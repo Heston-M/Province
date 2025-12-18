@@ -1,7 +1,7 @@
 import Tile from "@/components/ui/Tile";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import GameOverModal from "./ui/GameOverModal";
 
 const gridSize = 8;
@@ -11,15 +11,13 @@ interface GameBoardProps {
 }
 
 export default function GameBoard({ size }: GameBoardProps) {
-  const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
   const tileSize = (size - 2) / gridSize;
 
-  const { movesLeft, tileStates, gameState, selectTile } = useGameplay();
+  const { tileStates, gameState, selectTile } = useGameplay();
 
   return (
     <View style={{ position: "relative" }}>
-      <Text style={{ color: textColor, fontSize: 16, fontWeight: "bold", marginBottom: 10 }}>Moves left: {movesLeft}</Text>
       <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
         <GameOverModal visible={gameState !== "ongoing"} size={size} />
         <View style={styles.gameBoardInner}>{tileStates.map((tile) => (
