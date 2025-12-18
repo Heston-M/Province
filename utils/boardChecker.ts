@@ -45,3 +45,7 @@ export function isGameOver(movesLeft: number, tileStates: TileState[]): GameStat
 
   return "ongoing";
 }
+
+export function areAllTilesFortified(tileStates: TileState[]) {
+  return tileStates.every((tile) => tile.type === "ally");
+}
