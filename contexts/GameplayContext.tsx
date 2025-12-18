@@ -94,7 +94,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           growingLevel: 0, 
           type: type as "territory" | "enemy" | "ally", 
           isHidden: false, 
-          isCaptured: false });
+          isCaptured: type === "ally" ? true : false });
       }
     }
     setTileStates(tiles);
