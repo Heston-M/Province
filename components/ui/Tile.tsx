@@ -1,33 +1,70 @@
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { useState } from "react";
+import { useGameplay } from "@/contexts/GameplayContext";
+import { tileFields, useThemeColor } from "@/hooks/useThemeColor";
+import { TileState } from "@/types/tileState";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface TileProps {
-  type: "blank";
-  x: number;
-  y: number;
+  state: TileState;
   size: number;
+  onSelect: (state: TileState) => void;
 }
 
-export default function Tile({ type, x, y, size }: TileProps) {
-  const backgroundColor = useThemeColor("default");
-  const hoverColor = useThemeColor("hover");
+export default function Tile({ state, size, onSelect }: TileProps) {
+  const hiddenColor = useThemeColor("hidden");
   const borderColor = useThemeColor("border");
-  const selectedColor = useThemeColor("selected");
+  const uncapturedColor = useThemeColor("uncaptured");
+  const growingColor = useThemeColor("growing" + state.growingLevel as (typeof tileFields)[number]);
+  const enemyColor = useThemeColor("enemy");
+  const allyColor = useThemeColor("ally");
 
-  const [isSelected, setIsSelected] = useState(false);
+  const { movesLeft } = useGameplay();
+
   const [isHover, setIsHover] = useState(false);
+  const [tileColor, setTileColor] = useState(hiddenColor);
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    if (state.isHidden) {
+      setTileColor(hiddenColor);
+    } else {
+      setTileColor((prevColor) => {
+        switch (state.type) {
+          case "territory":
+            if (state.isCaptured) {
+              return growingColor;
+            } else {
+              return uncapturedColor;
+            }
+          case "enemy":
+            return enemyColor;
+          case "ally":
+            return allyColor;
+          default:
+            return prevColor;
+        }
+      });
+    }
+    if (movesLeft <= 0 || state.type === "ally") {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, movesLeft]);
 
   return (
     <Pressable 
       style={{ 
-        backgroundColor: isSelected ? selectedColor : isHover ? hoverColor : backgroundColor,
+        backgroundColor: isHover ? tileColor + "40" : tileColor,
         width: size, 
         height: size
        }}
       onHoverIn={() => setIsHover(true)}
       onHoverOut={() => setIsHover(false)}
-      onPress={() => setIsSelected(!isSelected)}
+      onPress={() => {
+        onSelect(state);
+      }}
+      disabled={disabled}
     >
       <View style={[styles.tile, { borderColor: borderColor }]}></View>
     </Pressable>
