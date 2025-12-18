@@ -1,4 +1,5 @@
 import { endGame } from "@/scripts/endGame";
+import { GameConfig } from "@/types/gameConfig";
 import { TileState } from "@/types/tileState";
 import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
@@ -6,35 +7,38 @@ import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
-  boardSize: number;
   movesLeft: number;
   tileStates: TileState[];
   firstMove: boolean;
   gameState: GameState;
+  gameConfig: GameConfig;
   loadGame: () => void;
-  newGame: (boardSize: number) => void;
+  newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
 }
 
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
 
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [boardSize, setBoardSize] = useState<number>(8);
   const [movesLeft, setMovesLeft] = useState<number>(10);
   const [tileStates, setTileStates] = useState<TileState[]>([]);
   const [firstMove, setFirstMove] = useState<boolean>(true);
   const [gameState, setGameState] = useState<GameState>("ongoing");
+  const [gameConfig, setGameConfig] = useState<GameConfig>({
+    boardSize: 8,
+    moveLimit: 10,
+  });
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
-      storage.get<number>("boardSize"), 
+      storage.get<GameConfig>("gameConfig"), 
       storage.get<number>("movesLeft"), 
       storage.get<TileState[]>("tileStates"),
       storage.get<boolean>("firstMove")
     ]).then((values) => {
-      const [boardSize, movesLeft, tileStates, firstMove] = values;
+      const [gameConfig, movesLeft, tileStates, firstMove] = values;
       
-      if (!boardSize || boardSize < 1) {
+      if (!gameConfig || gameConfig.boardSize < 1) {
         return false;
       }
       if (!movesLeft || movesLeft < 0) {
@@ -47,11 +51,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return false;
       }
       else {
-        setBoardSize(boardSize);
         setMovesLeft(movesLeft);
         setTileStates(tileStates);
         setFirstMove(firstMove);
         setGameState(isGameOver(movesLeft, tileStates));
+        setGameConfig(gameConfig);
         return true;
       }
     }).catch((error) => {
@@ -63,7 +67,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
-        newGame(8);
+        newGame({ boardSize: 8, moveLimit: 10 });
       }
     });
   }
@@ -72,16 +76,16 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     loadGame();
   }, []);
 
-  const newGame = (boardSize: number) => {
-    setBoardSize(boardSize);
-    storage.set<number>("boardSize", boardSize);
+  const newGame = (config: GameConfig) => {
+    setGameConfig(config);
+    storage.set<GameConfig>("gameConfig", config);
 
-    setMovesLeft(10);
-    storage.set<number>("movesLeft", 10);
+    setMovesLeft(config.moveLimit);
+    storage.set<number>("movesLeft", config.moveLimit);
 
     const tiles: TileState[] = [];
-    for (let y = 1; y <= boardSize; y++) {
-      for (let x = 1; x <= boardSize; x++) {
+    for (let y = 1; y <= config.boardSize; y++) {
+      for (let x = 1; x <= config.boardSize; x++) {
         const randNum = Math.random();
         let type = "territory";
         if (randNum < 0.9) {
@@ -106,7 +110,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }
 
   const runEndGame = async () => {
-    await endGame(tileStates, boardSize, (updatedStates) => {
+    await endGame(tileStates, gameConfig.boardSize, (updatedStates) => {
       setTileStates([...updatedStates]);
     }).then(() => {
       setGameState("playerWon");
@@ -127,7 +131,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     let moveCost = 1;
     let growTerritory = true;
     state.isHidden = false;
-    const adjacentTiles = getAdjacentTiles(state.x, state.y, boardSize, tileStates);
+    const adjacentTiles = getAdjacentTiles(state.x, state.y, gameConfig.boardSize, tileStates);
     const adjacentTerritoryTiles = adjacentTiles.filter((tile) => tile.type === "territory");
 
     // capture tile
@@ -169,7 +173,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // grow territory
     if (growTerritory) {
       let nextStates = progressTerritoryGrowth(tileStates);
-      nextStates = advanceEnemyTiles(nextStates, boardSize, [state]);
+      nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, [state]);
 
       setTileStates([...nextStates]);
       storage.set<TileState[]>("tileStates", nextStates);
@@ -178,7 +182,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTileStates([...tileStates]);
     storage.set<TileState[]>("tileStates", tileStates);
 
-    const nextNum = movesLeft - moveCost;
+    const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
 
@@ -193,7 +197,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <GameplayContext.Provider 
-      value={{ boardSize, movesLeft, tileStates, firstMove, gameState, loadGame, newGame, selectTile }}>
+      value={{ movesLeft, tileStates, firstMove, gameState, gameConfig, loadGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );

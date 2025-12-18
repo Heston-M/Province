@@ -13,7 +13,10 @@ export default function NewGameButton() {
     <Pressable 
       style={[styles.button, { backgroundColor: backgroundColor, borderColor: borderColor }]} 
       onPress={() => {
-        newGame(8);
+        newGame({ 
+          boardSize: 8, 
+          moveLimit: 10,
+        });
       }}>
       <Text style={[styles.text, { color: textColor }]}>New Game</Text>
     </Pressable>
