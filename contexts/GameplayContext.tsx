@@ -55,6 +55,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const selectTile = (state: TileState) => {
     let moveCost = 1;
     state.isHidden = false;
+    const adjacentTiles = getAdjacentTiles(state.x, state.y, boardSize, tileStates);
+    const adjacentTerritoryTiles = adjacentTiles.filter((tile) => tile.type === "territory");
 
     // capture tile
     if (state.type === "territory") {
@@ -70,11 +72,10 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     // reveal adjacent tiles
-    const adjacentTiles = getAdjacentTiles(state.x, state.y, boardSize);
     for (const tile of adjacentTiles) {
-      const tileState = tileStates.find((t) => t.x === tile.x && t.y === tile.y);
-      if (tileState) {
-        tileState.isHidden = false;
+      tile.isHidden = false;
+    }
+
       }
     }
 
