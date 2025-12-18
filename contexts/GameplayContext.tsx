@@ -12,6 +12,7 @@ type ContextShape = {
   firstMove: boolean;
   gameState: GameState;
   gameConfig: GameConfig;
+  elapsedTime: number;
   loadGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
@@ -28,6 +29,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     boardSize: 8,
     moveLimit: 10,
   });
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
@@ -107,7 +109,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setFirstMove(true);
     storage.set<boolean>("firstMove", true);
     setGameState("ongoing");
+    setElapsedTime(0);
   }
+
+  useEffect(() => {
+    if (gameState !== "ongoing") {
+      return;
+    }
+    const interval = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [gameState]);
 
   const runEndGame = async () => {
     await endGame(tileStates, gameConfig.boardSize, (updatedStates) => {
@@ -197,7 +210,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <GameplayContext.Provider 
-      value={{ movesLeft, tileStates, firstMove, gameState, gameConfig, loadGame, newGame, selectTile }}>
+      value={{ movesLeft, tileStates, firstMove, gameState, gameConfig, elapsedTime, loadGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );
