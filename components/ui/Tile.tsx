@@ -16,7 +16,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
   const uncapturedColor = useThemeColor("uncaptured");
   const growingColor = useThemeColor("growing" + state.growingLevel as (typeof tileFields)[number]);
   const enemyColor = useThemeColor("enemy");
-  const allyColor = useThemeColor("ally");
+  const fortifiedColor = useThemeColor("fortified");
 
   const { movesLeft, firstMove } = useGameplay();
 
@@ -38,14 +38,14 @@ export default function Tile({ state, size, onSelect }: TileProps) {
             }
           case "enemy":
             return enemyColor;
-          case "ally":
-            return allyColor;
+          case "fortified":
+            return fortifiedColor;
           default:
             return prevColor;
         }
       });
     }
-    if (movesLeft <= 0 || state.isHidden || state.type === "ally" ||
+    if (movesLeft <= 0 || state.isHidden || state.type === "fortified" ||
         (state.type === "territory" && state.isCaptured && state.growingLevel < 6)) {
       if (firstMove) {
         setDisabled(false);

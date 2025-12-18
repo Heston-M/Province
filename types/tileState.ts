@@ -1,7 +1,7 @@
 export type TileState = {
   x: number;
   y: number;
-  type: "territory" | "enemy" | "ally";
+  type: "territory" | "fortified" | "enemy";
   growingLevel: number;
   isHidden: boolean;
   isCaptured: boolean;

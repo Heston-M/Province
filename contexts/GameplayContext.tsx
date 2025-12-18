@@ -1,6 +1,7 @@
+import { endGame } from "@/scripts/endGame";
 import { TileState } from "@/types/tileState";
 import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
-import { getAdjacentTiles } from "@/utils/gridUtils";
+import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -83,18 +84,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       for (let x = 1; x <= boardSize; x++) {
         const randNum = Math.random();
         let type = "territory";
-        if (randNum < 0.8) {
+        if (randNum < 0.9) {
           type = "territory";
-        } else if (randNum < 0.9) {
+        } else if (randNum < 0.95) {
           type = "enemy";
         } else {
-          type = "ally";
+          type = "fortified";
         }
         tiles.push({ x, y, 
           growingLevel: 0, 
-          type: type as "territory" | "enemy" | "ally", 
+          type: type as "territory" | "fortified" | "enemy", 
           isHidden: false, 
-          isCaptured: type === "ally" ? true : false });
+          isCaptured: type === "fortified" ? true : false });
       }
     }
     setTileStates(tiles);
@@ -102,6 +103,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setFirstMove(true);
     storage.set<boolean>("firstMove", true);
     setGameState("ongoing");
+  }
+
+  const runEndGame = async () => {
+    await endGame(tileStates, boardSize, (updatedStates) => {
+      setTileStates([...updatedStates]);
+    }).then(() => {
+      setGameState("playerWon");
+      storage.set<TileState[]>("tileStates", tileStates);
+    }).catch((error) => {
+      console.error("Error running end game:", error);
+      setGameState("playerWon");
+    });
   }
 
   const selectTile = (state: TileState) => {
@@ -137,13 +150,13 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (state.type === "enemy") {
       state.type = "territory";
       state.isCaptured = true;
-      if (adjacentTiles.some((tile) => tile.type === "ally")) {
+      if (adjacentTiles.some((tile) => tile.type === "fortified")) {
         moveCost = 1;
       } else {
         moveCost = 2;
       }
     }
-    if (state.type === "ally") {
+    if (state.type === "fortified") {
       state.isCaptured = true;
       moveCost = 0;
     }
@@ -155,33 +168,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // grow territory
     if (growTerritory) {
-      for (const tile of tileStates) {
-        if (tile.type === "territory" && tile.isCaptured && tile.growingLevel <= 6) {
-          tile.growingLevel++;
-        }
-        if (tile.growingLevel > 6) {
-          tile.type = "ally";
-          tile.growingLevel = 0;
-        }
-      }
+      let nextStates = progressTerritoryGrowth(tileStates);
+      nextStates = advanceEnemyTiles(nextStates, boardSize, [state]);
 
-      // advance enemy tiles
-      if (Math.random() < 0.9) {
-        const capturableTiles: TileState[] = [];
-        for (const tile of tileStates) {
-          if (tile.type === "enemy") {
-            capturableTiles.push(...getAdjacentTiles(tile.x, tile.y, boardSize, tileStates).filter((t) => t.type === "territory" && !capturableTiles.includes(t)));
-          }
-        }
-        if (capturableTiles.length > 0) {
-          const tileToTakeOver = capturableTiles[Math.floor(Math.random() * capturableTiles.length)];
-          if (tileToTakeOver !== state) {
-            tileToTakeOver.type = "enemy";
-            tileToTakeOver.growingLevel = 0;
-            tileToTakeOver.isCaptured = false;
-          }
-        }
-      }
+      setTileStates([...nextStates]);
+      storage.set<TileState[]>("tileStates", nextStates);
     }
 
     setTileStates([...tileStates]);
@@ -190,7 +181,14 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const nextNum = movesLeft - moveCost;
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
-    setGameState(isGameOver(nextNum, tileStates));
+
+    const gameOverState = isGameOver(nextNum, tileStates);
+    if (gameOverState === "playerWon") {
+      runEndGame();
+    }
+    else {
+      setGameState(gameOverState);
+    }
   }
 
   return (

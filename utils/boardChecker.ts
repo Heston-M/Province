@@ -14,7 +14,7 @@ export function isValidTileSet(tileStates: TileState[]) {
     if (tile.x < 1 || tile.x > tileStates.length || tile.y < 1 || tile.y > tileStates.length) {
       return false;
     }
-    if (tile.type !== "territory" && tile.type !== "enemy" && tile.type !== "ally") {
+    if (tile.type !== "territory" && tile.type !== "fortified" && tile.type !== "enemy") {
       return false;
     }
     if (tile.growingLevel < 0 || tile.growingLevel > 6) {
@@ -44,4 +44,8 @@ export function isGameOver(movesLeft: number, tileStates: TileState[]): GameStat
   }
 
   return "ongoing";
+}
+
+export function areAllTilesFortified(tileStates: TileState[]) {
+  return tileStates.every((tile) => tile.type === "fortified");
 }
