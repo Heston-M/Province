@@ -1,7 +1,6 @@
 import Tile from "@/components/ui/Tile";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 const gridSize = 8;
@@ -15,11 +14,7 @@ export default function GameBoard({ size }: GameBoardProps) {
   const borderColor = useThemeColor("border");
   const tileSize = (size - 2) / gridSize;
 
-  const { movesLeft, tileStates, loadGame, selectTile } = useGameplay();
-
-  useEffect(() => {
-    loadGame();
-  }, []);
+  const { movesLeft, tileStates, selectTile } = useGameplay();
 
   return (
     <View>

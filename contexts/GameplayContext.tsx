@@ -1,4 +1,5 @@
 import { TileState } from "@/types/tileState";
+import { isValidTileSet } from "@/utils/boardChecker";
 import { getAdjacentTiles } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -19,20 +20,54 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [movesLeft, setMovesLeft] = useState<number>(10);
   const [tileStates, setTileStates] = useState<TileState[]>([]);
 
-  const loadGame = () => {
-    storage.get<TileState[]>("tileStates").then((value) => {
-      setTileStates(value || []);
-    });
-    storage.get<number>("boardSize").then((value) => {
-      setBoardSize(value || 8);
+  async function fetchGame(): Promise<boolean> {
+    return Promise.all([
+      storage.get<number>("boardSize"), 
+      storage.get<number>("movesLeft"), 
+      storage.get<TileState[]>("tileStates")
+    ]).then((values) => {
+      const [boardSize, movesLeft, tileStates] = values;
+      
+      if (!boardSize || boardSize < 1) {
+        return false;
+      }
+      if (!movesLeft || movesLeft < 0) {
+        return false;
+      }
+      if (!tileStates || !isValidTileSet(tileStates)) {
+        return false;
+      }
+      else {
+        setBoardSize(boardSize);
+        setMovesLeft(movesLeft);
+        setTileStates(tileStates);
+        return true;
+      }
+    }).catch((error) => {
+      console.error("Error fetching game:", error);
+      return false;
     });
   }
+
+  const loadGame = async () => {
+    await fetchGame().then((valid) => {
+      if (!valid) {
+        newGame(8);
+      }
+    });
+  }
+
+  useEffect(() => {
+    loadGame();
+  }, []);
 
   const newGame = (boardSize: number) => {
     setBoardSize(boardSize);
     storage.set<number>("boardSize", boardSize);
+
     setMovesLeft(10);
     storage.set<number>("movesLeft", 10);
+
     const tiles: TileState[] = [];
     for (let y = 1; y <= boardSize; y++) {
       for (let x = 1; x <= boardSize; x++) {
@@ -112,15 +147,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
   }
-
-  useEffect(() => {
-    storage.get<number>("movesLeft").then((value) => {
-      setMovesLeft(value || 10);
-    });
-    storage.get<TileState[]>("tileStates").then((value) => {
-      setTileStates(value || []);
-    });
-  }, []);
 
   return (
     <GameplayContext.Provider 
