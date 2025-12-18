@@ -21,7 +21,7 @@ export default function GameBoard({ size }: GameBoardProps) {
     <View style={{ position: "relative" }}>
       <Text style={{ color: textColor, fontSize: 16, fontWeight: "bold", marginBottom: 10 }}>Moves left: {movesLeft}</Text>
       <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
-        <GameOverModal visible={gameState !== "ongoing"} />
+        <GameOverModal visible={gameState !== "ongoing"} size={size} />
         <View style={styles.gameBoardInner}>{tileStates.map((tile) => (
           <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
         ))}</View>

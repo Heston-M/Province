@@ -5,20 +5,32 @@ import NewGameButton from "./NewGameButton";
 
 interface GameOverModalProps {
   visible: boolean;
+  size: number;
 }
 
-export default function GameOverModal({ visible }: GameOverModalProps) {
+export default function GameOverModal({ visible, size }: GameOverModalProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
 
   const { gameState } = useGameplay();
 
+  const minWidth = 200;
+  const minHeight = 200;
+
+  const horizontalPadding = (size - minWidth) / 2;
+  const verticalPadding = (size - minHeight) / 2;
+
   return (
     visible && (
     <View style={styles.modal}>
       <View style={[styles.modal, { backgroundColor: backgroundColor, opacity: 0.5 }]}></View>
-      <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+      <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor,
+        left: horizontalPadding,
+        top: verticalPadding,
+        right: horizontalPadding,
+        bottom: verticalPadding,
+       }]}>
         <Text style={[styles.title, { color: textColor }]}>Game Over</Text>
         <Text style={[styles.message, { color: textColor }]}>You {gameState === "playerWon" ? "won!" : gameState === "enemyWon" ? "lost" : "tied"}</Text>
         <NewGameButton />
@@ -38,10 +50,6 @@ const styles = StyleSheet.create({
   },
   container: {
     position: "absolute",
-    top: 100,
-    left: 100,
-    right: 100,
-    bottom: 100,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
