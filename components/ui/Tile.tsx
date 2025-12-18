@@ -18,7 +18,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
   const enemyColor = useThemeColor("enemy");
   const allyColor = useThemeColor("ally");
 
-  const { movesLeft } = useGameplay();
+  const { movesLeft, firstMove } = useGameplay();
 
   const [isHover, setIsHover] = useState(false);
   const [tileColor, setTileColor] = useState(hiddenColor);
@@ -45,12 +45,18 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         }
       });
     }
-    if (movesLeft <= 0 || state.type === "ally") {
-      setDisabled(true);
+    if (movesLeft <= 0 || state.isHidden || state.type === "ally" ||
+        (state.type === "territory" && state.isCaptured && state.growingLevel < 6)) {
+      if (firstMove) {
+        setDisabled(false);
+      }
+      else {
+        setDisabled(true);
+      }
     } else {
       setDisabled(false);
     }
-  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, movesLeft]);
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, movesLeft, firstMove]);
 
   return (
     <Pressable 
