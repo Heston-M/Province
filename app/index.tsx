@@ -1,6 +1,7 @@
 import GameBoard from "@/components/GameBoard";
+import NewGameButton from "@/components/ui/NewGameButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, View } from "react-native";
 
 export default function Index() {
   const backgroundColor = useThemeColor("background");
@@ -19,7 +20,7 @@ export default function Index() {
         backgroundColor: backgroundColor,
       }}
     >
-      <Text style={{ color: textColor }}>Edit app/index.tsx to edit this screen.</Text>
+      <NewGameButton />
       <View style={[{ width: gameBoardContainerSize, height: gameBoardContainerSize }]}>
         <GameBoard size={gameBoardContainerSize} />
       </View>
