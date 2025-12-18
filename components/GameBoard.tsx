@@ -1,4 +1,5 @@
 import Tile from "@/components/ui/Tile";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, View } from "react-native";
 
 const gridSize = 8;
@@ -8,6 +9,7 @@ interface GameBoardProps {
 }
 
 export default function GameBoard({ size }: GameBoardProps) {
+  const borderColor = useThemeColor("border");
   const tileSize = (size - 2) / gridSize;
 
   const tiles = [];
@@ -20,7 +22,7 @@ export default function GameBoard({ size }: GameBoardProps) {
   }
 
   return (
-    <View style={[styles.gameBoard, { width: size, height: size }]}>
+    <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
       <View style={styles.gameBoardInner}>{tiles}</View>
     </View>
   );
@@ -29,7 +31,6 @@ export default function GameBoard({ size }: GameBoardProps) {
 const styles = StyleSheet.create({
   gameBoard: {
     borderWidth: 1,
-    borderColor: "black",
   },
   gameBoardInner: {
     flexDirection: "row",

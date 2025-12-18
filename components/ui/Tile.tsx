@@ -1,5 +1,6 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 interface TileProps {
   type: "blank";
@@ -8,21 +9,27 @@ interface TileProps {
   size: number;
 }
 
-  export default function Tile({ type, x, y, size }: TileProps) {
-    const [isSelected, setIsSelected] = useState(false);
+export default function Tile({ type, x, y, size }: TileProps) {
+  const backgroundColor = useThemeColor("default");
+  const hoverColor = useThemeColor("hover");
+  const borderColor = useThemeColor("border");
+  const selectedColor = useThemeColor("selected");
+
+  const [isSelected, setIsSelected] = useState(false);
+  const [isHover, setIsHover] = useState(false);
 
   return (
     <Pressable 
       style={{ 
-        backgroundColor: isSelected ? "white" : "red", 
+        backgroundColor: isSelected ? selectedColor : isHover ? hoverColor : backgroundColor,
         width: size, 
         height: size
        }}
+      onHoverIn={() => setIsHover(true)}
+      onHoverOut={() => setIsHover(false)}
       onPress={() => setIsSelected(!isSelected)}
     >
-      <View style={styles.tile}>
-        <Text>Tile</Text>
-      </View>
+      <View style={[styles.tile, { borderColor: borderColor }]}></View>
     </Pressable>
   );
 }
@@ -31,6 +38,5 @@ const styles = StyleSheet.create({
   tile: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "black",
   },
 });
