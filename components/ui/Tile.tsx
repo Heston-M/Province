@@ -1,3 +1,4 @@
+import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -7,13 +8,16 @@ interface TileProps {
   x: number;
   y: number;
   size: number;
+  onSelect: (x: number, y: number) => void;
 }
 
-export default function Tile({ type, x, y, size }: TileProps) {
+export default function Tile({ type, x, y, size, onSelect }: TileProps) {
   const backgroundColor = useThemeColor("default");
   const hoverColor = useThemeColor("hover");
   const borderColor = useThemeColor("border");
   const selectedColor = useThemeColor("selected");
+
+  const { movesLeft } = useGameplay();
 
   const [isSelected, setIsSelected] = useState(false);
   const [isHover, setIsHover] = useState(false);
@@ -27,7 +31,11 @@ export default function Tile({ type, x, y, size }: TileProps) {
        }}
       onHoverIn={() => setIsHover(true)}
       onHoverOut={() => setIsHover(false)}
-      onPress={() => setIsSelected(!isSelected)}
+      onPress={() => {
+        setIsSelected(!isSelected);
+        onSelect(x, y);
+      }}
+      disabled={movesLeft <= 0}
     >
       <View style={[styles.tile, { borderColor: borderColor }]}></View>
     </Pressable>
