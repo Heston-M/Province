@@ -1,6 +1,7 @@
 export type TileState = {
   x: number;
   y: number;
-  type: "blank" | "territory" | "enemy" | "ally";
+  type: "territory" | "enemy" | "ally";
   isHidden: boolean;
+  isCaptured: boolean;
 }

@@ -12,7 +12,7 @@ export default function RootLayout() {
           color: useThemeColor("text"),
         },
         headerStyle: {
-          backgroundColor: useThemeColor("default"),
+          backgroundColor: useThemeColor("secondary"),
         },
       }}
       >
