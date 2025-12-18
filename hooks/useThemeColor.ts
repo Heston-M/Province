@@ -2,7 +2,7 @@ import { colors, tileColors } from "@/constants/colors";
 import { useColorScheme } from "react-native";
 
 const colorFields = Object.keys(colors["light"]) as (keyof typeof colors["light"])[];
-const tileFields = Object.keys(tileColors["light"]) as (keyof typeof tileColors["light"])[];
+export const tileFields = Object.keys(tileColors["light"]) as (keyof typeof tileColors["light"])[];
 
 interface ThemeColor {
   field: (typeof colorFields)[number] | (typeof tileFields)[number];

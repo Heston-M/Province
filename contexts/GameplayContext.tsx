@@ -45,7 +45,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         } else {
           type = "ally";
         }
-        tiles.push({ x, y, type: type as "territory" | "enemy" | "ally", isHidden: true, isCaptured: false });
+        tiles.push({ x, y, 
+          growingLevel: 0, 
+          type: type as "territory" | "enemy" | "ally", 
+          isHidden: true, 
+          isCaptured: false });
       }
     }
     setTileStates(tiles);
@@ -60,11 +64,28 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // capture tile
     if (state.type === "territory") {
-      state.isCaptured = true;
+      if (!state.isCaptured) {
+        state.isCaptured = true;
+      }
+      if (state.growingLevel === 6) {
+        state.growingLevel = 0;
+        moveCost = -1;
+        for (const tile of adjacentTerritoryTiles) {
+          if (tile.growingLevel === 6) {
+            tile.growingLevel = 0;
+            moveCost -= 1;
+          }
+        }
+      }
     }
     if (state.type === "enemy") {
+      state.type = "territory";
       state.isCaptured = true;
-      moveCost = 2;
+      if (adjacentTiles.some((tile) => tile.type === "ally")) {
+        moveCost = 1;
+      } else {
+        moveCost = 2;
+      }
     }
     if (state.type === "ally") {
       state.isCaptured = true;
@@ -76,6 +97,10 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tile.isHidden = false;
     }
 
+    // grow territory
+    for (const tile of tileStates) {
+      if (tile.type === "territory" && tile.isCaptured && tile.growingLevel < 6) {
+        tile.growingLevel++;
       }
     }
 

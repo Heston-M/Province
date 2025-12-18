@@ -1,5 +1,5 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { tileFields, useThemeColor } from "@/hooks/useThemeColor";
 import { TileState } from "@/types/tileState";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -12,10 +12,9 @@ interface TileProps {
 
 export default function Tile({ state, size, onSelect }: TileProps) {
   const hiddenColor = useThemeColor("hidden");
-  const hoverColor = useThemeColor("hover");
   const borderColor = useThemeColor("border");
   const uncapturedColor = useThemeColor("uncaptured");
-  const territoryColor = useThemeColor("territory");
+  const growingColor = useThemeColor("growing" + state.growingLevel as (typeof tileFields)[number]);
   const enemyColor = useThemeColor("enemy");
   const allyColor = useThemeColor("ally");
 
@@ -32,7 +31,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         switch (state.type) {
           case "territory":
             if (state.isCaptured) {
-              return territoryColor;
+              return growingColor;
             } else {
               return uncapturedColor;
             }
@@ -45,7 +44,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         }
       });
     }
-  }, [state.isHidden, state.type, state.isCaptured]);
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel]);
 
   return (
     <Pressable 

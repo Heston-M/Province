@@ -12,23 +12,43 @@ export const colors = {
   },
 }
 
+const growingColors = [
+  "#440000",
+  "#884400",
+  "#cc8800",
+  "#ffcc00",
+  "#ffff00",
+  "#ccff88",
+  "#00ff00",
+]
+
 export const tileColors = {
   light: {
     hidden: "#ffffff",
-    hover: "#d3d3d3",
     border: "#000000",
     uncaptured: "#ffEEff",
-    territory: "#00ff00",
     enemy: "#ff0000",
     ally: "#00aadd",
+    growing0: growingColors[0],
+    growing1: growingColors[1],
+    growing2: growingColors[2],
+    growing3: growingColors[3],
+    growing4: growingColors[4],
+    growing5: growingColors[5],
+    growing6: growingColors[6],
   },
   dark: {
     hidden: "#000000",
-    hover: "#808080",
     border: "#ffffff",
     uncaptured: "#ffEEff",
-    territory: "#00ff00",
     enemy: "#ff0000",
     ally: "#00aadd",
+    growing0: growingColors[0],
+    growing1: growingColors[1],
+    growing2: growingColors[2],
+    growing3: growingColors[3],
+    growing4: growingColors[4],
+    growing5: growingColors[5],
+    growing6: growingColors[6],
   },
 }
