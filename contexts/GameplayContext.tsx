@@ -68,8 +68,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         state.isCaptured = true;
       }
       if (state.growingLevel === 6) {
-        state.growingLevel = 0;
-        moveCost = -1;
+        moveCost = 0;
         for (const tile of adjacentTerritoryTiles) {
           if (tile.growingLevel === 6) {
             tile.growingLevel = 0;
@@ -77,6 +76,15 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
         }
       }
+      else {
+        // grow territory
+        for (const tile of tileStates) {
+          if (tile.type === "territory" && tile.isCaptured && tile.growingLevel < 6) {
+            tile.growingLevel++;
+          }
+        }
+      }
+      state.growingLevel = 0;
     }
     if (state.type === "enemy") {
       state.type = "territory";
@@ -95,13 +103,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // reveal adjacent tiles
     for (const tile of adjacentTiles) {
       tile.isHidden = false;
-    }
-
-    // grow territory
-    for (const tile of tileStates) {
-      if (tile.type === "territory" && tile.isCaptured && tile.growingLevel < 6) {
-        tile.growingLevel++;
-      }
     }
 
     setTileStates([...tileStates]);

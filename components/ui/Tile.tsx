@@ -22,6 +22,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
 
   const [isHover, setIsHover] = useState(false);
   const [tileColor, setTileColor] = useState(hiddenColor);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (state.isHidden) {
@@ -44,7 +45,12 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         }
       });
     }
-  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel]);
+    if (movesLeft <= 0 || state.type === "ally") {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, movesLeft]);
 
   return (
     <Pressable 
@@ -58,7 +64,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
       onPress={() => {
         onSelect(state);
       }}
-      disabled={movesLeft <= 0}
+      disabled={disabled}
     >
       <View style={[styles.tile, { borderColor: borderColor }]}></View>
     </Pressable>
