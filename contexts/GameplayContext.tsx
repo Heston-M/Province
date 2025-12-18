@@ -1,3 +1,4 @@
+import { endGame } from "@/scripts/endGame";
 import { TileState } from "@/types/tileState";
 import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
@@ -104,6 +105,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameState("ongoing");
   }
 
+  const runEndGame = async () => {
+    await endGame(tileStates, boardSize, (updatedStates) => {
+      setTileStates([...updatedStates]);
+    }).then(() => {
+      setGameState("playerWon");
+      storage.set<TileState[]>("tileStates", tileStates);
+    }).catch((error) => {
+      console.error("Error running end game:", error);
+      setGameState("playerWon");
+    });
+  }
+
   const selectTile = (state: TileState) => {
     if (firstMove) {
       state.type = "territory";
@@ -168,7 +181,14 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const nextNum = movesLeft - moveCost;
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
-    setGameState(isGameOver(nextNum, tileStates));
+
+    const gameOverState = isGameOver(nextNum, tileStates);
+    if (gameOverState === "playerWon") {
+      runEndGame();
+    }
+    else {
+      setGameState(gameOverState);
+    }
   }
 
   return (
