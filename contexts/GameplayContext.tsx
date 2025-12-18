@@ -1,5 +1,5 @@
 import { TileState } from "@/types/tileState";
-import { isValidTileSet } from "@/utils/boardChecker";
+import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { getAdjacentTiles } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ type ContextShape = {
   movesLeft: number;
   tileStates: TileState[];
   firstMove: boolean;
+  gameState: GameState;
   loadGame: () => void;
   newGame: (boardSize: number) => void;
   selectTile: (state: TileState) => void;
@@ -21,6 +22,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [movesLeft, setMovesLeft] = useState<number>(10);
   const [tileStates, setTileStates] = useState<TileState[]>([]);
   const [firstMove, setFirstMove] = useState<boolean>(true);
+  const [gameState, setGameState] = useState<GameState>("ongoing");
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
@@ -48,6 +50,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setMovesLeft(movesLeft);
         setTileStates(tileStates);
         setFirstMove(firstMove);
+        setGameState(isGameOver(movesLeft, tileStates));
         return true;
       }
     }).catch((error) => {
@@ -98,6 +101,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     storage.set<TileState[]>("tileStates", tiles);
     setFirstMove(true);
     storage.set<boolean>("firstMove", true);
+    setGameState("ongoing");
   }
 
   const selectTile = (state: TileState) => {
@@ -186,11 +190,12 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const nextNum = movesLeft - moveCost;
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
+    setGameState(isGameOver(nextNum, tileStates));
   }
 
   return (
     <GameplayContext.Provider 
-      value={{ boardSize, movesLeft, tileStates, firstMove, loadGame, newGame, selectTile }}>
+      value={{ boardSize, movesLeft, tileStates, firstMove, gameState, loadGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );
