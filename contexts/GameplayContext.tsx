@@ -80,8 +80,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
 
-    setMovesLeft(10);
-    storage.set<number>("movesLeft", 10);
+    setMovesLeft(config.moveLimit);
+    storage.set<number>("movesLeft", config.moveLimit);
 
     const tiles: TileState[] = [];
     for (let y = 1; y <= config.boardSize; y++) {
@@ -182,7 +182,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTileStates([...tileStates]);
     storage.set<TileState[]>("tileStates", tileStates);
 
-    const nextNum = movesLeft - moveCost;
+    const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
 
