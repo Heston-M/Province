@@ -48,7 +48,7 @@ export function progressTerritoryGrowth(tileStates: TileState[]): TileState[] {
         tile.growingLevel++;
       }
       if (tile.growingLevel > 6) {
-        tile.type = "ally";
+        tile.type = "fortified";
         tile.growingLevel = 0;
       }
     }

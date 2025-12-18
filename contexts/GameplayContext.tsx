@@ -84,18 +84,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       for (let x = 1; x <= boardSize; x++) {
         const randNum = Math.random();
         let type = "territory";
-        if (randNum < 0.8) {
+        if (randNum < 0.9) {
           type = "territory";
-        } else if (randNum < 0.9) {
+        } else if (randNum < 0.95) {
           type = "enemy";
         } else {
-          type = "ally";
+          type = "fortified";
         }
         tiles.push({ x, y, 
           growingLevel: 0, 
-          type: type as "territory" | "enemy" | "ally", 
+          type: type as "territory" | "fortified" | "enemy", 
           isHidden: false, 
-          isCaptured: type === "ally" ? true : false });
+          isCaptured: type === "fortified" ? true : false });
       }
     }
     setTileStates(tiles);
@@ -150,13 +150,13 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (state.type === "enemy") {
       state.type = "territory";
       state.isCaptured = true;
-      if (adjacentTiles.some((tile) => tile.type === "ally")) {
+      if (adjacentTiles.some((tile) => tile.type === "fortified")) {
         moveCost = 1;
       } else {
         moveCost = 2;
       }
     }
-    if (state.type === "ally") {
+    if (state.type === "fortified") {
       state.isCaptured = true;
       moveCost = 0;
     }
@@ -170,7 +170,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (growTerritory) {
       let nextStates = progressTerritoryGrowth(tileStates);
       nextStates = advanceEnemyTiles(nextStates, boardSize, [state]);
-      
+
       setTileStates([...nextStates]);
       storage.set<TileState[]>("tileStates", nextStates);
     }
