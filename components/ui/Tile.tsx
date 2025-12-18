@@ -14,7 +14,7 @@ export default function Tile({ type, x, y, size }: TileProps) {
   const hoverColor = useThemeColor("hover");
   const borderColor = useThemeColor("border");
   const selectedColor = useThemeColor("selected");
-  
+
   const [isSelected, setIsSelected] = useState(false);
   const [isHover, setIsHover] = useState(false);
 
@@ -22,7 +22,6 @@ export default function Tile({ type, x, y, size }: TileProps) {
     <Pressable 
       style={{ 
         backgroundColor: isSelected ? selectedColor : isHover ? hoverColor : backgroundColor,
-        borderColor: borderColor,
         width: size, 
         height: size
        }}
@@ -30,7 +29,7 @@ export default function Tile({ type, x, y, size }: TileProps) {
       onHoverOut={() => setIsHover(false)}
       onPress={() => setIsSelected(!isSelected)}
     >
-      <View style={styles.tile}></View>
+      <View style={[styles.tile, { borderColor: borderColor }]}></View>
     </Pressable>
   );
 }
