@@ -1,6 +1,6 @@
 import { TileState } from "@/types/tileState";
 import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
-import { getAdjacentTiles } from "@/utils/gridUtils";
+import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -155,33 +155,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // grow territory
     if (growTerritory) {
-      for (const tile of tileStates) {
-        if (tile.type === "territory" && tile.isCaptured && tile.growingLevel <= 6) {
-          tile.growingLevel++;
-        }
-        if (tile.growingLevel > 6) {
-          tile.type = "ally";
-          tile.growingLevel = 0;
-        }
-      }
-
-      // advance enemy tiles
-      if (Math.random() < 0.9) {
-        const capturableTiles: TileState[] = [];
-        for (const tile of tileStates) {
-          if (tile.type === "enemy") {
-            capturableTiles.push(...getAdjacentTiles(tile.x, tile.y, boardSize, tileStates).filter((t) => t.type === "territory" && !capturableTiles.includes(t)));
-          }
-        }
-        if (capturableTiles.length > 0) {
-          const tileToTakeOver = capturableTiles[Math.floor(Math.random() * capturableTiles.length)];
-          if (tileToTakeOver !== state) {
-            tileToTakeOver.type = "enemy";
-            tileToTakeOver.growingLevel = 0;
-            tileToTakeOver.isCaptured = false;
-          }
-        }
-      }
+      let nextStates = progressTerritoryGrowth(tileStates);
+      nextStates = advanceEnemyTiles(nextStates, boardSize, [state]);
+      
+      setTileStates([...nextStates]);
+      storage.set<TileState[]>("tileStates", nextStates);
     }
 
     setTileStates([...tileStates]);
