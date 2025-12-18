@@ -1,5 +1,5 @@
 import { TileState } from "@/types/tileState";
-import { isValidTileSet } from "@/utils/boardChecker";
+import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { getAdjacentTiles } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ type ContextShape = {
   movesLeft: number;
   tileStates: TileState[];
   firstMove: boolean;
+  gameState: GameState;
   loadGame: () => void;
   newGame: (boardSize: number) => void;
   selectTile: (state: TileState) => void;
@@ -21,6 +22,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [movesLeft, setMovesLeft] = useState<number>(10);
   const [tileStates, setTileStates] = useState<TileState[]>([]);
   const [firstMove, setFirstMove] = useState<boolean>(true);
+  const [gameState, setGameState] = useState<GameState>("ongoing");
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
@@ -48,6 +50,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setMovesLeft(movesLeft);
         setTileStates(tileStates);
         setFirstMove(firstMove);
+        setGameState(isGameOver(movesLeft, tileStates));
         return true;
       }
     }).catch((error) => {
@@ -91,13 +94,14 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           growingLevel: 0, 
           type: type as "territory" | "enemy" | "ally", 
           isHidden: false, 
-          isCaptured: false });
+          isCaptured: type === "ally" ? true : false });
       }
     }
     setTileStates(tiles);
     storage.set<TileState[]>("tileStates", tiles);
     setFirstMove(true);
     storage.set<boolean>("firstMove", true);
+    setGameState("ongoing");
   }
 
   const selectTile = (state: TileState) => {
@@ -162,21 +166,20 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
 
       // advance enemy tiles
-      const capturableTiles: TileState[] = [];
-      for (const tile of tileStates) {
-        if (tile.type === "enemy") {
-          capturableTiles.push(...getAdjacentTiles(tile.x, tile.y, boardSize, tileStates).filter((t) => t.type === "territory" && !capturableTiles.includes(t)));
+      if (Math.random() < 0.9) {
+        const capturableTiles: TileState[] = [];
+        for (const tile of tileStates) {
+          if (tile.type === "enemy") {
+            capturableTiles.push(...getAdjacentTiles(tile.x, tile.y, boardSize, tileStates).filter((t) => t.type === "territory" && !capturableTiles.includes(t)));
+          }
         }
-      }
-      if (capturableTiles.length > 0) {
-        const multiplier = movesLeft / 10;
-        const MaxNumToCapture = Math.floor(capturableTiles.length * multiplier);
-        const numToCapture = Math.max(capturableTiles.length, Math.floor(Math.random() * MaxNumToCapture));
-        for (let i = 0; i < 1; i++) {
+        if (capturableTiles.length > 0) {
           const tileToTakeOver = capturableTiles[Math.floor(Math.random() * capturableTiles.length)];
-          tileToTakeOver.type = "enemy";
-          tileToTakeOver.growingLevel = 0;
-          tileToTakeOver.isCaptured = false;
+          if (tileToTakeOver !== state) {
+            tileToTakeOver.type = "enemy";
+            tileToTakeOver.growingLevel = 0;
+            tileToTakeOver.isCaptured = false;
+          }
         }
       }
     }
@@ -187,11 +190,12 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const nextNum = movesLeft - moveCost;
     setMovesLeft(nextNum);
     storage.set<number>("movesLeft", nextNum);
+    setGameState(isGameOver(nextNum, tileStates));
   }
 
   return (
     <GameplayContext.Provider 
-      value={{ boardSize, movesLeft, tileStates, firstMove, loadGame, newGame, selectTile }}>
+      value={{ boardSize, movesLeft, tileStates, firstMove, gameState, loadGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );

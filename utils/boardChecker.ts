@@ -1,5 +1,7 @@
 import { TileState } from "@/types/tileState";
 
+export type GameState = "ongoing" | "playerWon" | "enemyWon";
+
 function isSquareNumber(number: number) {
   return Math.sqrt(number) % 1 === 0;
 }
@@ -26,4 +28,20 @@ export function isValidTileSet(tileStates: TileState[]) {
     }
   }
   return true;
+}
+
+// Function to check if the game is over
+// returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
+export function isGameOver(movesLeft: number, tileStates: TileState[]): GameState {
+  // check if all tiles are captured
+  if (tileStates.every((tile) => tile.isCaptured)) {
+    return "playerWon";
+  }
+
+  // check if the player has no moves left
+  if (movesLeft <= 0) {
+    return "enemyWon";
+  }
+
+  return "ongoing";
 }

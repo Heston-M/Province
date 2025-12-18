@@ -1,11 +1,9 @@
 import GameBoard from "@/components/GameBoard";
-import NewGameButton from "@/components/ui/NewGameButton";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Dimensions, View } from "react-native";
 
 export default function Index() {
   const backgroundColor = useThemeColor("background");
-  const textColor = useThemeColor("text");
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -20,7 +18,6 @@ export default function Index() {
         backgroundColor: backgroundColor,
       }}
     >
-      <NewGameButton />
       <View style={[{ width: gameBoardContainerSize, height: gameBoardContainerSize }]}>
         <GameBoard size={gameBoardContainerSize} />
       </View>
