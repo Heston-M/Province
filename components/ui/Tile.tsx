@@ -45,14 +45,11 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         }
       });
     }
-    if (movesLeft <= 0 || state.isHidden || state.type === "fortified" ||
-        (state.type === "territory" && state.isCaptured && state.growingLevel < 6)) {
-      if (firstMove) {
-        setDisabled(false);
-      }
-      else {
-        setDisabled(true);
-      }
+    if ((state.type === "fortified") 
+      || !firstMove && 
+        (movesLeft <= 0 || state.isHidden ||
+        (state.type === "territory" && state.isCaptured && state.growingLevel < 6))) {
+      setDisabled(true);
     } else {
       setDisabled(false);
     }
