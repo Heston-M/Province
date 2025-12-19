@@ -1,18 +1,15 @@
 import { endGame } from "@/scripts/endGame";
 import { GameConfig } from "@/types/gameConfig";
+import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
-import { GameState, isGameOver, isValidTileSet } from "@/utils/boardChecker";
+import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
-  movesLeft: number;
-  tileStates: TileState[];
-  firstMove: boolean;
   gameState: GameState;
   gameConfig: GameConfig;
-  elapsedTime: number;
   loadGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
@@ -21,42 +18,37 @@ type ContextShape = {
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
 
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [movesLeft, setMovesLeft] = useState<number>(10);
-  const [tileStates, setTileStates] = useState<TileState[]>([]);
-  const [firstMove, setFirstMove] = useState<boolean>(true);
-  const [gameState, setGameState] = useState<GameState>("ongoing");
+  const [gameState, setGameState] = useState<GameState>({
+    status: "ongoing",
+    movesLeft: 10,
+    elapsedTime: 0,
+    tileStates: [],
+    firstMove: true,
+    movesEnabled: true,
+  });
   const [gameConfig, setGameConfig] = useState<GameConfig>({
     boardSize: 8,
     moveLimit: 10,
   });
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
       storage.get<GameConfig>("gameConfig"), 
-      storage.get<number>("movesLeft"), 
-      storage.get<TileState[]>("tileStates"),
-      storage.get<boolean>("firstMove")
+      storage.get<GameState>("gameState"),
     ]).then((values) => {
-      const [gameConfig, movesLeft, tileStates, firstMove] = values;
+      const [gameConfig, gameState] = values;
       
       if (!gameConfig || gameConfig.boardSize < 1) {
         return false;
       }
-      if (!movesLeft || movesLeft < 0) {
+      if (!gameState) {
         return false;
       }
-      if (!tileStates || !isValidTileSet(tileStates)) {
-        return false;
-      }
-      if (!firstMove) {
+      if (!gameState.tileStates || !isValidTileSet(gameState.tileStates)) {
         return false;
       }
       else {
-        setMovesLeft(movesLeft);
-        setTileStates(tileStates);
-        setFirstMove(firstMove);
-        setGameState(isGameOver(movesLeft, tileStates));
+        setGameState(gameState);
         setGameConfig(gameConfig);
         return true;
       }
@@ -82,9 +74,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
 
-    setMovesLeft(config.moveLimit);
-    storage.set<number>("movesLeft", config.moveLimit);
-
     const tiles: TileState[] = [];
     for (let y = 1; y <= config.boardSize; y++) {
       for (let x = 1; x <= config.boardSize; x++) {
@@ -104,47 +93,49 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           isCaptured: type === "fortified" ? true : false });
       }
     }
-    setTileStates(tiles);
-    storage.set<TileState[]>("tileStates", tiles);
-    setFirstMove(true);
-    storage.set<boolean>("firstMove", true);
-    setGameState("ongoing");
-    setElapsedTime(0);
+    setGameState({
+      status: "ongoing",
+      movesLeft: config.moveLimit,
+      elapsedTime: 0,
+      tileStates: tiles,
+      firstMove: true,
+      movesEnabled: true,
+    })
+    storage.set<GameState>("gameState", gameState);
   }
 
   useEffect(() => {
-    if (gameState !== "ongoing") {
+    if (gameState.status !== "ongoing") {
       return;
     }
     const interval = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
+      setGameState({...gameState, elapsedTime: gameState.elapsedTime + 1});
     }, 1000);
     return () => clearInterval(interval);
   }, [gameState]);
 
-  const runEndGame = async () => {
-    await endGame(tileStates, gameConfig.boardSize, (updatedStates) => {
-      setTileStates([...updatedStates]);
+  const runEndGame = async (status: GameState["status"]) => {
+    setGameState({...gameState, movesEnabled: false});
+    await endGame(gameState.tileStates, gameConfig.boardSize, status, (updatedStates) => {
+      setGameState({...gameState, tileStates: updatedStates});
     }).then(() => {
-      setGameState("playerWon");
-      storage.set<TileState[]>("tileStates", tileStates);
+      setGameState({...gameState, status: status});
     }).catch((error) => {
       console.error("Error running end game:", error);
-      setGameState("playerWon");
+      setGameState({...gameState, status: status});
     });
   }
 
   const selectTile = (state: TileState) => {
-    if (firstMove) {
+    if (gameState.firstMove) {
       state.type = "territory";
-      setFirstMove(false);
-      storage.set<boolean>("firstMove", false);
+      setGameState({...gameState, firstMove: false});
     }
 
     let moveCost = 1;
     let growTerritory = true;
     state.isHidden = false;
-    const adjacentTiles = getAdjacentTiles(state.x, state.y, gameConfig.boardSize, tileStates);
+    const adjacentTiles = getAdjacentTiles(state.x, state.y, gameConfig.boardSize, gameState.tileStates);
     const adjacentTerritoryTiles = adjacentTiles.filter((tile) => tile.type === "territory");
 
     // capture tile
@@ -152,7 +143,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (!state.isCaptured) {
         state.isCaptured = true;
       }
-      else if (state.growingLevel <= 6) {
+      else if (state.growingLevel === 6) {
         moveCost = 0;
         for (const tile of adjacentTerritoryTiles) {
           if (tile.type === "territory" && tile.growingLevel > 0 && tile.growingLevel <= 6) {
@@ -185,32 +176,28 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // grow territory
     if (growTerritory) {
-      let nextStates = progressTerritoryGrowth(tileStates);
+      let nextStates = progressTerritoryGrowth(gameState.tileStates);
       nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, [state]);
 
-      setTileStates([...nextStates]);
-      storage.set<TileState[]>("tileStates", nextStates);
+      setGameState({...gameState, tileStates: [...nextStates]});
     }
 
-    setTileStates([...tileStates]);
-    storage.set<TileState[]>("tileStates", tileStates);
+    setGameState({...gameState, tileStates: [...gameState.tileStates]});
 
-    const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
-    setMovesLeft(nextNum);
-    storage.set<number>("movesLeft", nextNum);
+    const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, gameState.movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
+    setGameState({...gameState, movesLeft: nextNum});
 
-    const gameOverState = isGameOver(nextNum, tileStates);
-    if (gameOverState === "playerWon") {
-      runEndGame();
-    }
-    else {
-      setGameState(gameOverState);
+    storage.set<GameState>("gameState", gameState);
+
+    const gameOverState = isGameOver(nextNum, gameState.tileStates);
+    if (gameOverState !== "ongoing") {
+      runEndGame(gameOverState);
     }
   }
 
   return (
     <GameplayContext.Provider 
-      value={{ movesLeft, tileStates, firstMove, gameState, gameConfig, elapsedTime, loadGame, newGame, selectTile }}>
+      value={{ gameState, gameConfig, loadGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );

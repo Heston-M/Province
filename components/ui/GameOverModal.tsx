@@ -32,7 +32,8 @@ export default function GameOverModal({ visible, size }: GameOverModalProps) {
         bottom: verticalPadding,
        }]}>
         <Text style={[styles.title, { color: textColor }]}>Game Over</Text>
-        <Text style={[styles.message, { color: textColor }]}>You {gameState === "playerWon" ? "won!" : gameState === "enemyWon" ? "lost" : "tied"}</Text>
+        <Text style={[styles.message, { color: textColor }]}>
+          You {gameState.status === "playerWon" ? "won!" : gameState.status === "enemyWon" ? "lost" : "are tied"}</Text>
         <NewGameButton />
       </View>
     </View>

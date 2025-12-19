@@ -14,13 +14,13 @@ export default function GameBoard({ size }: GameBoardProps) {
   const borderColor = useThemeColor("border");
   const tileSize = (size - 2) / gridSize;
 
-  const { tileStates, gameState, selectTile } = useGameplay();
+  const { gameState, selectTile } = useGameplay();
 
   return (
     <View style={{ position: "relative" }}>
       <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
-        <GameOverModal visible={gameState !== "ongoing"} size={size} />
-        <View style={styles.gameBoardInner}>{tileStates.map((tile) => (
+        <GameOverModal visible={gameState.status !== "ongoing"} size={size} />
+        <View style={styles.gameBoardInner}>{gameState.tileStates.map((tile) => (
           <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
         ))}</View>
       </View>
