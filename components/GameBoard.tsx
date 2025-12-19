@@ -19,7 +19,7 @@ export default function GameBoard({ size }: GameBoardProps) {
   return (
     <View style={{ position: "relative" }}>
       <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
-        <GameOverModal visible={gameState.status !== "ongoing"} size={size} />
+        <GameOverModal visible={gameState.status !== "ongoing" && gameState.status !== "animating"} size={size} />
         <View style={styles.gameBoardInner}>{gameState.tileStates.map((tile) => (
           <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
         ))}</View>

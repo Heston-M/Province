@@ -1,7 +1,7 @@
 import { TileState } from "./tileState";
 
 export type GameState = {
-  status: "ongoing" | "playerWon" | "enemyWon";
+  status: "ongoing" | "animating" | "playerWon" | "enemyWon";
   tileStates: TileState[];
   movesLeft: number;
   elapsedTime: number;

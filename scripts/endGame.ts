@@ -7,12 +7,12 @@ import { advanceEnemyTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 // on each step, calls the onStepUpdate function with the updated tile states
 // wait for 500ms before the next step
 export async function endGame(
-  tileStates: TileState[],
+  initialStates: TileState[],
   boardSize: number,
   winner: GameState["status"],
   onStepUpdate: (updatedStates: TileState[]) => void
-) {
-  let currentStates: TileState[] = tileStates.map(tile => ({ ...tile }));
+): Promise<TileState[]> {
+  let currentStates: TileState[] = initialStates.map(tile => ({ ...tile }));
   let timeout = 300;
 
   while (winner === "playerWon" && !areAllTilesFortified(currentStates) 
@@ -31,4 +31,5 @@ export async function endGame(
     });
     currentStates = [...nextStates];
   }
+  return currentStates;
 }

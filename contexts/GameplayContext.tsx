@@ -101,7 +101,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       firstMove: true,
       movesEnabled: true,
     })
-    storage.set<GameState>("gameState", gameState);
   }
 
   useEffect(() => {
@@ -109,33 +108,36 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
     const interval = setInterval(() => {
-      setGameState({...gameState, elapsedTime: gameState.elapsedTime + 1});
+      setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
     }, 1000);
     return () => clearInterval(interval);
+  }, [gameState.status]);
+
+  useEffect(() => {
+    storage.set<GameState>("gameState", gameState);
   }, [gameState]);
 
-  const runEndGame = async (status: GameState["status"]) => {
-    setGameState({...gameState, movesEnabled: false});
-    await endGame(gameState.tileStates, gameConfig.boardSize, status, (updatedStates) => {
-      setGameState({...gameState, tileStates: updatedStates});
-    }).then(() => {
-      setGameState({...gameState, status: status});
-    }).catch((error) => {
-      console.error("Error running end game:", error);
-      setGameState({...gameState, status: status});
+  const runEndGame = async (targetStatus: GameState["status"], currentState: GameState) => {
+    setGameState({...currentState, movesEnabled: false, status: "animating"});
+    await endGame(currentState.tileStates, gameConfig.boardSize, targetStatus, (updatedStates) => {
+      setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
+    }).then((finalStates) => {
+      setGameState((prevState) => ({...prevState, status: targetStatus, tileStates: finalStates}));
     });
   }
 
   const selectTile = (state: TileState) => {
+    let newState = {...gameState};
+
     if (gameState.firstMove) {
       state.type = "territory";
-      setGameState({...gameState, firstMove: false});
+      newState.firstMove = false;
     }
 
     let moveCost = 1;
     let growTerritory = true;
     state.isHidden = false;
-    const adjacentTiles = getAdjacentTiles(state.x, state.y, gameConfig.boardSize, gameState.tileStates);
+    const adjacentTiles = getAdjacentTiles(state.x, state.y, gameConfig.boardSize, newState.tileStates);
     const adjacentTerritoryTiles = adjacentTiles.filter((tile) => tile.type === "territory");
 
     // capture tile
@@ -176,22 +178,20 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // grow territory
     if (growTerritory) {
-      let nextStates = progressTerritoryGrowth(gameState.tileStates);
+      let nextStates = progressTerritoryGrowth(newState.tileStates);
       nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, [state]);
 
-      setGameState({...gameState, tileStates: [...nextStates]});
+      newState.tileStates = [...nextStates];
     }
 
-    setGameState({...gameState, tileStates: [...gameState.tileStates]});
-
     const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, gameState.movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
-    setGameState({...gameState, movesLeft: nextNum});
+    newState.movesLeft = nextNum;
 
-    storage.set<GameState>("gameState", gameState);
+    setGameState(newState);
 
-    const gameOverState = isGameOver(nextNum, gameState.tileStates);
+    const gameOverState = isGameOver(nextNum, newState.tileStates);
     if (gameOverState !== "ongoing") {
-      runEndGame(gameOverState);
+      runEndGame(gameOverState, newState);
     }
   }
 
