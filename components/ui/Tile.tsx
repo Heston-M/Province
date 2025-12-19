@@ -18,7 +18,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
   const enemyColor = useThemeColor("enemy");
   const fortifiedColor = useThemeColor("fortified");
 
-  const { movesLeft, firstMove } = useGameplay();
+  const { gameState } = useGameplay();
 
   const [isHover, setIsHover] = useState(false);
   const [tileColor, setTileColor] = useState(hiddenColor);
@@ -45,15 +45,13 @@ export default function Tile({ state, size, onSelect }: TileProps) {
         }
       });
     }
-    if ((state.type === "fortified") 
-      || !firstMove && 
-        (movesLeft <= 0 || state.isHidden ||
-        (state.type === "territory" && state.isCaptured && state.growingLevel < 6))) {
+    if (state.type === "fortified" || !gameState.movesEnabled) setDisabled(true);
+    else if (state.isHidden) setDisabled(true);
+    else if (gameState.movesLeft <= 0 || 
+      (state.type === "territory" && state.isCaptured && state.growingLevel !== 6)) 
       setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, movesLeft, firstMove]);
+    else setDisabled(false);
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, gameState.movesLeft, gameState.firstMove, gameState.movesEnabled]);
 
   return (
     <Pressable 
