@@ -4,17 +4,16 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, View } from "react-native";
 import GameOverModal from "./ui/GameOverModal";
 
-const gridSize = 8;
-
 interface GameBoardProps {
   size: number;
 }
 
 export default function GameBoard({ size }: GameBoardProps) {
   const borderColor = useThemeColor("border");
-  const tileSize = (size - 2) / gridSize;
 
-  const { gameState, selectTile } = useGameplay();
+  const { gameState, gameConfig, selectTile } = useGameplay();
+
+  const tileSize = (size - 2) / gameConfig.boardSize;
 
   return (
     <View style={{ position: "relative" }}>
