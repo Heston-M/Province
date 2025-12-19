@@ -12,8 +12,8 @@ export default function Index() {
   const screenHeight = Dimensions.get("window").height;
   const gameBoardContainerSize = Math.min(screenHeight * 0.8, screenWidth * 0.8);
 
-  const { movesLeft, elapsedTime } = useGameplay();
-  const formattedTime = formatTime(elapsedTime);
+  const { gameState } = useGameplay();
+  const formattedTime = formatTime(gameState.elapsedTime);
 
   return (
     <View
@@ -25,7 +25,7 @@ export default function Index() {
       }}
     >
       <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>
-      <Text style={[styles.stat, { color: textColor }]}>Moves left: {movesLeft}</Text>
+      <Text style={[styles.stat, { color: textColor }]}>Moves left: {gameState.movesLeft}</Text>
       <View style={[{ width: gameBoardContainerSize, height: gameBoardContainerSize }]}>
         <GameBoard size={gameBoardContainerSize} />
       </View>

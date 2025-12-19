@@ -1,6 +1,6 @@
+import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
-
-export type GameState = "ongoing" | "playerWon" | "enemyWon";
+import { getAdjacentTiles } from "./gridUtils";
 
 function isSquareNumber(number: number) {
   return Math.sqrt(number) % 1 === 0;
@@ -32,7 +32,7 @@ export function isValidTileSet(tileStates: TileState[]) {
 
 // Function to check if the game is over
 // returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
-export function isGameOver(movesLeft: number, tileStates: TileState[]): GameState {
+export function isGameOver(movesLeft: number, tileStates: TileState[]): GameState["status"] {
   // check if all tiles are captured
   if (tileStates.every((tile) => tile.isCaptured)) {
     return "playerWon";
@@ -48,4 +48,15 @@ export function isGameOver(movesLeft: number, tileStates: TileState[]): GameStat
 
 export function areAllTilesFortified(tileStates: TileState[]) {
   return tileStates.every((tile) => tile.type === "fortified");
+}
+
+export function enemyCannotMove(tileStates: TileState[], boardSize: number) {
+  const enemyTiles = tileStates.filter((tile) => tile.type === "enemy");
+  for (const tile of enemyTiles) {
+    const adjacentTiles = getAdjacentTiles(tile.x, tile.y, boardSize, tileStates);
+    if (adjacentTiles.some((tile) => tile.type === "territory")) {
+      return false;
+    }
+  }
+  return true;
 }
