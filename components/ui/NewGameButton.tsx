@@ -2,7 +2,11 @@ import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-export default function NewGameButton() {
+interface NewGameButtonProps {
+  text: string;
+}
+
+export default function NewGameButton({ text }: NewGameButtonProps) {
   const backgroundColor = useThemeColor("secondary");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
@@ -18,7 +22,7 @@ export default function NewGameButton() {
           moveLimit: 10,
         });
       }}>
-      <Text style={[styles.text, { color: textColor }]}>New Game</Text>
+      <Text style={[styles.text, { color: textColor }]}>{text}</Text>
     </Pressable>
   );
 }

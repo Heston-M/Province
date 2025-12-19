@@ -1,0 +1,39 @@
+export const winMessages = [
+  "Good work.",
+  "Well done... I guess...",
+  "You did the thing.",
+  "You didn't suck.",
+  "You're not a complete idiot.",
+  "Now go eat a sandwich.",
+  "Touch grass.",
+  "Now do it faster.",
+  "You're a 'genius'.",
+  "I can't believe it.",
+  "You're a wizard, Harry.",
+  "Hard to believe you managed that.",
+  "You're a lucky son of a bitch.",
+  "Wow.",
+  "ehh, could have been worse.",
+  "Not bad for a human.",
+  "Smart move.",
+  "Struggled a little, huh?"
+]
+
+export const loseMessages = [
+  "L",
+  "You ran out of moves.",
+  "Try again.",
+  "You're not very good at this.",
+  "Did you read the rules?",
+  "As expected.",
+  "Maybe next time :)",
+  "You're trying right?",
+  "Hmm",
+  "Ur bad.",
+  "What a shame.",
+  "What did you expect?",
+  "Do better.",
+  "I do not like you right now.",
+  "Yup.",
+  "That just wasn't very good."
+]

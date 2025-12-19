@@ -1,4 +1,5 @@
 import { useGameplay } from "@/contexts/GameplayContext";
+import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, Text, View } from "react-native";
 import NewGameButton from "./NewGameButton";
@@ -21,6 +22,9 @@ export default function GameOverModal({ visible, size }: GameOverModalProps) {
   const horizontalPadding = (size - minWidth) / 2;
   const verticalPadding = (size - minHeight) / 2;
 
+  const winMessage = useRandomQuote("win");
+  const loseMessage = useRandomQuote("lose");
+
   return (
     visible && (
     <View style={styles.modal}>
@@ -31,10 +35,13 @@ export default function GameOverModal({ visible, size }: GameOverModalProps) {
         right: horizontalPadding,
         bottom: verticalPadding,
        }]}>
-        <Text style={[styles.title, { color: textColor }]}>Game Over</Text>
+        <Text style={[styles.title, { color: textColor }]}>
+          {gameState.status === "playerWon" ? "You Won!" : "You lost..."}
+        </Text>
         <Text style={[styles.message, { color: textColor }]}>
-          You {gameState.status === "playerWon" ? "won!" : gameState.status === "enemyWon" ? "lost" : "are tied"}</Text>
-        <NewGameButton />
+          {gameState.status === "playerWon" ? winMessage : loseMessage}
+        </Text>
+        <NewGameButton text="Play Again" />
       </View>
     </View>
   ));
