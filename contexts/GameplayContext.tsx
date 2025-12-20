@@ -6,11 +6,13 @@ import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useMenuContext } from "./MenuContext";
 
 type ContextShape = {
   gameState: GameState;
   gameConfig: GameConfig;
   loadGame: () => void;
+  restartGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
 }
@@ -27,9 +29,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     movesEnabled: true,
   });
   const [gameConfig, setGameConfig] = useState<GameConfig>({
-    boardSize: 8,
+    boardSize: [8, 10],
     moveLimit: 10,
   });
+
+  const { openMenu } = useMenuContext();
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
@@ -38,13 +42,13 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     ]).then((values) => {
       const [gameConfig, gameState] = values;
       
-      if (!gameConfig || gameConfig.boardSize < 1) {
+      if (!gameConfig || gameConfig.boardSize[0] < 1 || gameConfig.boardSize[1] < 1) {
         return false;
       }
       if (!gameState) {
         return false;
       }
-      if (!gameState.tileStates || !isValidTileSet(gameState.tileStates)) {
+      if (!gameState.tileStates || !isValidTileSet(gameState.tileStates, gameConfig.boardSize)) {
         return false;
       }
       else {
@@ -61,7 +65,10 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
-        newGame({ boardSize: 8, moveLimit: 10 });
+        newGame({ 
+          boardSize: [8, 10], 
+          moveLimit: 10 
+        });
       }
     });
   }
@@ -70,13 +77,20 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     loadGame();
   }, []);
 
+  // Restarts the current game with the same config
+  // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
+  //   Cannot restart exact same game until initial tiles are being saved.
+  const restartGame = () => {
+    newGame(gameConfig);
+  }
+
   const newGame = (config: GameConfig) => {
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
 
     const tiles: TileState[] = [];
-    for (let y = 1; y <= config.boardSize; y++) {
-      for (let x = 1; x <= config.boardSize; x++) {
+    for (let y = 1; y <= config.boardSize[1]; y++) {
+      for (let x = 1; x <= config.boardSize[0]; x++) {
         const randNum = Math.random();
         let type = "territory";
         if (randNum < 0.9) {
@@ -123,6 +137,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
     }).then((finalStates) => {
       setGameState((prevState) => ({...prevState, status: targetStatus, tileStates: finalStates}));
+      openMenu("gameOver");
     });
   }
 
@@ -197,7 +212,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <GameplayContext.Provider 
-      value={{ gameState, gameConfig, loadGame, newGame, selectTile }}>
+      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );

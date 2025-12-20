@@ -1,11 +1,28 @@
 import { TileState } from "@/types/tileState";
 
 
-export function getAdjacentTiles(x: number, y: number, boardSize: number, tileStates: TileState[]) {
+/**
+ * Get the board size based on the max height and width and the board size
+ * @param maxHeight - The maximum height of the board
+ * @param maxWidth - The maximum width of the board
+ * @param boardSize - The board size
+ * @returns [boardWidth, boardHeight, tileSize]
+ */
+export function getBoardSize(maxHeight: number, maxWidth: number, boardSize: [number, number]): [number, number, number] {
+  const maxTileHeight = Math.floor(maxHeight / boardSize[1]);
+  const maxTileWidth = Math.floor(maxWidth / boardSize[0]);
+  const tileSize = Math.min(maxTileHeight, maxTileWidth);
+  const boardHeight = tileSize * boardSize[1];
+  const boardWidth = tileSize * boardSize[0];
+
+  return [boardWidth, boardHeight, tileSize];
+}
+
+export function getAdjacentTiles(x: number, y: number, boardSize: [number, number], tileStates: TileState[]) {
   const tiles = [];
   for (let i = -1; i <= 1; i++) {
     for (let j = -1; j <= 1; j++) {
-      if (x + i >= 1 && x + i <= boardSize && y + j >= 1 && y + j <= boardSize) {
+      if (x + i >= 1 && x + i <= boardSize[0] && y + j >= 1 && y + j <= boardSize[1]) {
         tiles.push({ x: x + i, y: y + j });
       }
     }
@@ -20,7 +37,7 @@ export function getAdjacentTiles(x: number, y: number, boardSize: number, tileSt
   return adjacentTiles;
 }
 
-export function advanceEnemyTiles(tileStates: TileState[], boardSize: number, disallowedStates: TileState[] = []): TileState[] {
+export function advanceEnemyTiles(tileStates: TileState[], boardSize: [number, number], disallowedStates: TileState[] = []): TileState[] {
   if (Math.random() < 0.9) {
     const capturableTiles: TileState[] = [];
     for (const tile of tileStates) {

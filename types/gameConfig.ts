@@ -1,4 +1,4 @@
 export type GameConfig = {
-  boardSize: number;
+  boardSize: [number, number]; // [width, height]
   moveLimit: number;
 }

@@ -1,28 +1,28 @@
 import Tile from "@/components/ui/Tile";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { getBoardSize } from "@/utils/gridUtils";
 import { StyleSheet, View } from "react-native";
-import GameOverModal from "./ui/GameOverModal";
-
-const gridSize = 8;
 
 interface GameBoardProps {
-  size: number;
+  maxHeight: number;
+  maxWidth: number;
 }
 
-export default function GameBoard({ size }: GameBoardProps) {
+export default function GameBoard({ maxHeight, maxWidth }: GameBoardProps) {
   const borderColor = useThemeColor("border");
-  const tileSize = (size - 2) / gridSize;
 
-  const { gameState, selectTile } = useGameplay();
+  const { gameState, gameConfig, selectTile } = useGameplay();
+
+  const [boardWidth, boardHeight, tileSize] = 
+    getBoardSize(maxHeight, maxWidth, gameConfig.boardSize);
 
   return (
-    <View style={{ position: "relative" }}>
-      <View style={[styles.gameBoard, { width: size, height: size, borderColor: borderColor }]}>
-        <GameOverModal visible={gameState.status !== "ongoing" && gameState.status !== "animating"} size={size} />
-        <View style={styles.gameBoardInner}>{gameState.tileStates.map((tile) => (
+    <View style={[styles.gameBoard, { borderColor: borderColor }]}>
+      <View style={[styles.gameBoardInner, { width: boardWidth, height: boardHeight }]}>
+        {gameState.tileStates.map((tile) => (
           <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
-        ))}</View>
+        ))}
       </View>
     </View>
   );
@@ -30,6 +30,7 @@ export default function GameBoard({ size }: GameBoardProps) {
 
 const styles = StyleSheet.create({
   gameBoard: {
+    position: "relative",
     borderWidth: 1,
   },
   gameBoardInner: {
