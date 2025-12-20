@@ -34,8 +34,20 @@ export default function GameOverModal() {
       <MenuButton text={buttonText} onPress={() => {
         if (gameState.status === "playerWon") {
           newGame({
-            boardSize: [10, 8],
+            name: "Random Game",
+            description: "",
+            boardSize: [8, 8],
             moveLimit: 10,
+            timeLimit: -1,
+            fogOfWar: false,
+            enemyAggression: 0.8,
+            initialTileStates: [],
+            randRemainingTiles: true,
+            randProbabilities: {
+              territory: 0.9,
+              fortified: 0.05,
+              enemy: 0.05,
+            },
           });
         } else {
           restartGame();

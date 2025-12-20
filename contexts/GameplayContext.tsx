@@ -27,7 +27,7 @@ const defaultGameConfig: GameConfig = {
   fogOfWar: false,
   enemyAggression: 0.8,
   initialTileStates: [],
-  randRemainingTiles: false,
+  randRemainingTiles: true,
   randProbabilities: {
     territory: 0.9,
     fortified: 0.05,
@@ -40,9 +40,10 @@ const GameplayContext = createContext<ContextShape | undefined>(undefined);
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState>({
     status: "ongoing",
+    tileStates: [],
+    previousTileStates: [],
     movesLeft: 10,
     elapsedTime: 0,
-    tileStates: [],
     firstMove: true,
     movesEnabled: true,
     isPaused: false,
@@ -106,7 +107,12 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
   //   Cannot restart exact same game until initial tiles are being saved.
   const restartGame = () => {
-    newGame(gameConfig);
+    const newConfig = {
+      ...gameConfig, 
+      initialTileStates: gameState.previousTileStates[0] ?? [],
+      randRemainingTiles: false,
+    };
+    newGame(newConfig);
   }
 
   /**
@@ -122,9 +128,10 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const tiles = generateBoard(config);
     setGameState({
       status: "ongoing",
+      tileStates: tiles,
+      previousTileStates: [tiles],
       movesLeft: config.moveLimit,
       elapsedTime: 0,
-      tileStates: tiles,
       firstMove: true,
       movesEnabled: true,
       isPaused: false,
@@ -170,9 +177,12 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const selectTile = (state: TileState) => {
     let newState = {...gameState};
 
-    if (gameState.firstMove) {
+    if (newState.firstMove) {
       state.type = "territory";
       newState.firstMove = false;
+    }
+    else {
+      newState.previousTileStates.push([...newState.tileStates]);  // don't save the initial tiles states, already saved
     }
 
     let moveCost = 1;

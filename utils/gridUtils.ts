@@ -27,10 +27,11 @@ export function getBoardSize(maxHeight: number, maxWidth: number, boardSize: [nu
  */
 export function generateBoard(gameConfig: GameConfig): TileState[] {
   const tiles: TileState[] = [];
+  const initialTileStates = gameConfig.initialTileStates ?? [];
   
   for (let y = 1; y <= gameConfig.boardSize[1]; y++) {
     for (let x = 1; x <= gameConfig.boardSize[0]; x++) {
-      const tileState = gameConfig.initialTileStates.find((t) => t.x === x && t.y === y);
+      const tileState = initialTileStates.find((t) => t.x === x && t.y === y);
       if (tileState) {
         tiles.push(tileState);  // tile determined by game config
       }
