@@ -1,6 +1,7 @@
 import GameBoard from "@/components/GameBoard";
 import MainMenu from "@/components/MainMenu";
 import BasicModal from "@/components/ui/BasicModal";
+import MenuIcon from "@/components/ui/MenuIcon";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formatTime } from "@/utils/timeUtils";
@@ -30,6 +31,9 @@ export default function Index() {
         backgroundColor: backgroundColor,
       }}
     >
+      <View style={styles.menuIcon}>
+        <MenuIcon onPress={() => setModalVisible(true)} />
+      </View>
       <BasicModal visible={modalVisible}>
         {menu()}
       </BasicModal>
@@ -43,6 +47,13 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  menuIcon: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    right: 0,
+    bottom: 0,
+  },
   stat: {
     fontSize: 20,
     fontWeight: "bold",
