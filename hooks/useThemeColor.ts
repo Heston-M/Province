@@ -8,6 +8,12 @@ interface ThemeColor {
   field: (typeof colorFields)[number] | (typeof tileFields)[number];
 }
 
+/**
+ * @description
+ * Gets the theme color for a given field
+ * @param field - The field to get the color for
+ * @returns The color string
+ */
 export const useThemeColor = (field: ThemeColor["field"]) => {
   const theme = useColorScheme() || "light";
 

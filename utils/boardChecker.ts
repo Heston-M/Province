@@ -2,6 +2,13 @@ import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { getAdjacentTiles } from "./gridUtils";
 
+/**
+ * @description
+ * Checks if the tile set is valid
+ * @param tileStates - The tile states to check
+ * @param boardSize - The board size
+ * @returns true if the tile set is valid, false otherwise
+ */
 export function isValidTileSet(tileStates: TileState[], boardSize: [number, number]) {
   for (const tile of tileStates) {
     if (tile.x < 1 || tile.x > boardSize[0] || tile.y < 1 || tile.y > boardSize[1]) {
@@ -23,26 +30,40 @@ export function isValidTileSet(tileStates: TileState[], boardSize: [number, numb
   return true;
 }
 
-// Function to check if the game is over
-// returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
+/**
+ * @description
+ * Checks if the game is over
+ * @param movesLeft - The number of moves left
+ * @param tileStates - The tile states to check
+ * @returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
+ */
 export function isGameOver(movesLeft: number, tileStates: TileState[]): GameState["status"] {
-  // check if all tiles are captured
   if (tileStates.every((tile) => tile.isCaptured)) {
     return "playerWon";
   }
-
-  // check if the player has no moves left
   if (movesLeft <= 0) {
     return "enemyWon";
   }
-
   return "ongoing";
 }
 
+/**
+ * @description
+ * Checks if all tiles are fortified
+ * @param tileStates - The tile states to check
+ * @returns true if all tiles are fortified, false otherwise
+ */
 export function areAllTilesFortified(tileStates: TileState[]) {
   return tileStates.every((tile) => tile.type === "fortified");
 }
 
+/**
+ * @description
+ * Checks if the enemy cannot move
+ * @param tileStates - The tile states to check
+ * @param boardSize - The board size
+ * @returns true if the enemy cannot move, false otherwise
+ */
 export function enemyCannotMove(tileStates: TileState[], boardSize: [number, number]) {
   const enemyTiles = tileStates.filter((tile) => tile.type === "enemy");
   for (const tile of enemyTiles) {
