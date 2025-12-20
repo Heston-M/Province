@@ -1,6 +1,7 @@
 import GameOverModal from "@/components/GameOverMenu";
 import MainMenu from "@/components/MainMenu";
-import { createContext, useContext, useState } from "react";
+import { useGameplay } from "@/contexts/GameplayContext";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
   menuVisible: boolean;
@@ -19,6 +20,14 @@ export default function MenuContextProvider({ children }: { children: React.Reac
 
   const mainMenu = () => { return ( <MainMenu /> ) }
   const gameOverMenu = () => { return ( <GameOverModal /> ) }
+
+  const { gameState } = useGameplay();
+
+  useEffect(() => {
+    if (gameState.status !== "ongoing" && gameState.status !== "animating") {
+      openMenu("gameOver");
+    }
+  }, [gameState.status]);
 
   const openMenu = (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver") => {
     setMenuVisible(true);

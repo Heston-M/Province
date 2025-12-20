@@ -5,8 +5,8 @@ import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <MenuContextProvider>
-      <GameplayProvider>
+    <GameplayProvider>
+      <MenuContextProvider>
         <Stack 
         screenOptions={{
           headerShown: true,
@@ -20,7 +20,7 @@ export default function RootLayout() {
         >
           <Stack.Screen name="index" options={{ title: "Province" }} />
         </Stack>
-      </GameplayProvider>
-    </MenuContextProvider>
+      </MenuContextProvider>
+    </GameplayProvider>
   );
 }
