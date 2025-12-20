@@ -14,6 +14,8 @@ type ContextShape = {
   restartGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
+  pauseGame: () => void;
+  resumeGame: () => void;
 }
 
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
@@ -26,6 +28,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     tileStates: [],
     firstMove: true,
     movesEnabled: true,
+    isPaused: false,
   });
   const [gameConfig, setGameConfig] = useState<GameConfig>({
     boardSize: [8, 10],
@@ -111,18 +114,19 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tileStates: tiles,
       firstMove: true,
       movesEnabled: true,
+      isPaused: false,
     })
   }
 
   useEffect(() => {
-    if (gameState.status !== "ongoing") {
+    if (gameState.status !== "ongoing" || gameState.isPaused) {
       return;
     }
     const interval = setInterval(() => {
       setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
     }, 1000);
     return () => clearInterval(interval);
-  }, [gameState.status]);
+  }, [gameState.status, gameState.isPaused]);
 
   useEffect(() => {
     storage.set<GameState>("gameState", gameState);
@@ -206,9 +210,19 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }
 
+  const pauseGame = () => {
+    setGameState(prev => ({...prev, movesEnabled: false, isPaused: true}));
+  }
+
+  const resumeGame = () => {
+    if (gameState.status === "ongoing") {
+      setGameState(prev => ({...prev, movesEnabled: true, isPaused: false}));
+    }
+  }
+
   return (
     <GameplayContext.Provider 
-      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile }}>
+      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile, pauseGame, resumeGame }}>
       {children}
     </GameplayContext.Provider>
   );

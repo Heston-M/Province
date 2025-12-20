@@ -7,4 +7,5 @@ export type GameState = {
   elapsedTime: number;
   firstMove: boolean;
   movesEnabled: boolean;
+  isPaused: boolean;
 };
