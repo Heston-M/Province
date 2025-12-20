@@ -7,6 +7,13 @@ interface MenuButtonProps {
   onPress: () => void;
 }
 
+/**
+ * @description
+ * Renders a menu button
+ * @param text - The text to display on the button
+ * @param onPress - Callback function to be called when the button is pressed
+ * @returns The menu button component
+ */
 export default function MenuButton({ text, onPress }: MenuButtonProps) {
   const backgroundColor = useThemeColor("secondary");
   const textColor = useThemeColor("text");

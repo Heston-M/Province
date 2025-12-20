@@ -7,6 +7,13 @@ interface BasicModalProps {
   children: React.ReactNode;
 }
 
+/**
+ * @description
+ * Renders a basic modal
+ * @param visible - Whether the modal is visible
+ * @param children - The children to render inside the modal
+ * @returns The basic modal component
+ */
 export default function BasicModal({ visible, children }: BasicModalProps) {
   const backgroundColor = useThemeColor("background");
   const secondaryColor = useThemeColor("secondary");

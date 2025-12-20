@@ -29,6 +29,12 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     }
   }, [gameState.status]);
 
+  /**
+   * @description
+   * Opens the menu of the given type.
+   * @param type - The type of menu to open
+   * @returns void
+   */
   const openMenu = (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver") => {
     pauseGame();
     setMenuVisible(true);
@@ -45,6 +51,12 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
     }
   }
+
+  /**
+   * @description
+   * Handles when the user presses the back button in a menu.
+   * @returns void
+   */
   const goBackMenu = () => {
     switch (menuType) {
       case "main":
@@ -63,6 +75,12 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
     }
   }
+
+  /**
+   * @description
+   * Hard closes the menu, no matter the menu type.
+   * @returns void
+   */
   const hardCloseMenu = () => {
     resumeGame();
     setMenuContent(null);
