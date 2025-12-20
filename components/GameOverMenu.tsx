@@ -5,6 +5,11 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, Text, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
+/**
+ * @description
+ * Renders the game over menu
+ * @returns The game over menu
+ */
 export default function GameOverModal() {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");

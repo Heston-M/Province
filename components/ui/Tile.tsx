@@ -10,6 +10,14 @@ interface TileProps {
   onSelect: (state: TileState) => void;
 }
 
+/**
+ * @description
+ * Renders a tile
+ * @param state - The state of the tile
+ * @param size - The size of the tile
+ * @param onSelect - Callback function to be called when the tile is selected
+ * @returns The tile component
+ */
 export default function Tile({ state, size, onSelect }: TileProps) {
   const hiddenColor = useThemeColor("hidden");
   const borderColor = useThemeColor("border");

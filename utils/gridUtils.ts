@@ -1,12 +1,12 @@
 import { TileState } from "@/types/tileState";
 
-
 /**
- * Get the board size based on the max height and width and the board size
+ * @description
+ * Gets the board size based on the max height and width and the board size
  * @param maxHeight - The maximum height of the board
  * @param maxWidth - The maximum width of the board
  * @param boardSize - The board size
- * @returns [boardWidth, boardHeight, tileSize]
+ * @returns [boardWidth, boardHeight, tileSize] in pixels
  */
 export function getBoardSize(maxHeight: number, maxWidth: number, boardSize: [number, number]): [number, number, number] {
   const maxTileHeight = Math.floor(maxHeight / boardSize[1]);
@@ -18,6 +18,15 @@ export function getBoardSize(maxHeight: number, maxWidth: number, boardSize: [nu
   return [boardWidth, boardHeight, tileSize];
 }
 
+/**
+ * @description
+ * Gets the adjacent tiles to a given tile
+ * @param x - The x coordinate of the tile
+ * @param y - The y coordinate of the tile
+ * @param boardSize - The board size
+ * @param tileStates - The tile states
+ * @returns The adjacent tiles
+ */
 export function getAdjacentTiles(x: number, y: number, boardSize: [number, number], tileStates: TileState[]) {
   const tiles = [];
   for (let i = -1; i <= 1; i++) {
@@ -37,6 +46,14 @@ export function getAdjacentTiles(x: number, y: number, boardSize: [number, numbe
   return adjacentTiles;
 }
 
+/**
+ * @description
+ * Advances the enemy tiles
+ * @param tileStates - The tile states
+ * @param boardSize - The board size
+ * @param disallowedStates - The disallowed states
+ * @returns The tile states with the advanced enemy tiles
+ */
 export function advanceEnemyTiles(tileStates: TileState[], boardSize: [number, number], disallowedStates: TileState[] = []): TileState[] {
   if (Math.random() < 0.9) {
     const capturableTiles: TileState[] = [];
@@ -58,6 +75,12 @@ export function advanceEnemyTiles(tileStates: TileState[], boardSize: [number, n
   return tileStates;
 }
 
+/**
+ * @description
+ * Progresses the territory growth. All captured territory tiles will grow by 1 level, until they reach 6, at which point they become fortified.
+ * @param tileStates - The tile states
+ * @returns The tile states with the progressed territory growth
+ */
 export function progressTerritoryGrowth(tileStates: TileState[]): TileState[] {
   for (const tile of tileStates) {
     if (tile.type === "territory" && tile.isCaptured) {

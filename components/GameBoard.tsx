@@ -9,6 +9,13 @@ interface GameBoardProps {
   maxWidth: number;
 }
 
+/**
+ * @description
+ * Renders the game board
+ * @param maxHeight - The maximum height of the board
+ * @param maxWidth - The maximum width of the board
+ * @returns The game board
+ */
 export default function GameBoard({ maxHeight, maxWidth }: GameBoardProps) {
   const borderColor = useThemeColor("border");
 

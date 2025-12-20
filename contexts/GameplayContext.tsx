@@ -6,7 +6,6 @@ import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useMenuContext } from "./MenuContext";
 
 type ContextShape = {
   gameState: GameState;
@@ -15,6 +14,8 @@ type ContextShape = {
   restartGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
+  pauseGame: () => void;
+  resumeGame: () => void;
 }
 
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
@@ -27,14 +28,18 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     tileStates: [],
     firstMove: true,
     movesEnabled: true,
+    isPaused: false,
   });
   const [gameConfig, setGameConfig] = useState<GameConfig>({
     boardSize: [8, 10],
     moveLimit: 10,
   });
 
-  const { openMenu } = useMenuContext();
-
+  /**
+   * @description
+   * Fetches the game from storage.
+   * @returns true if the game is valid, false otherwise
+   */
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
       storage.get<GameConfig>("gameConfig"), 
@@ -62,6 +67,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }
 
+  /**
+   * @description
+   * Loads the current game from storage.
+   * @returns void
+   */
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
@@ -77,13 +87,23 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     loadGame();
   }, []);
 
-  // Restarts the current game with the same config
+  /**
+   * @description
+   * Restarts the current game with the same config.
+   * @returns void
+   */
   // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
   //   Cannot restart exact same game until initial tiles are being saved.
   const restartGame = () => {
     newGame(gameConfig);
   }
 
+  /**
+   * @description
+   * Starts a new game with the given config.
+   * @param config - The config for the new game
+   * @returns void
+   */
   const newGame = (config: GameConfig) => {
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
@@ -114,33 +134,46 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tileStates: tiles,
       firstMove: true,
       movesEnabled: true,
+      isPaused: false,
     })
   }
 
   useEffect(() => {
-    if (gameState.status !== "ongoing") {
+    if (gameState.status !== "ongoing" || gameState.isPaused) {
       return;
     }
     const interval = setInterval(() => {
       setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
     }, 1000);
     return () => clearInterval(interval);
-  }, [gameState.status]);
+  }, [gameState.status, gameState.isPaused]);
 
   useEffect(() => {
     storage.set<GameState>("gameState", gameState);
   }, [gameState]);
 
+  /**
+   * @description
+   * Runs the end game sequence. This is the helper function that will be called when the game is over. It will animate the game state and then update the game state to the target status.
+   * @param targetStatus - The target status of the game (i.e. playerWon or enemyWon)
+   * @param currentState - The current game state
+   * @returns void
+   */
   const runEndGame = async (targetStatus: GameState["status"], currentState: GameState) => {
     setGameState({...currentState, movesEnabled: false, status: "animating"});
     await endGame(currentState.tileStates, gameConfig.boardSize, targetStatus, (updatedStates) => {
       setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
     }).then((finalStates) => {
       setGameState((prevState) => ({...prevState, status: targetStatus, tileStates: finalStates}));
-      openMenu("gameOver");
     });
   }
 
+  /**
+   * @description
+   * Selects a tile. This is the main function that the player uses to play the game. It will advance the game state based on the tile selected.
+   * @param state - The tile state selected by the player
+   * @returns void
+   */
   const selectTile = (state: TileState) => {
     let newState = {...gameState};
 
@@ -210,9 +243,29 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }
 
+  /**
+   * @description
+   * Pauses the game.
+   * @returns void
+   */
+  const pauseGame = () => {
+    setGameState(prev => ({...prev, movesEnabled: false, isPaused: true}));
+  }
+
+  /**
+   * @description
+   * Resumes the game if it is ongoing. This call is safe, meaning it will do nothing if the game shouldn't be resumed (i.e. the game is over).
+   * @returns void
+   */
+  const resumeGame = () => {
+    if (gameState.status === "ongoing") {
+      setGameState(prev => ({...prev, movesEnabled: true, isPaused: false}));
+    }
+  }
+
   return (
     <GameplayContext.Provider 
-      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile }}>
+      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile, pauseGame, resumeGame }}>
       {children}
     </GameplayContext.Provider>
   );
