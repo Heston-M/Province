@@ -23,11 +23,12 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     onClose={() => {hardCloseMenu()}} 
     onOpenMenu={(type) => {openMenu(type as "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame")}} /> ) }
   
-    const gameOverMenu = () => { return ( <GameOverModal 
+  const gameOverMenu = () => { return ( <GameOverModal 
     onClose={() => {hardCloseMenu()}} /> ) }
-    
+
   const customGameMenu = () => { return ( <CustomGameMenu 
-    onBack={() => {goBackMenu()}} /> ) }
+    onBack={() => {goBackMenu()}}
+    onGameStarted={() => {hardCloseMenu()}} /> ) }
 
   const { gameState, pauseGame, resumeGame } = useGameplay();
 

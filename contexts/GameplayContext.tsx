@@ -3,6 +3,7 @@ import { GameConfig } from "@/types/gameConfig";
 import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
+import { isValidConfig } from "@/utils/configUtils";
 import { advanceEnemyTiles, generateBoard, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -12,7 +13,7 @@ type ContextShape = {
   gameConfig: GameConfig;
   loadGame: () => void;
   restartGame: () => void;
-  newGame: (config: GameConfig) => void;
+  newGame: (config: GameConfig) => boolean;
   selectTile: (state: TileState) => void;
   pauseGame: () => void;
   resumeGame: () => void;
@@ -121,7 +122,11 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * @param config - The config for the new game
    * @returns void
    */
-  const newGame = (config: GameConfig) => {
+  const newGame = (config: GameConfig): boolean => {
+    if (!isValidConfig(config)) {
+      return false;
+    }
+
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
 
@@ -136,6 +141,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       movesEnabled: true,
       isPaused: false,
     })
+    return true;
   }
 
   useEffect(() => {

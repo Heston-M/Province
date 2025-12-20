@@ -1,13 +1,16 @@
+import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface CustomGameMenuProps {
   onBack: () => void;
+  onGameStarted: () => void;
 }
 
-export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
+export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenuProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [boardX, setBoardX] = useState("");
@@ -16,8 +19,10 @@ export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
   const [useTimeLimit, setUseTimeLimit] = useState(false);
   const [timeLimit, setTimeLimit] = useState("");
   const [useFogOfWar, setUseFogOfWar] = useState(false);
-  const [fogOfWar, setFogOfWar] = useState(false);
   const [enemyAggression, setEnemyAggression] = useState("");
+
+  const [error, setError] = useState<string | null>(null);
+  const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "moveLimit" | "timeLimit" | "enemyAggression")[]>([]);
 
   const backgroundColor = useThemeColor("background");
   const secondaryColor = useThemeColor("secondary");
@@ -25,8 +30,77 @@ export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
   const borderColor = useThemeColor("border");
   const isDark = useColorScheme() === "dark";
 
-  const submitGame = () => {
-    console.log("submitGame");
+  const { newGame } = useGameplay();
+
+  function submitGame() {
+    setError(null);
+    setInvalidFields([]);
+
+    const errors = [];
+    const invalidFields: ("name" |"boardX" | "boardY" | "moveLimit" | "timeLimit" | "enemyAggression")[] = [];
+
+    const newName = name.trim();
+    if (newName.length === 0) {
+      errors.push("Name is required.");
+      invalidFields.push("name");
+    }
+    const newDescription = description.trim();
+    const newBoardY = parseInt(boardY.trim());
+    if (isNaN(newBoardY) || newBoardY < 3 || newBoardY > 20) {
+      errors.push("Rows must be between 3 and 20.");
+      invalidFields.push("boardY");
+    }
+    const newBoardX = parseInt(boardX.trim());
+    if (isNaN(newBoardX) || newBoardX < 3 || newBoardX > 20) {
+      errors.push("Columns must be between 3 and 20.");
+      invalidFields.push("boardX");
+    }
+    const newMoveLimit = parseInt(moveLimit.trim());
+    if (isNaN(newMoveLimit) || newMoveLimit < 6) {
+      errors.push("Move limit must be at least 6.");
+      invalidFields.push("moveLimit");
+    }
+    const newTimeLimit = useTimeLimit ? parseInt(timeLimit.trim()) : -1;
+    if (useTimeLimit && (isNaN(newTimeLimit) || newTimeLimit < 1)) {
+      errors.push("Time limit must be at least 1 second.");
+      invalidFields.push("timeLimit");
+    }
+    const newEnemyAggression = Number(enemyAggression.trim());
+    if (newEnemyAggression < 0 || newEnemyAggression > 1) {
+      errors.push("Enemy aggression must be between 0 and 1.");
+      invalidFields.push("enemyAggression");
+    }
+
+    setError(errors.join("\n"));
+    setInvalidFields(invalidFields);
+
+    if (errors.length > 0 || invalidFields.length > 0) {
+      return;
+    }
+
+    const config: GameConfig = {
+      name: newName,
+      description: newDescription,
+      boardSize: [newBoardX, newBoardY],
+      moveLimit: newMoveLimit,
+      timeLimit: newTimeLimit,
+      fogOfWar: useFogOfWar,
+      enemyAggression: newEnemyAggression,
+      initialTileStates: [],
+      randRemainingTiles: true,
+      randProbabilities: {
+        territory: 0.9,
+        fortified: 0.05,
+        enemy: 0.05,
+      },
+    }
+    console.log(config);
+    if (newGame(config)) {
+      onGameStarted();
+    }
+    else {
+      setError("Invalid game config");
+    }
   }
 
   return (
@@ -38,8 +112,12 @@ export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
           <Image source={isDark ? require("@/assets/icons/backArrowWhite.jpg") : require("@/assets/icons/backArrowBlack.jpg")} style={styles.closeIcon} />
         </Pressable>
         <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
+        {error && <View style={styles.errorContainer}>
+           <Text style={[styles.error, { color: textColor }]}>{error}</Text>
+        </View>}
         <TextInput 
-          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
+          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+            invalidFields.includes("name") && { borderColor: "red" }]} 
           value={name} 
           placeholder="Name"
           placeholderTextColor={textColor + "80"}
@@ -53,40 +131,29 @@ export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
           onChangeText={setDescription} 
         />
         <TextInput 
-          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
+          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }, 
+            invalidFields.includes("boardY") && { borderColor: "red" }]} 
           value={boardY} 
           placeholder="Rows (3 - 20)"
           placeholderTextColor={textColor + "80"}
           onChangeText={setBoardY} 
         />
         <TextInput 
-          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
+          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+            invalidFields.includes("boardX") && { borderColor: "red" }]} 
           value={boardX} 
           placeholder="Columns (3 - 20)"
           placeholderTextColor={textColor + "80"}
           onChangeText={setBoardX} 
         />
         <TextInput 
-          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
+          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+            invalidFields.includes("moveLimit") && { borderColor: "red" }]} 
           value={moveLimit} 
           placeholder="Move Limit (at least 6)"
           placeholderTextColor={textColor + "80"}
           onChangeText={setMoveLimit} 
         />
-        <View style={styles.row}>
-          <Switch
-            value={useTimeLimit}
-            onValueChange={setUseTimeLimit}
-          />
-          <Text style={[styles.label, { color: textColor }]}>Time Limit</Text>
-        </View>
-        {useTimeLimit && <TextInput 
-          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
-          value={timeLimit} 
-          placeholder="Time Limit (in seconds)"
-          placeholderTextColor={textColor + "80"}
-          onChangeText={setTimeLimit} 
-        />}
         <View style={styles.row}>
           <Switch
             value={useFogOfWar}
@@ -95,9 +162,24 @@ export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
           <Text style={[styles.label, { color: textColor }]}>Fog of War</Text>
         </View>
         <View style={styles.row}>
+          <Switch
+            value={useTimeLimit}
+            onValueChange={setUseTimeLimit}
+          />
+          <Text style={[styles.label, { color: textColor, marginRight: 2 }]}>Time Limit</Text>
+        </View>
+        {useTimeLimit && <TextInput 
+          style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+            invalidFields.includes("timeLimit") && { borderColor: "red" }]} 
+          value={timeLimit} 
+          placeholder="Time Limit (in seconds)"
+          placeholderTextColor={textColor + "80"}
+          onChangeText={setTimeLimit} 
+        />}
+        <View style={styles.row}>
           <MenuButton
             text="Create Game"
-            onPress={() => {submitGame}}
+            onPress={submitGame}
           />
         </View>
       </View>
@@ -128,6 +210,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     marginLeft: 20,
+  },
+  errorContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  error: {
+    fontSize: 12,
+    textAlign: "center",
   },
   row: {
     flexDirection: "row",
