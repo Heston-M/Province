@@ -1,3 +1,4 @@
+import { useGameplay } from "@/contexts/GameplayContext";
 import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
@@ -10,6 +11,7 @@ export default function MainMenu() {
   const isDark = useColorScheme() === "dark";
 
   const { hardCloseMenu } = useMenuContext();
+  const { restartGame, newGame } = useGameplay();
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
@@ -18,8 +20,17 @@ export default function MainMenu() {
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Province</Text>
       <View style={styles.gridContainer}>
-        <MenuButton text="Restart Game" onPress={() => {}} />
-        <MenuButton text="Level Select" onPress={() => {}} />
+        <MenuButton text="Restart Game" onPress={() => {
+          restartGame();
+          hardCloseMenu();
+        }} />
+        <MenuButton text="New Game" onPress={() => {
+          newGame({
+            boardSize: 8,
+            moveLimit: 10,
+          });
+          hardCloseMenu();
+        }} />
         <View style={styles.row}>
           <MenuButton text="Rules" onPress={() => {}} />
           <MenuButton text="Settings" onPress={() => {}} />

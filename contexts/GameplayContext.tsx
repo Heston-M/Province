@@ -11,6 +11,7 @@ type ContextShape = {
   gameState: GameState;
   gameConfig: GameConfig;
   loadGame: () => void;
+  restartGame: () => void;
   newGame: (config: GameConfig) => void;
   selectTile: (state: TileState) => void;
 }
@@ -69,6 +70,13 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     loadGame();
   }, []);
+
+  // Restarts the current game with the same config
+  // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
+  //   Cannot restart exact same game until initial tiles are being saved.
+  const restartGame = () => {
+    newGame(gameConfig);
+  }
 
   const newGame = (config: GameConfig) => {
     setGameConfig(config);
@@ -197,7 +205,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <GameplayContext.Provider 
-      value={{ gameState, gameConfig, loadGame, newGame, selectTile }}>
+      value={{ gameState, gameConfig, loadGame, restartGame, newGame, selectTile }}>
       {children}
     </GameplayContext.Provider>
   );
