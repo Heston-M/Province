@@ -13,12 +13,10 @@ export default function MainMenu() {
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
-      <View style={[styles.row, { justifyContent: "space-between" }]}>
-        <Text style={[styles.title, { color: textColor }]}>Province</Text>
-        <Pressable onPress={hardCloseMenu}>
-          <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
-        </Pressable>
-      </View>
+      <Pressable onPress={hardCloseMenu} style={styles.closeIconContainer}>
+        <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+      </Pressable>
+      <Text style={[styles.title, { color: textColor }]}>Province</Text>
       <View style={styles.gridContainer}>
         <MenuButton text="Restart Game" onPress={() => {}} />
         <MenuButton text="Level Select" onPress={() => {}} />
@@ -36,6 +34,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  closeIconContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 20,
+    height: 20,
+  },
   closeIcon: {
     width: 20,
     height: 20,
@@ -45,6 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    marginRight: 20,
   },
   gridContainer: {
     flexDirection: "column",
