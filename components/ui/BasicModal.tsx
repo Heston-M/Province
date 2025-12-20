@@ -1,5 +1,6 @@
+import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 interface BasicModalProps {
   visible: boolean;
@@ -11,10 +12,12 @@ export default function BasicModal({ visible, children }: BasicModalProps) {
   const secondaryColor = useThemeColor("secondary");
   const borderColor = useThemeColor("border");
 
+  const { hardCloseMenu } = useMenuContext();
+
   return (
     visible && (
       <View style={[styles.modal, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
-        <View style={[styles.modal, { backgroundColor: backgroundColor, opacity: 0.5 }]}></View>
+        <Pressable onPress={hardCloseMenu} style={[styles.modal, { backgroundColor: backgroundColor, opacity: 0.5 }]}></Pressable>
         <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
           {children}
         </View>
