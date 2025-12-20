@@ -1,22 +1,24 @@
+import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
-interface MainMenuProps {
-  onClose: () => void;
-}
-
-export default function MainMenu({ onClose }: MainMenuProps) {
+export default function MainMenu() {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
+  const isDark = useColorScheme() === "dark";
+
+  const { hardCloseMenu } = useMenuContext();
 
   return (
-    <Pressable 
-      style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}
-      onPress={onClose}
-    >
-      <Text style={[styles.title, { color: textColor }]}>Province</Text>
+    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+      <View style={[styles.row, { justifyContent: "space-between" }]}>
+        <Text style={[styles.title, { color: textColor }]}>Province</Text>
+        <Pressable onPress={hardCloseMenu}>
+          <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+        </Pressable>
+      </View>
       <View style={styles.gridContainer}>
         <MenuButton text="Restart Game" onPress={() => {}} />
         <MenuButton text="Level Select" onPress={() => {}} />
@@ -25,7 +27,7 @@ export default function MainMenu({ onClose }: MainMenuProps) {
           <MenuButton text="Settings" onPress={() => {}} />
         </View>
       </View>
-    </Pressable>
+    </View>
   );
 }
 
@@ -33,6 +35,11 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    zIndex: 1001,
   },
   title: {
     fontSize: 24,

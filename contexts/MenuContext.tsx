@@ -5,7 +5,8 @@ type ContextShape = {
   menuVisible: boolean;
   menuContent: React.ReactNode;
   openMenu: (type: "main" | "levelSelect" | "rules" | "settings") => void;
-  closeMenu: () => void;
+  goBackMenu: () => void;
+  hardCloseMenu: () => void;
 }
 
 const MenuContext = createContext<ContextShape | undefined>(undefined);
@@ -15,7 +16,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const [menuContent, setMenuContent] = useState<React.ReactNode>(null);
   const [menuType, setMenuType] = useState<"main" | "levelSelect" | "rules" | "settings" | undefined>("main");
 
-  const mainMenu = () => { return ( <MainMenu onClose={closeMenu} /> ) }
+  const mainMenu = () => { return ( <MainMenu /> ) }
 
   const openMenu = (type: "main" | "levelSelect" | "rules" | "settings") => {
     setMenuVisible(true);
@@ -29,7 +30,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
     }
   }
-  const closeMenu = () => {
+  const goBackMenu = () => {
     switch (menuType) {
       case "main":
         setMenuContent(null);
@@ -43,9 +44,14 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
     }
   }
+  const hardCloseMenu = () => {
+    setMenuContent(null);
+    setMenuVisible(false);
+    setMenuType(undefined);
+  }
 
   return (
-    <MenuContext.Provider value={{ menuVisible, menuContent, openMenu, closeMenu }}>
+    <MenuContext.Provider value={{ menuVisible, menuContent, openMenu, goBackMenu, hardCloseMenu }}>
       {children}
     </MenuContext.Provider>
   );
