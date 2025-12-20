@@ -21,7 +21,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const mainMenu = () => { return ( <MainMenu /> ) }
   const gameOverMenu = () => { return ( <GameOverModal /> ) }
 
-  const { gameState } = useGameplay();
+  const { gameState, pauseGame, resumeGame } = useGameplay();
 
   useEffect(() => {
     if (gameState.status !== "ongoing" && gameState.status !== "animating") {
@@ -30,6 +30,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   }, [gameState.status]);
 
   const openMenu = (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver") => {
+    pauseGame();
     setMenuVisible(true);
     setMenuType(type);
     switch (type) {
@@ -47,6 +48,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const goBackMenu = () => {
     switch (menuType) {
       case "main":
+        resumeGame();
         setMenuContent(null);
         setMenuVisible(false);
         setMenuType(undefined);
@@ -54,6 +56,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
       case "gameOver":
         break;
       default:
+        resumeGame();
         setMenuContent(null);
         setMenuVisible(false);
         setMenuType(undefined);
@@ -61,6 +64,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     }
   }
   const hardCloseMenu = () => {
+    resumeGame();
     setMenuContent(null);
     setMenuVisible(false);
     setMenuType(undefined);
