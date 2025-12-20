@@ -18,7 +18,7 @@ export default function NewGameButton({ text }: NewGameButtonProps) {
       style={[styles.button, { backgroundColor: backgroundColor, borderColor: borderColor }]} 
       onPress={() => {
         newGame({ 
-          boardSize: 8, 
+          boardSize: [10, 8], 
           moveLimit: 10,
         });
       }}>

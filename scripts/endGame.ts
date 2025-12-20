@@ -8,7 +8,7 @@ import { advanceEnemyTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 // wait for 500ms before the next step
 export async function endGame(
   initialStates: TileState[],
-  boardSize: number,
+  boardSize: [number, number],
   winner: GameState["status"],
   onStepUpdate: (updatedStates: TileState[]) => void
 ): Promise<TileState[]> {

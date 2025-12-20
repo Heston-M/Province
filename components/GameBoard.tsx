@@ -16,17 +16,15 @@ export default function GameBoard({ size, maxHeight, maxWidth }: GameBoardProps)
 
   const { gameState, gameConfig, selectTile } = useGameplay();
 
-  const tileSize = (size - 2) / gameConfig.boardSize;
-
-  const [boardWidth, boardHeight, tileSize2] = 
-    gameConfig.boardSize2 ? getBoardSize(maxHeight, maxWidth, gameConfig.boardSize2) : getBoardSize(maxHeight, maxWidth, [gameConfig.boardSize, gameConfig.boardSize]);
+  const [boardWidth, boardHeight, tileSize] = 
+    getBoardSize(maxHeight, maxWidth, gameConfig.boardSize);
 
   return (
     <View style={[styles.gameBoard, { position: "relative", borderColor: borderColor }]}>
-      <View style={{ width: boardWidth ?? size, height: boardHeight ?? size }}>
+      <View style={{ width: boardWidth, height: boardHeight }}>
         <GameOverModal visible={gameState.status !== "ongoing" && gameState.status !== "animating"} size={size} />
         <View style={styles.gameBoardInner}>{gameState.tileStates.map((tile) => (
-          <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize2 ?? tileSize} onSelect={selectTile} />
+          <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
         ))}</View>
       </View>
     </View>

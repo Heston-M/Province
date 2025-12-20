@@ -1,5 +1,4 @@
 export type GameConfig = {
-  boardSize: number;
-  boardSize2?: [number, number]; // [width, height] for non-square boards
+  boardSize: [number, number]; // [width, height]
   moveLimit: number;
 }

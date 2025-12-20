@@ -2,16 +2,9 @@ import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { getAdjacentTiles } from "./gridUtils";
 
-function isSquareNumber(number: number) {
-  return Math.sqrt(number) % 1 === 0;
-}
-
-export function isValidTileSet(tileStates: TileState[]) {
-  if (!isSquareNumber(tileStates.length)) {
-    return false;
-  }
+export function isValidTileSet(tileStates: TileState[], boardSize: [number, number]) {
   for (const tile of tileStates) {
-    if (tile.x < 1 || tile.x > tileStates.length || tile.y < 1 || tile.y > tileStates.length) {
+    if (tile.x < 1 || tile.x > boardSize[0] || tile.y < 1 || tile.y > boardSize[1]) {
       return false;
     }
     if (tile.type !== "territory" && tile.type !== "fortified" && tile.type !== "enemy") {
@@ -50,7 +43,7 @@ export function areAllTilesFortified(tileStates: TileState[]) {
   return tileStates.every((tile) => tile.type === "fortified");
 }
 
-export function enemyCannotMove(tileStates: TileState[], boardSize: number) {
+export function enemyCannotMove(tileStates: TileState[], boardSize: [number, number]) {
   const enemyTiles = tileStates.filter((tile) => tile.type === "enemy");
   for (const tile of enemyTiles) {
     const adjacentTiles = getAdjacentTiles(tile.x, tile.y, boardSize, tileStates);

@@ -26,7 +26,7 @@ export default function MainMenu() {
         }} />
         <MenuButton text="New Game" onPress={() => {
           newGame({
-            boardSize: 8,
+            boardSize: [8, 10],
             moveLimit: 10,
           });
           hardCloseMenu();
