@@ -5,12 +5,11 @@ import { getBoardSize } from "@/utils/gridUtils";
 import { StyleSheet, View } from "react-native";
 
 interface GameBoardProps {
-  size: number;
   maxHeight: number;
   maxWidth: number;
 }
 
-export default function GameBoard({ size, maxHeight, maxWidth }: GameBoardProps) {
+export default function GameBoard({ maxHeight, maxWidth }: GameBoardProps) {
   const borderColor = useThemeColor("border");
 
   const { gameState, gameConfig, selectTile } = useGameplay();
@@ -19,11 +18,11 @@ export default function GameBoard({ size, maxHeight, maxWidth }: GameBoardProps)
     getBoardSize(maxHeight, maxWidth, gameConfig.boardSize);
 
   return (
-    <View style={[styles.gameBoard, { position: "relative", borderColor: borderColor }]}>
-      <View style={{ width: boardWidth, height: boardHeight }}>
-        <View style={styles.gameBoardInner}>{gameState.tileStates.map((tile) => (
+    <View style={[styles.gameBoard, { borderColor: borderColor }]}>
+      <View style={[styles.gameBoardInner, { width: boardWidth, height: boardHeight }]}>
+        {gameState.tileStates.map((tile) => (
           <Tile key={`${tile.x}-${tile.y}`} state={tile} size={tileSize} onSelect={selectTile} />
-        ))}</View>
+        ))}
       </View>
     </View>
   );
@@ -31,6 +30,7 @@ export default function GameBoard({ size, maxHeight, maxWidth }: GameBoardProps)
 
 const styles = StyleSheet.create({
   gameBoard: {
+    position: "relative",
     borderWidth: 1,
   },
   gameBoardInner: {

@@ -13,7 +13,6 @@ export default function Index() {
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
-  const gameBoardContainerSize = Math.min(screenHeight * 0.8, screenWidth * 0.8);
 
   const { gameState } = useGameplay();
   const formattedTime = formatTime(gameState.elapsedTime);
@@ -37,7 +36,7 @@ export default function Index() {
       </BasicModal>
       <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>
       <Text style={[styles.stat, { color: textColor }]}>Moves left: {gameState.movesLeft}</Text>
-      <GameBoard size={gameBoardContainerSize} maxHeight={screenHeight * 0.8} maxWidth={screenWidth * 0.8} />
+      <GameBoard maxHeight={screenHeight * 0.8} maxWidth={screenWidth * 0.8} />
     </View>
   );
 }
