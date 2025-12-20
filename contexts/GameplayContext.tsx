@@ -6,6 +6,7 @@ import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useMenuContext } from "./MenuContext";
 
 type ContextShape = {
   gameState: GameState;
@@ -31,6 +32,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     boardSize: [8, 10],
     moveLimit: 10,
   });
+
+  const { openMenu } = useMenuContext();
 
   async function fetchGame(): Promise<boolean> {
     return Promise.all([
@@ -134,6 +137,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
     }).then((finalStates) => {
       setGameState((prevState) => ({...prevState, status: targetStatus, tileStates: finalStates}));
+      openMenu("gameOver");
     });
   }
 

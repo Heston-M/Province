@@ -1,10 +1,11 @@
+import GameOverModal from "@/components/GameOverMenu";
 import MainMenu from "@/components/MainMenu";
 import { createContext, useContext, useState } from "react";
 
 type ContextShape = {
   menuVisible: boolean;
   menuContent: React.ReactNode;
-  openMenu: (type: "main" | "levelSelect" | "rules" | "settings") => void;
+  openMenu: (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver") => void;
   goBackMenu: () => void;
   hardCloseMenu: () => void;
 }
@@ -14,16 +15,20 @@ const MenuContext = createContext<ContextShape | undefined>(undefined);
 export default function MenuContextProvider({ children }: { children: React.ReactNode }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuContent, setMenuContent] = useState<React.ReactNode>(null);
-  const [menuType, setMenuType] = useState<"main" | "levelSelect" | "rules" | "settings" | undefined>("main");
+  const [menuType, setMenuType] = useState<"main" | "levelSelect" | "rules" | "settings" | "gameOver" | undefined>("main");
 
   const mainMenu = () => { return ( <MainMenu /> ) }
+  const gameOverMenu = () => { return ( <GameOverModal /> ) }
 
-  const openMenu = (type: "main" | "levelSelect" | "rules" | "settings") => {
+  const openMenu = (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver") => {
     setMenuVisible(true);
     setMenuType(type);
     switch (type) {
       case "main":
         setMenuContent(mainMenu());
+        break;
+      case "gameOver":
+        setMenuContent(gameOverMenu());
         break;
       default:
         setMenuContent(null);
@@ -36,6 +41,8 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         setMenuContent(null);
         setMenuVisible(false);
         setMenuType(undefined);
+        break;
+      case "gameOver":
         break;
       default:
         setMenuContent(null);
