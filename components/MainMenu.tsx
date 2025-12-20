@@ -4,6 +4,11 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
+/**
+ * @description
+ * Renders the main menu
+ * @returns The main menu
+ */
 export default function MainMenu() {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
