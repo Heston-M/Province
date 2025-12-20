@@ -1,10 +1,13 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
+interface CustomGameMenuProps {
+  onBack: () => void;
+}
 
-export default function CustomGameMenu() {
+export default function CustomGameMenu({ onBack }: CustomGameMenuProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [boardX, setBoardX] = useState("");
@@ -20,6 +23,7 @@ export default function CustomGameMenu() {
   const secondaryColor = useThemeColor("secondary");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
+  const isDark = useColorScheme() === "dark";
 
   const submitGame = () => {
     console.log("submitGame");
@@ -28,6 +32,11 @@ export default function CustomGameMenu() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+        <Pressable 
+          style={styles.closeIconContainer}
+          onPress={() => {onBack()}}>
+          <Image source={isDark ? require("@/assets/icons/backArrowWhite.jpg") : require("@/assets/icons/backArrowBlack.jpg")} style={styles.closeIcon} />
+        </Pressable>
         <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
         <TextInput 
           style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
@@ -90,10 +99,6 @@ export default function CustomGameMenu() {
             text="Create Game"
             onPress={() => {submitGame}}
           />
-          <MenuButton
-            text="Cancel"
-            onPress={() => {}}
-          />
         </View>
       </View>
     </ScrollView>
@@ -109,10 +114,20 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     gap: 10,
   },
+  closeIconContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    marginLeft: 20,
   },
   row: {
     flexDirection: "row",

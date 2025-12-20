@@ -1,22 +1,24 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useMenuContext } from "@/contexts/MenuContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, Text, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
+
+interface GameOverModalProps {
+  onClose: () => void;
+}
 
 /**
  * @description
  * Renders the game over menu
  * @returns The game over menu
  */
-export default function GameOverModal() {
+export default function GameOverModal({ onClose }: GameOverModalProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
 
   const { gameState, newGame, restartGame } = useGameplay();
-  const { hardCloseMenu } = useMenuContext();
 
   const winMessage = useRandomQuote("win");
   const loseMessage = useRandomQuote("lose");
@@ -52,7 +54,7 @@ export default function GameOverModal() {
         } else {
           restartGame();
         }
-        hardCloseMenu();
+        onClose();
       }} />
     </View>
   );

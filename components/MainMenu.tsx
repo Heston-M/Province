@@ -1,33 +1,36 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
+
+interface MainMenuProps {
+  onClose: () => void;
+  onOpenMenu: (type: string) => void;
+}
 
 /**
  * @description
  * Renders the main menu
  * @returns The main menu
  */
-export default function MainMenu() {
+export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
   const isDark = useColorScheme() === "dark";
 
-  const { hardCloseMenu } = useMenuContext();
   const { restartGame, newGame } = useGameplay();
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
-      <Pressable onPress={hardCloseMenu} style={styles.closeIconContainer}>
+      <Pressable onPress={onClose} style={styles.closeIconContainer}>
         <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Province</Text>
       <View style={styles.gridContainer}>
         <MenuButton text="Restart Game" onPress={() => {
           restartGame();
-          hardCloseMenu();
+          onClose();
         }} />
         <MenuButton text="New Game" onPress={() => {
           newGame({
@@ -46,7 +49,10 @@ export default function MainMenu() {
               enemy: 0.05,
             },
           });
-          hardCloseMenu();
+          onClose();
+        }} />
+        <MenuButton text="Custom Game" onPress={() => {
+          onOpenMenu("customGame");
         }} />
         <View style={styles.row}>
           <MenuButton text="Rules" onPress={() => {}} />
