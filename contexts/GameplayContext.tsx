@@ -3,7 +3,7 @@ import { GameConfig } from "@/types/gameConfig";
 import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
-import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
+import { advanceEnemyTiles, generateBoard, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -18,6 +18,23 @@ type ContextShape = {
   resumeGame: () => void;
 }
 
+const defaultGameConfig: GameConfig = {
+  name: "Default",
+  description: "A default game config",
+  boardSize: [8, 8],
+  moveLimit: 10,
+  timeLimit: -1,
+  fogOfWar: false,
+  enemyAggression: 0.8,
+  initialTileStates: [],
+  randRemainingTiles: false,
+  randProbabilities: {
+    territory: 0.9,
+    fortified: 0.05,
+    enemy: 0.05,
+  },
+}
+
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
 
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -30,10 +47,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     movesEnabled: true,
     isPaused: false,
   });
-  const [gameConfig, setGameConfig] = useState<GameConfig>({
-    boardSize: [8, 10],
-    moveLimit: 10,
-  });
+  const [gameConfig, setGameConfig] = useState<GameConfig>(defaultGameConfig);
 
   /**
    * @description
@@ -75,10 +89,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
-        newGame({ 
-          boardSize: [8, 10], 
-          moveLimit: 10 
-        });
+        newGame(defaultGameConfig);
       }
     });
   }
@@ -108,25 +119,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameConfig(config);
     storage.set<GameConfig>("gameConfig", config);
 
-    const tiles: TileState[] = [];
-    for (let y = 1; y <= config.boardSize[1]; y++) {
-      for (let x = 1; x <= config.boardSize[0]; x++) {
-        const randNum = Math.random();
-        let type = "territory";
-        if (randNum < 0.9) {
-          type = "territory";
-        } else if (randNum < 0.95) {
-          type = "enemy";
-        } else {
-          type = "fortified";
-        }
-        tiles.push({ x, y, 
-          growingLevel: 0, 
-          type: type as "territory" | "fortified" | "enemy", 
-          isHidden: false, 
-          isCaptured: type === "fortified" ? true : false });
-      }
-    }
+    const tiles = generateBoard(config);
     setGameState({
       status: "ongoing",
       movesLeft: config.moveLimit,

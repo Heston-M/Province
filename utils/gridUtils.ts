@@ -1,3 +1,4 @@
+import { GameConfig } from "@/types/gameConfig";
 import { TileState } from "@/types/tileState";
 
 /**
@@ -16,6 +17,57 @@ export function getBoardSize(maxHeight: number, maxWidth: number, boardSize: [nu
   const boardWidth = tileSize * boardSize[0];
 
   return [boardWidth, boardHeight, tileSize];
+}
+
+/**
+ * @description
+ * Generates the board based on the game config
+ * @param gameConfig - The game config
+ * @returns The board
+ */
+export function generateBoard(gameConfig: GameConfig): TileState[] {
+  const tiles: TileState[] = [];
+  
+  for (let y = 1; y <= gameConfig.boardSize[1]; y++) {
+    for (let x = 1; x <= gameConfig.boardSize[0]; x++) {
+      const tileState = gameConfig.initialTileStates.find((t) => t.x === x && t.y === y);
+      if (tileState) {
+        tiles.push(tileState);  // tile determined by game config
+      }
+      else {
+        if (gameConfig.randRemainingTiles) {  // randomly generate tile
+          const randNum = Math.random();
+          let type = "territory";
+          if (randNum < gameConfig.randProbabilities.territory) {
+            type = "territory";
+          }
+          else if (randNum < gameConfig.randProbabilities.territory + gameConfig.randProbabilities.fortified) {
+            type = "fortified";
+          }
+          else {
+            type = "enemy";
+          }
+          tiles.push({ 
+            x, y, 
+            type: type as "territory" | "fortified" | "enemy", 
+            growingLevel: 0, 
+            isHidden: gameConfig.fogOfWar, 
+            isCaptured: type === "fortified" ? true : false 
+          });
+        }
+        else {  // fill tile with uncaptured territory
+          tiles.push({ 
+            x, y, 
+            type: "territory", 
+            growingLevel: 0, 
+            isHidden: gameConfig.fogOfWar, 
+            isCaptured: false 
+          });
+        }
+      }
+    }
+  }
+  return tiles;
 }
 
 /**
