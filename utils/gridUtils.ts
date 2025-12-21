@@ -68,6 +68,17 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
       }
     }
   }
+  // reveal fortified tiles and adjacent tiles if fog of war is enabled
+  if (gameConfig.fogOfWar) {
+    const fortifiedTiles = tiles.filter((tile) => tile.type === "fortified");
+    for (const tile of fortifiedTiles) {
+      tile.isHidden = false;
+      const adjacentTiles = getAdjacentTiles(tile.x, tile.y, gameConfig.boardSize, tiles);
+      for (const adjacentTile of adjacentTiles) {
+        adjacentTile.isHidden = false;
+      }
+    }
+  }
   return tiles;
 }
 

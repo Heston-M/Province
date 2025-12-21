@@ -94,7 +94,6 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
         enemy: 0.05,
       },
     }
-    console.log(config);
     if (newGame(config)) {
       onGameStarted();
     }

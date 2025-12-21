@@ -1,7 +1,7 @@
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
@@ -18,6 +18,7 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
+  const isDark = useColorScheme() === "dark";
 
   const { gameState, newGame, restartGame } = useGameplay();
 
@@ -26,6 +27,9 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+      <Pressable style={styles.closeIconContainer} onPress={onClose}>
+        <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+      </Pressable>
       <Text style={[styles.title, { color: textColor }]}>
         {gameState.status === "playerWon" ? "You Won!" : "You lost..."}
       </Text>
@@ -79,6 +83,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     zIndex: 1001,
     gap: 10,
+  },
+  closeIconContainer: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    width: 20,
+    height: 20,
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
   },
   title: {
     fontSize: 24,
