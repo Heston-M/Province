@@ -56,8 +56,8 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       invalidFields.push("boardX");
     }
     const newMoveLimit = parseInt(moveLimit.trim());
-    if (isNaN(newMoveLimit) || newMoveLimit < 6) {
-      errors.push("Move limit must be at least 6.");
+    if (isNaN(newMoveLimit) || newMoveLimit < 7) {
+      errors.push("Move limit must be at least 7.");
       invalidFields.push("moveLimit");
     }
     const newTimeLimit = useTimeLimit ? parseInt(timeLimit.trim()) : -1;
@@ -150,7 +150,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
           style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
             invalidFields.includes("moveLimit") && { borderColor: "red" }]} 
           value={moveLimit} 
-          placeholder="Move Limit (at least 6)"
+          placeholder="Move Limit (at least 7)"
           placeholderTextColor={textColor + "80"}
           onChangeText={setMoveLimit} 
         />

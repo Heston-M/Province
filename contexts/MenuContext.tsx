@@ -24,7 +24,8 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     onOpenMenu={(type) => {openMenu(type as "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame")}} /> ) }
   
   const gameOverMenu = () => { return ( <GameOverModal 
-    onClose={() => {hardCloseMenu()}} /> ) }
+    onClose={() => {hardCloseMenu()}} 
+    onOpenMenu={(type) => {openMenu(type as "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame")}} /> ) }
 
   const customGameMenu = () => { return ( <CustomGameMenu 
     onBack={() => {goBackMenu()}}

@@ -6,6 +6,7 @@ import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
   onClose: () => void;
+  onOpenMenu: (type: "main") => void;
 }
 
 /**
@@ -13,7 +14,7 @@ interface GameOverModalProps {
  * Renders the game over menu
  * @returns The game over menu
  */
-export default function GameOverModal({ onClose }: GameOverModalProps) {
+export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
@@ -23,8 +24,6 @@ export default function GameOverModal({ onClose }: GameOverModalProps) {
   const winMessage = useRandomQuote("win");
   const loseMessage = useRandomQuote("lose");
 
-  const buttonText = gameState.status === "playerWon" ? "New Game" : "Try Again";
-
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Text style={[styles.title, { color: textColor }]}>
@@ -33,7 +32,9 @@ export default function GameOverModal({ onClose }: GameOverModalProps) {
       <Text style={[styles.message, { color: textColor }]}>
         {gameState.status === "playerWon" ? winMessage : loseMessage}
       </Text>
-      <MenuButton text={buttonText} onPress={() => {
+      <MenuButton 
+        text={gameState.status === "playerWon" ? "New Game" : "Try Again"} 
+        onPress={() => {
         if (gameState.status === "playerWon") {
           newGame({
             name: "Random Game",
@@ -56,6 +57,11 @@ export default function GameOverModal({ onClose }: GameOverModalProps) {
         }
         onClose();
       }} />
+      <MenuButton 
+        text="Main Menu" 
+        onPress={() => {
+          onOpenMenu("main");
+        }} />
     </View>
   );
 }
@@ -72,16 +78,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     zIndex: 1001,
+    gap: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
     textAlign: "center",
   },
   message: {
     fontSize: 16,
-    marginBottom: 10,
     textAlign: "center",
   },
 });
