@@ -1,8 +1,8 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface CustomGameMenuProps {
@@ -24,11 +24,12 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const [error, setError] = useState<string | null>(null);
   const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "moveLimit" | "timeLimit" | "enemyAggression")[]>([]);
 
-  const backgroundColor = useThemeColor("background");
-  const secondaryColor = useThemeColor("secondary");
-  const textColor = useThemeColor("text");
-  const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { getThemeColor, getIconSource } = useThemeContext();
+  const backgroundColor = getThemeColor("background");
+  const secondaryColor = getThemeColor("secondary");
+  const textColor = getThemeColor("text");
+  const borderColor = getThemeColor("border");
+  const backIcon = getIconSource("backIcon");
 
   const { newGame } = useGameplay();
 
@@ -105,10 +106,8 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-        <Pressable 
-          style={styles.closeIconContainer}
-          onPress={() => {onBack()}}>
-          <Image source={isDark ? require("@/assets/icons/backArrowWhite.jpg") : require("@/assets/icons/backArrowBlack.jpg")} style={styles.closeIcon} />
+        <Pressable style={styles.backIconContainer} onPress={() => {onBack()}}>
+          <Image source={backIcon} style={styles.backIcon} />
         </Pressable>
         <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
         {error && <View style={styles.errorContainer}>
@@ -195,12 +194,12 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     gap: 10,
   },
-  closeIconContainer: {
+  backIconContainer: {
     position: "absolute",
     top: 0,
     left: 0,
   },
-  closeIcon: {
+  backIcon: {
     width: 20,
     height: 20,
   },

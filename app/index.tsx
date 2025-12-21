@@ -1,15 +1,16 @@
 import GameBoard from "@/components/GameBoard";
 import BasicModal from "@/components/ui/BasicModal";
-import MenuIcon from "@/components/ui/MenuIcon";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useMenuContext } from "@/contexts/MenuContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { formatTime } from "@/utils/timeUtils";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
-  const backgroundColor = useThemeColor("background");
-  const textColor = useThemeColor("text");
+  const { getThemeColor, getIconSource } = useThemeContext();
+  const backgroundColor = getThemeColor("background");
+  const textColor = getThemeColor("text");
+  const menuIcon = getIconSource("menuBar");
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -28,9 +29,9 @@ export default function Index() {
         backgroundColor: backgroundColor,
       }}
     >
-      <View style={styles.menuIcon}>
-        <MenuIcon onPress={() => openMenu("main")} />
-      </View>
+      <Pressable onPress={() => openMenu("main")} style={[styles.menuIconContainer, { backgroundColor: backgroundColor }]}>
+        <Image source={menuIcon} style={styles.menuIcon} />
+      </Pressable>
       <BasicModal visible={menuVisible}>
         {menuContent}
       </BasicModal>
@@ -42,12 +43,16 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  menuIcon: {
+  menuIconContainer: {
     position: "absolute",
     top: 10,
     left: 10,
     right: 0,
     bottom: 0,
+  },
+  menuIcon: {
+    width: 40,
+    height: 40,
   },
   stat: {
     fontSize: 20,

@@ -1,5 +1,5 @@
 import { useMenuContext } from "@/contexts/MenuContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { Pressable, StyleSheet, View } from "react-native";
 
 interface BasicModalProps {
@@ -15,9 +15,10 @@ interface BasicModalProps {
  * @returns The basic modal component
  */
 export default function BasicModal({ visible, children }: BasicModalProps) {
-  const backgroundColor = useThemeColor("background");
-  const secondaryColor = useThemeColor("secondary");
-  const borderColor = useThemeColor("border");
+  const { getThemeColor } = useThemeContext();
+  const backgroundColor = getThemeColor("background");
+  const secondaryColor = getThemeColor("secondary");
+  const borderColor = getThemeColor("border");
 
   const { hardCloseMenu } = useMenuContext();
 

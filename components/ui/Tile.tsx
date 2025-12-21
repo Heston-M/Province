@@ -1,5 +1,6 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { tileFields, useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
+import { tileFields } from "@/hooks/useThemeColor";
 import { TileState } from "@/types/tileState";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -19,23 +20,28 @@ interface TileProps {
  * @returns The tile component
  */
 export default function Tile({ state, size, onSelect }: TileProps) {
-  const hiddenColor = useThemeColor("hidden");
-  const borderColor = useThemeColor("border");
-  const uncapturedColor = useThemeColor("uncaptured");
-  const growingColor = useThemeColor("growing" + state.growingLevel as (typeof tileFields)[number]);
-  const enemyColor = useThemeColor("enemy");
-  const fortifiedColor = useThemeColor("fortified");
+  const { getThemeColor } = useThemeContext();
+  const hiddenColor = getThemeColor("hidden");
+  const borderColor = getThemeColor("tileBorder");
+  const hiddenBorderColor = getThemeColor("hiddenBorder");
+  const uncapturedColor = getThemeColor("uncaptured");
+  const growingColor = getThemeColor("growing" + state.growingLevel as (typeof tileFields)[number]);
+  const enemyColor = getThemeColor("enemy");
+  const fortifiedColor = getThemeColor("fortified");
 
   const { gameState } = useGameplay();
 
   const [isHover, setIsHover] = useState(false);
   const [tileColor, setTileColor] = useState(hiddenColor);
+  const [tileBorderColor, setTileBorderColor] = useState(borderColor);
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (state.isHidden) {
       setTileColor(hiddenColor);
+      setTileBorderColor(hiddenBorderColor);
     } else {
+      setTileBorderColor(borderColor);
       setTileColor((prevColor) => {
         switch (state.type) {
           case "territory":
@@ -75,7 +81,7 @@ export default function Tile({ state, size, onSelect }: TileProps) {
       }}
       disabled={disabled}
     >
-      <View style={[styles.tile, { borderColor: borderColor }]}></View>
+      <View style={[styles.tile, { borderColor: tileBorderColor }]}></View>
     </Pressable>
   );
 }

@@ -4,11 +4,13 @@ export const colors = {
     background: "#e5e5e5",
     secondary: "#ffffff",
     text: "#000000",
+    border: "#000000",
   },
   dark: {
     background: "#1a1a1a",
     secondary: "#000000",
     text: "#ffffff",
+    border: "#ffffff",
   },
 }
 
@@ -24,8 +26,9 @@ const growingColors = [
 
 export const tileColors = {
   light: {
-    hidden: "#ffffff",
-    border: "#000000",
+    tileBorder: "#ffffff",
+    hidden: "#757575",
+    hiddenBorder: "#bbbbbb",
     uncaptured: "#ffEEff",
     enemy: "#ff0000",
     fortified: "#00aadd",
@@ -38,8 +41,9 @@ export const tileColors = {
     growing6: growingColors[6],
   },
   dark: {
-    hidden: "#000000",
-    border: "#ffffff",
+    tileBorder: "#ffffff",
+    hidden: "#757575",
+    hiddenBorder: "#bbbbbb",
     uncaptured: "#ffEEff",
     enemy: "#ff0000",
     fortified: "#00aadd",

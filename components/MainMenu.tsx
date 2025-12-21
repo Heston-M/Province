@@ -1,7 +1,7 @@
+import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
-import MenuButton from "./ui/MenuButton";
+import { useThemeContext } from "@/contexts/ThemeContext";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface MainMenuProps {
   onClose: () => void;
@@ -14,17 +14,18 @@ interface MainMenuProps {
  * @returns The main menu
  */
 export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
-  const backgroundColor = useThemeColor("background");
-  const textColor = useThemeColor("text");
-  const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { getThemeColor, getIconSource } = useThemeContext();
+  const backgroundColor = getThemeColor("background");
+  const textColor = getThemeColor("text");
+  const borderColor = getThemeColor("border");
+  const closeIcon = getIconSource("closeIcon");
 
   const { restartGame, newGame } = useGameplay();
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable onPress={onClose} style={styles.closeIconContainer}>
-        <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+        <Image source={closeIcon} style={styles.closeIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Province</Text>
       <View style={styles.gridContainer}>
@@ -56,7 +57,9 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
         }} />
         <View style={styles.row}>
           <MenuButton text="Rules" onPress={() => {}} />
-          <MenuButton text="Settings" onPress={() => {}} />
+          <MenuButton text="Settings" onPress={() => {
+            onOpenMenu("settings");
+          }} />
         </View>
       </View>
     </View>

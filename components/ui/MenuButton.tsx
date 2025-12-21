@@ -1,4 +1,4 @@
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
@@ -15,9 +15,10 @@ interface MenuButtonProps {
  * @returns The menu button component
  */
 export default function MenuButton({ text, onPress }: MenuButtonProps) {
-  const backgroundColor = useThemeColor("secondary");
-  const textColor = useThemeColor("text");
-  const borderColor = useThemeColor("border");
+  const { getThemeColor } = useThemeContext();
+  const backgroundColor = getThemeColor("secondary");
+  const textColor = getThemeColor("text");
+  const borderColor = getThemeColor("border");
 
   const [isHover, setIsHover] = useState(false);
 

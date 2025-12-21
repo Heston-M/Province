@@ -1,7 +1,7 @@
 import { useGameplay } from "@/contexts/GameplayContext";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
@@ -15,10 +15,11 @@ interface GameOverModalProps {
  * @returns The game over menu
  */
 export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProps) {
-  const backgroundColor = useThemeColor("background");
-  const textColor = useThemeColor("text");
-  const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { getThemeColor, getIconSource } = useThemeContext();
+  const backgroundColor = getThemeColor("background");
+  const textColor = getThemeColor("text");
+  const borderColor = getThemeColor("border");
+  const closeIcon = getIconSource("closeIcon");
 
   const { gameState, newGame, restartGame } = useGameplay();
 
@@ -28,7 +29,7 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable style={styles.closeIconContainer} onPress={onClose}>
-        <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+        <Image source={closeIcon} style={styles.closeIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>
         {gameState.status === "playerWon" ? "You Won!" : "You lost..."}
