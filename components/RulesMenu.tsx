@@ -48,6 +48,7 @@ export default function RulesMenu({ onClose }: RulesMenuProps) {
 const styles = StyleSheet.create({
   container: {
     height: 450,
+    maxWidth: 300,
     justifyContent: "center",
     alignItems: "center",
   },

@@ -2,6 +2,7 @@ import { ImageSourcePropType } from "react-native";
 
 export type RulesImage = {
   source: ImageSourcePropType;
+  darkThemeSource?: ImageSourcePropType;
   caption?: string;
   width?: number;
   height?: number;

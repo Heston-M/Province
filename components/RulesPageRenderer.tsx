@@ -8,7 +8,7 @@ interface RulesPageRendererProps {
 }
 
 export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
-  const { getThemeColor } = useThemeContext();
+  const { theme, getThemeColor } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const textColor = getThemeColor("text");
 
@@ -28,7 +28,7 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
               return (
                 <View key={index} style={styles.imageContainer}>
                   <Image 
-                    source={section.image?.source} 
+                    source={theme === "light" ? section.image?.source : section.image?.darkThemeSource ?? section.image?.source} 
                     style={[styles.image, { width: section.image?.width ?? 200, height: section.image?.height ?? 200 }]}
                     contentFit="contain"
                   />
@@ -48,7 +48,7 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                   {section.image && (
                     <View style={styles.imageContainer}>
                       <Image 
-                        source={section.image.source} 
+                        source={theme === "light" ? section.image?.source : section.image?.darkThemeSource ?? section.image?.source} 
                         style={[styles.textImage, { width: section.image?.width ?? 200, height: section.image?.height ?? 200 }]} 
                         contentFit="contain"
                       />
