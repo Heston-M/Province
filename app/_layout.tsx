@@ -1,29 +1,25 @@
 import { GameplayProvider } from "@/contexts/GameplayContext";
 import MenuContextProvider from "@/contexts/MenuContext";
 import ThemeContextProvider from "@/contexts/ThemeContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { Stack } from "expo-router";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   return (
-    <ThemeContextProvider>
-      <GameplayProvider>
-        <MenuContextProvider>
-          <Stack 
-          screenOptions={{
-            headerShown: true,
-            headerTitleStyle: {
-              color: useThemeColor("text"),
-            },
-            headerStyle: {
-              backgroundColor: useThemeColor("secondary"),
-            },
-          }}
-          >
-            <Stack.Screen name="index" options={{ title: "Province" }} />
-          </Stack>
-        </MenuContextProvider>
-      </GameplayProvider>
-    </ThemeContextProvider>
+    <SafeAreaProvider>
+      <ThemeContextProvider>
+        <GameplayProvider>
+          <MenuContextProvider>
+            <Stack 
+            screenOptions={{
+              headerShown: false,
+            }}
+            >
+              <Stack.Screen name="index" options={{ title: "Province" }} />
+            </Stack>
+          </MenuContextProvider>
+        </GameplayProvider>
+      </ThemeContextProvider>
+    </SafeAreaProvider>
   );
 }

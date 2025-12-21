@@ -4,7 +4,8 @@ import { useGameplay } from "@/contexts/GameplayContext";
 import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { formatTime } from "@/utils/timeUtils";
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Index() {
   const { getThemeColor, getIconSource } = useThemeContext();
@@ -12,8 +13,8 @@ export default function Index() {
   const textColor = getThemeColor("text");
   const menuIcon = getIconSource("menuBar");
 
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
+  const { width, height } = useSafeAreaFrame();
+  const { top, left, right, bottom } = useSafeAreaInsets();
 
   const { gameState } = useGameplay();
   const formattedTime = formatTime(gameState.elapsedTime);
@@ -24,12 +25,18 @@ export default function Index() {
     <View
       style={{
         flex: 1,
+        paddingTop: top,
+        paddingLeft: left,
+        paddingRight: right,
+        paddingBottom: bottom,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: backgroundColor,
       }}
     >
-      <Pressable onPress={() => openMenu("main")} style={[styles.menuIconContainer, { backgroundColor: backgroundColor }]}>
+      <Pressable 
+        onPress={() => openMenu("main")} 
+        style={[styles.menuIconContainer, { backgroundColor: backgroundColor, top: top + 20, left: left + 20 }]}>
         <Image source={menuIcon} style={styles.menuIcon} />
       </Pressable>
       <BasicModal visible={menuVisible}>
@@ -37,7 +44,7 @@ export default function Index() {
       </BasicModal>
       <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>
       <Text style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</Text>
-      <GameBoard maxHeight={screenHeight * 0.8} maxWidth={screenWidth * 0.8} />
+      <GameBoard maxHeight={height * 0.8} maxWidth={width * 0.8} />
     </View>
   );
 }
@@ -45,10 +52,6 @@ export default function Index() {
 const styles = StyleSheet.create({
   menuIconContainer: {
     position: "absolute",
-    top: 10,
-    left: 10,
-    right: 0,
-    bottom: 0,
     width: 40,
     height: 40,
   },
