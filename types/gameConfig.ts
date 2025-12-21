@@ -30,22 +30,3 @@ export type GameConfig = {
   initialTileStates: TileState[];
   fillConfig: FillConfig;
 }
-
-export const randomGameConfig: GameConfig = {
-  name: "Default",
-  description: "",
-  boardSize: [8, 8],
-  resourceLimit: 10,
-  timeLimit: -1,
-  fogOfWar: false,
-  enemyAggression: 0.8,
-  initialTileStates: [],
-  fillConfig: {
-    type: "probabilities",
-    probabilities: {
-      territory: 0.9,
-      fortified: 0.05,
-      enemy: 0.05,
-    },
-  },
-}
