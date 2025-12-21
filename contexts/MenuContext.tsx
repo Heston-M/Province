@@ -1,8 +1,8 @@
-import CustomGameMenu from "@/components/CustomGameMenu";
-import GameOverModal from "@/components/GameOverMenu";
-import MainMenu from "@/components/MainMenu";
-import RulesMenu from "@/components/RulesMenu";
-import SettingsMenu from "@/components/SettingsMenu";
+import CustomGameMenu from "@/components/menus/CustomGameMenu";
+import GameOverModal from "@/components/menus/GameOverMenu";
+import MainMenu from "@/components/menus/MainMenu";
+import RulesMenu from "@/components/menus/RulesMenu";
+import SettingsMenu from "@/components/menus/SettingsMenu";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { MenuType } from "@/types/menuType";
 import { createContext, useContext, useEffect, useState } from "react";

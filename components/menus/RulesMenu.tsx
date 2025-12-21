@@ -1,8 +1,8 @@
+import RulesPageRenderer from "@/components/RulesPageRenderer";
 import { getRulesPage, getTotalPages } from "@/constants/rules";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import RulesPageRenderer from "./RulesPageRenderer";
 
 interface RulesMenuProps {
   onClose: () => void;

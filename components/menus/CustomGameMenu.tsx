@@ -1,9 +1,9 @@
+import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
-import MenuButton from "./ui/MenuButton";
 
 interface CustomGameMenuProps {
   onBack: () => void;

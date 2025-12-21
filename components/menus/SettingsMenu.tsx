@@ -1,6 +1,6 @@
+import ThemePicker from "@/components/ui/ThemePicker";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import ThemePicker from "./ui/ThemePicker";
 
 interface SettingsMenuProps {
   onBack: () => void;
