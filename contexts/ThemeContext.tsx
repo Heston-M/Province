@@ -6,7 +6,7 @@ import { ImageSourcePropType, useColorScheme } from "react-native";
 
 type ContextShape = {
   theme: "light" | "dark";
-  preference: "light" | "dark" | "system";
+  preference: "light" | "dark" | "system" | null;
   setPreference: (theme: "light" | "dark" | "system") => void;
   getThemeColor: (color: ThemeColor["field"]) => string;
   getIconSource: (icon: "menuBar" | "closeIcon" | "backIcon") => ImageSourcePropType;
@@ -16,25 +16,25 @@ const ThemeContext = createContext<ContextShape | undefined>(undefined);
 
 export default function ThemeContextProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [preference, setPreference] = useState<"light" | "dark" | "system">("system");
+  const [preference, setPreference] = useState<"light" | "dark" | "system" | null>(null);
 
   const systemTheme = useColorScheme() === "dark" ? "dark" : "light";
 
   useEffect(() => {
-    if (preference === "system") {
+    if (preference === "system" || preference === null) {
       setTheme(systemTheme);
     } else {
       setTheme(preference);
     }
-    storage.set<"light" | "dark" | "system">("themePreference", preference);
+    if (preference !== null) {
+      storage.set<"light" | "dark" | "system">("themePreference", preference);
+    }
   }, [preference]);
 
   useEffect(() => {
     storage.get<"light" | "dark" | "system">("themePreference").then((value) => {
       if (value) {
         setPreference(value);
-      } else {
-        setPreference("system");
       }
     });
   }, []);
