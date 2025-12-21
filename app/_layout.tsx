@@ -1,12 +1,12 @@
 import { GameplayProvider } from "@/contexts/GameplayContext";
 import MenuContextProvider from "@/contexts/MenuContext";
-import UserContextProvider from "@/contexts/UserContext";
+import ThemeContextProvider from "@/contexts/ThemeContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <UserContextProvider>
+    <ThemeContextProvider>
       <GameplayProvider>
         <MenuContextProvider>
           <Stack 
@@ -24,6 +24,6 @@ export default function RootLayout() {
           </Stack>
         </MenuContextProvider>
       </GameplayProvider>
-    </UserContextProvider>
+    </ThemeContextProvider>
   );
 }
