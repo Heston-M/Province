@@ -1,14 +1,16 @@
 import CustomGameMenu from "@/components/CustomGameMenu";
 import GameOverModal from "@/components/GameOverMenu";
 import MainMenu from "@/components/MainMenu";
+import RulesMenu from "@/components/RulesMenu";
 import SettingsMenu from "@/components/SettingsMenu";
 import { useGameplay } from "@/contexts/GameplayContext";
+import { MenuType } from "@/types/menuType";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
   menuVisible: boolean;
   menuContent: React.ReactNode;
-  openMenu: (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame") => void;
+  openMenu: (type: MenuType) => void;
   goBackMenu: () => void;
   hardCloseMenu: () => void;
 }
@@ -18,21 +20,25 @@ const MenuContext = createContext<ContextShape | undefined>(undefined);
 export default function MenuContextProvider({ children }: { children: React.ReactNode }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuContent, setMenuContent] = useState<React.ReactNode>(null);
-  const [menuType, setMenuType] = useState<"main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame" | undefined>("main");
+  const [menuType, setMenuType] = useState<MenuType | undefined>("main");
 
   const mainMenu = () => { return ( <MainMenu 
     onClose={() => {hardCloseMenu()}} 
-    onOpenMenu={(type) => {openMenu(type as "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame")}} /> ) }
+    onOpenMenu={(type) => {openMenu(type as MenuType)}} /> ) }
   
   const gameOverMenu = () => { return ( <GameOverModal 
     onClose={() => {hardCloseMenu()}} 
-    onOpenMenu={(type) => {openMenu(type as "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame")}} /> ) }
+    onOpenMenu={(type) => {openMenu(type as MenuType)}} /> ) }
 
   const customGameMenu = () => { return ( <CustomGameMenu 
     onBack={() => {goBackMenu()}}
     onGameStarted={() => {hardCloseMenu()}} /> ) }
 
-  const settingsMenu = () => { return ( <SettingsMenu onBack={() => {goBackMenu()}} /> ) }
+  const settingsMenu = () => { return ( <SettingsMenu 
+    onBack={() => {goBackMenu()}} /> ) }
+
+  const rulesMenu = () => { return ( <RulesMenu 
+    onClose={() => {goBackMenu()}} /> ) }
 
   const { gameState, pauseGame, resumeGame } = useGameplay();
 
@@ -48,7 +54,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
    * @param type - The type of menu to open
    * @returns void
    */
-  const openMenu = (type: "main" | "levelSelect" | "rules" | "settings" | "gameOver" | "customGame") => {
+  const openMenu = (type: MenuType) => {
     pauseGame();
     setMenuVisible(true);
     setMenuType(type);
@@ -58,6 +64,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
       case "customGame":
         setMenuContent(customGameMenu());
+        break;
+      case "rules":
+        setMenuContent(rulesMenu());
         break;
       case "settings":
         setMenuContent(settingsMenu());
@@ -82,6 +91,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         hardCloseMenu();
         break;
       case "customGame":
+        openMenu("main");
+        break;
+      case "rules":
         openMenu("main");
         break;
       case "settings":
