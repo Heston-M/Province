@@ -12,6 +12,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 type ContextShape = {
   menuVisible: boolean;
   menuContent: React.ReactNode;
+  menuEscapeAllowed: boolean;
   openMenu: (type: MenuType) => void;
   goBackMenu: () => void;
   hardCloseMenu: () => void;
@@ -54,6 +55,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuContent, setMenuContent] = useState<React.ReactNode>(welcomeScreen());
   const [menuType, setMenuType] = useState<MenuType | undefined>(undefined);
+  const [menuEscapeAllowed, setMenuEscapeAllowed] = useState(true);
 
   useEffect(() => {
     if (gameState.status !== "ongoing" && gameState.status !== "animating") {
@@ -79,6 +81,11 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     pauseGame();
     setMenuVisible(true);
     setMenuType(type);
+    if (type === "welcome") {
+      setMenuEscapeAllowed(false);
+    } else {
+      setMenuEscapeAllowed(true);
+    }
     switch (type) {
       case "welcome":
         setMenuContent(welcomeScreen());
@@ -155,7 +162,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   }
 
   return (
-    <MenuContext.Provider value={{ menuVisible, menuContent, openMenu, goBackMenu, hardCloseMenu }}>
+    <MenuContext.Provider value={{ menuVisible, menuContent, menuEscapeAllowed, openMenu, goBackMenu, hardCloseMenu }}>
       {children}
     </MenuContext.Provider>
   );

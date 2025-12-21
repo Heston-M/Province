@@ -19,7 +19,7 @@ export default function Index() {
   const { gameState } = useGameplay();
   const formattedTime = formatTime(gameState.elapsedTime);
 
-  const { menuVisible, menuContent, openMenu } = useMenuContext();
+  const { menuVisible, menuContent, menuEscapeAllowed, openMenu } = useMenuContext();
 
   return (
     <View
@@ -39,7 +39,7 @@ export default function Index() {
         style={[styles.menuIconContainer, { backgroundColor: backgroundColor, top: top + 20, left: left + 20 }]}>
         <Image source={menuIcon} style={styles.menuIcon} />
       </Pressable>
-      <BasicModal visible={menuVisible}>
+      <BasicModal visible={menuVisible} escapeAllowed={menuEscapeAllowed}>
         {menuContent}
       </BasicModal>
       <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>

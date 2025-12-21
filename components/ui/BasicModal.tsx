@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 interface BasicModalProps {
   visible: boolean;
+  escapeAllowed: boolean;
   children: React.ReactNode;
 }
 
@@ -14,7 +15,7 @@ interface BasicModalProps {
  * @param children - The children to render inside the modal
  * @returns The basic modal component
  */
-export default function BasicModal({ visible, children }: BasicModalProps) {
+export default function BasicModal({ visible, escapeAllowed, children }: BasicModalProps) {
   const { getThemeColor } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const secondaryColor = getThemeColor("secondary");
@@ -25,7 +26,11 @@ export default function BasicModal({ visible, children }: BasicModalProps) {
   return (
     visible && (
       <View style={[styles.modal, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
-        <Pressable onPress={hardCloseMenu} style={[styles.modal, { backgroundColor: backgroundColor, opacity: 0.5 }]}></Pressable>
+        <Pressable 
+          onPress={hardCloseMenu} 
+          style={[styles.modal, { backgroundColor: backgroundColor, opacity: 0.5 }]}
+          disabled={!escapeAllowed}>
+        </Pressable>
         <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
           {children}
         </View>
