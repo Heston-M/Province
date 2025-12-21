@@ -1,6 +1,41 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
+ * Custom error class for storage quota exceeded errors
+ */
+export class StorageQuotaError extends Error {
+  constructor(message: string = "Storage quota exceeded") {
+    super(message);
+    this.name = "StorageQuotaError";
+  }
+}
+
+/**
+ * Checks if an error is a storage quota error
+ * @param error - The error to check
+ * @returns true if the error is a storage quota error
+ */
+export function isStorageQuotaError(error: unknown): error is StorageQuotaError {
+  if (error instanceof StorageQuotaError) {
+    return true;
+  }
+  // Check for DOMException QuotaExceededError (web)
+  if (typeof DOMException !== "undefined" && error instanceof DOMException && error.name === "QuotaExceededError") {
+    return true;
+  }
+  // Check for error messages that indicate quota issues
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes("quota") ||
+      message.includes("exceeded") ||
+      message.includes("full")
+    );
+  }
+  return false;
+}
+
+/**
  * Storage utility that provides a consistent API for persistent storage
  * across all platforms (iOS, Android, Web)
  */
@@ -17,7 +52,15 @@ class Storage {
       await AsyncStorage.setItem(key, jsonValue);
     } catch (error) {
       console.error(`Error storing value for key "${key}":`, error);
-      throw error;
+      
+      if (isStorageQuotaError(error)) {
+        throw new StorageQuotaError(
+          `Storage quota exceeded while storing key "${key}". Please free up some storage space.`
+        );
+      }
+      else {
+        throw error;
+      }
     }
   }
 

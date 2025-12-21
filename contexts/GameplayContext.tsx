@@ -5,7 +5,7 @@ import { TileState } from "@/types/tileState";
 import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { isValidConfig } from "@/utils/configUtils";
 import { advanceEnemyTiles, generateBoard, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
-import { storage } from "@/utils/storage";
+import { isStorageQuotaError, storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
@@ -128,7 +128,15 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     setGameConfig(config);
-    storage.set<GameConfig>("gameConfig", config);
+    try {
+      storage.set<GameConfig>("gameConfig", config);
+    } catch (error) {
+      if (isStorageQuotaError(error)) {
+        console.error("Storage quota exceeded while storing game config.");
+      } else {
+        console.error("Error storing game config:", error);
+      }
+    }
 
     const tiles = generateBoard(config);
     setGameState({
@@ -155,7 +163,19 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [gameState.status, gameState.isPaused]);
 
   useEffect(() => {
-    storage.set<GameState>("gameState", gameState);
+    try {
+      storage.set<GameState>("gameState", gameState);
+    } catch (error) {
+      if (isStorageQuotaError(error)) {
+        console.error("Storage quota exceeded while storing game state.");
+        // keep the first move, and the last 10 moves
+        if (gameState.previousTileStates.length > 10) {
+          gameState.previousTileStates = [...gameState.previousTileStates.slice(0,1), ...gameState.previousTileStates.slice(-10)];
+        }
+      } else {
+        console.error("Error storing game state:", error);
+      }
+    }
   }, [gameState]);
 
   /**
