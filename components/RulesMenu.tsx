@@ -28,10 +28,17 @@ export default function RulesMenu({ onClose }: RulesMenuProps) {
       <View style={styles.pageContainer}>
         <RulesPageRenderer page={currentPage} />
       </View>
-      <Pressable onPress={() => setPage(page + 1)} style={styles.nextIconContainer}>
+      <Pressable 
+        onPress={() => setPage(page + 1)} 
+        style={[styles.nextIconContainer, { opacity: page >= totalPages ? 0.5 : 1 }]}
+        disabled={page >= totalPages}
+      >
         <Image source={nextIcon} style={styles.pageIcon} />
       </Pressable>
-      <Pressable onPress={() => setPage(page - 1)} style={styles.previousIconContainer}>
+      <Pressable 
+        onPress={() => setPage(page - 1)} 
+        style={[styles.previousIconContainer, { opacity: page <= 1 ? 0.5 : 1 }]} 
+        disabled={page <= 1}>
         <Image source={previousIcon} style={styles.pageIcon} />
       </Pressable>
     </View>
@@ -40,7 +47,7 @@ export default function RulesMenu({ onClose }: RulesMenuProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 450,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -77,6 +84,7 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     flex: 1,
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,

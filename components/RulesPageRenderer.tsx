@@ -28,13 +28,13 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
               return (
                 <View key={index} style={styles.imageContainer}>
                   <Image 
-                    source={section.image!.source} 
-                    style={styles.image}
+                    source={section.image?.source} 
+                    style={[styles.image, { width: section.image?.width ?? 200, height: section.image?.height ?? 200 }]}
                     contentFit="contain"
                   />
-                  {section.image!.caption && (
-                    <Text style={[styles.caption, { color: textColor }]}>
-                      {section.image!.caption}
+                  {section.image?.caption && (
+                    <Text style={[styles.caption, { width: section.image?.width ?? 200, color: textColor }]}>
+                      {section.image?.caption}
                     </Text>
                   )}
                 </View>
@@ -42,18 +42,18 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
             case "text-image":
               return (
                 <View key={index} style={styles.textImageContainer}>
-                  <Text style={[styles.text, { color: textColor }]}>
+                  <Text style={[styles.text, { height: section.image?.height ?? 200, color: textColor }]}>
                     {section.content}
                   </Text>
                   {section.image && (
                     <View style={styles.imageContainer}>
                       <Image 
                         source={section.image.source} 
-                        style={styles.textImage} 
+                        style={[styles.textImage, { width: section.image?.width ?? 200, height: section.image?.height ?? 200 }]} 
                         contentFit="contain"
                       />
                       {section.image.caption && (
-                        <Text style={[styles.caption, { width: 100, color: textColor }]}>
+                        <Text style={[styles.caption, { width: section.image?.width ?? 200, color: textColor, textAlign: "center" }]}>
                           {section.image.caption}
                         </Text>
                       )}
@@ -73,6 +73,8 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
+    maxWidth: "100%",
     padding: 20,
   },
   title: {
