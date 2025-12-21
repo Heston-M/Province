@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
     left: 10,
     right: 0,
     bottom: 0,
+    width: 40,
+    height: 40,
   },
   menuIcon: {
     width: 40,
