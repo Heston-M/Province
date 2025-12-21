@@ -61,11 +61,11 @@ export default function Tile({ state, size, onSelect }: TileProps) {
     }
     if (state.type === "fortified" || !gameState.movesEnabled) setDisabled(true);
     else if (state.isHidden) setDisabled(true);
-    else if (gameState.movesLeft <= 0 || 
+    else if (gameState.resourcesLeft <= 0 || 
       (state.type === "territory" && state.isCaptured && state.growingLevel !== 6)) 
       setDisabled(true);
     else setDisabled(false);
-  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, gameState.movesLeft, gameState.firstMove, gameState.movesEnabled]);
+  }, [state.isHidden, state.type, state.isCaptured, state.growingLevel, gameState.resourcesLeft, gameState.firstMove, gameState.movesEnabled]);
 
   return (
     <Pressable 

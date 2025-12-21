@@ -5,7 +5,7 @@ export function isValidConfig(config: GameConfig) {
   if (config.boardSize[0] < 3 || config.boardSize[1] < 3) {
     return false;
   }
-  if (config.moveLimit < 7) {
+  if (config.resourceLimit < 7) {
     return false;
   }
   if (config.timeLimit < -1) {

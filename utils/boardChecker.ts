@@ -33,15 +33,15 @@ export function isValidTileSet(tileStates: TileState[], boardSize: [number, numb
 /**
  * @description
  * Checks if the game is over
- * @param movesLeft - The number of moves left
+ * @param resourcesLeft - The number of resources left
  * @param tileStates - The tile states to check
  * @returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
  */
-export function isGameOver(movesLeft: number, tileStates: TileState[]): GameState["status"] {
+export function isGameOver(resourcesLeft: number, tileStates: TileState[]): GameState["status"] {
   if (tileStates.every((tile) => tile.isCaptured)) {
     return "playerWon";
   }
-  if (movesLeft <= 0) {
+  if (resourcesLeft <= 0) {
     return "enemyWon";
   }
   return "ongoing";

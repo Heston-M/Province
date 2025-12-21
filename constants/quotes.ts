@@ -21,7 +21,7 @@ export const winMessages = [
 
 export const loseMessages = [
   "L",
-  "You ran out of moves.",
+  "You ran out of resources.",
   "Try again.",
   "You're not very good at this.",
   "Did you read the rules?",

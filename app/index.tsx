@@ -36,7 +36,7 @@ export default function Index() {
         {menuContent}
       </BasicModal>
       <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>
-      <Text style={[styles.stat, { color: textColor }]}>Moves left: {gameState.movesLeft}</Text>
+      <Text style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</Text>
       <GameBoard maxHeight={screenHeight * 0.8} maxWidth={screenWidth * 0.8} />
     </View>
   );

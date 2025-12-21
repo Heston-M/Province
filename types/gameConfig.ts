@@ -4,7 +4,7 @@ export type GameConfig = {
   name: string;
   description: string;
   boardSize: [number, number]; // [width, height]
-  moveLimit: number;
+  resourceLimit: number;
   timeLimit: number;
   fogOfWar: boolean;
   enemyAggression: number;

@@ -23,7 +23,7 @@ const defaultGameConfig: GameConfig = {
   name: "Default",
   description: "A default game config",
   boardSize: [8, 8],
-  moveLimit: 10,
+  resourceLimit: 10,
   timeLimit: -1,
   fogOfWar: false,
   enemyAggression: 0.8,
@@ -43,7 +43,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     status: "ongoing",
     tileStates: [],
     previousTileStates: [],
-    movesLeft: 10,
+    resourcesLeft: 10,
     elapsedTime: 0,
     firstMove: true,
     movesEnabled: true,
@@ -135,7 +135,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       status: "ongoing",
       tileStates: tiles,
       previousTileStates: [tiles],
-      movesLeft: config.moveLimit,
+      resourcesLeft: config.resourceLimit,
       elapsedTime: 0,
       firstMove: true,
       movesEnabled: true,
@@ -241,8 +241,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       newState.tileStates = [...nextStates];
     }
 
-    const nextNum = Math.max(0, Math.min(gameConfig.moveLimit, gameState.movesLeft - moveCost)); // clamp the moves left between 0 and the move limit
-    newState.movesLeft = nextNum;
+    const nextNum = Math.max(0, Math.min(gameConfig.resourceLimit, gameState.resourcesLeft - moveCost)); // clamp the moves left between 0 and the move limit
+    newState.resourcesLeft = nextNum;
 
     setGameState(newState);
 

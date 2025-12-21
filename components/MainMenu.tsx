@@ -38,7 +38,7 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
             name: "Random Game",
             description: "",
             boardSize: [8, 8],
-            moveLimit: 10,
+            resourceLimit: 10,
             timeLimit: -1,
             fogOfWar: false,
             enemyAggression: 0.8,

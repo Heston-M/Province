@@ -15,14 +15,14 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const [description, setDescription] = useState("");
   const [boardX, setBoardX] = useState("");
   const [boardY, setBoardY] = useState("");
-  const [moveLimit, setMoveLimit] = useState("");
+  const [resourceLimit, setResourceLimit] = useState("");
   const [useTimeLimit, setUseTimeLimit] = useState(false);
   const [timeLimit, setTimeLimit] = useState("");
   const [useFogOfWar, setUseFogOfWar] = useState(false);
   const [enemyAggression, setEnemyAggression] = useState("");
 
   const [error, setError] = useState<string | null>(null);
-  const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "moveLimit" | "timeLimit" | "enemyAggression")[]>([]);
+  const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "resourceLimit" | "timeLimit" | "enemyAggression")[]>([]);
 
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
@@ -38,7 +38,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
     setInvalidFields([]);
 
     const errors = [];
-    const invalidFields: ("name" |"boardX" | "boardY" | "moveLimit" | "timeLimit" | "enemyAggression")[] = [];
+    const invalidFields: ("name" |"boardX" | "boardY" | "resourceLimit" | "timeLimit" | "enemyAggression")[] = [];
 
     const newName = name.trim();
     if (newName.length === 0) {
@@ -56,10 +56,10 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       errors.push("Columns must be between 3 and 20.");
       invalidFields.push("boardX");
     }
-    const newMoveLimit = parseInt(moveLimit.trim());
-    if (isNaN(newMoveLimit) || newMoveLimit < 7) {
-      errors.push("Move limit must be at least 7.");
-      invalidFields.push("moveLimit");
+    const newResourceLimit = parseInt(resourceLimit.trim());
+    if (isNaN(newResourceLimit) || newResourceLimit < 7) {
+      errors.push("Resource limit must be at least 7.");
+      invalidFields.push("resourceLimit");
     }
     const newTimeLimit = useTimeLimit ? parseInt(timeLimit.trim()) : -1;
     if (useTimeLimit && (isNaN(newTimeLimit) || newTimeLimit < 1)) {
@@ -83,7 +83,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       name: newName,
       description: newDescription,
       boardSize: [newBoardX, newBoardY],
-      moveLimit: newMoveLimit,
+      resourceLimit: newResourceLimit,
       timeLimit: newTimeLimit,
       fogOfWar: useFogOfWar,
       enemyAggression: newEnemyAggression,
@@ -146,11 +146,11 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
         />
         <TextInput 
           style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
-            invalidFields.includes("moveLimit") && { borderColor: "red" }]} 
-          value={moveLimit} 
-          placeholder="Move Limit (at least 7)"
+            invalidFields.includes("resourceLimit") && { borderColor: "red" }]} 
+          value={resourceLimit} 
+          placeholder="Resource Limit (at least 7)"
           placeholderTextColor={textColor + "80"}
-          onChangeText={setMoveLimit} 
+          onChangeText={setResourceLimit} 
         />
         <View style={styles.row}>
           <Switch
