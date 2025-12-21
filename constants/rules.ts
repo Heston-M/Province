@@ -3,7 +3,7 @@ import { ImageSourcePropType } from "react-native";
 export type RulesImage = {
   source: ImageSourcePropType;
   caption?: string;
-  width?: number;  // Optional: control image size
+  width?: number;
   height?: number;
 };
 
@@ -12,9 +12,8 @@ export type RulesPage = {
   title: string;
   sections: Array<{
     type: "text" | "image" | "text-image";
-    content?: string;  // For text sections
-    image?: RulesImage;  // For image sections
-    images?: RulesImage[];  // For multiple images
+    content?: string;
+    image?: RulesImage;
   }>;
 };
 

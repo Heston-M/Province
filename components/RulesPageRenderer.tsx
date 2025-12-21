@@ -1,6 +1,7 @@
 import { RulesPage } from "@/constants/rules";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, Text, View } from "react-native";
 
 interface RulesPageRendererProps {
   page: RulesPage;
@@ -28,7 +29,8 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                 <View key={index} style={styles.imageContainer}>
                   <Image 
                     source={section.image!.source} 
-                    style={styles.image} 
+                    style={styles.image}
+                    contentFit="contain"
                   />
                   {section.image!.caption && (
                     <Text style={[styles.caption, { color: textColor }]}>
@@ -48,6 +50,7 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                       <Image 
                         source={section.image.source} 
                         style={styles.image} 
+                        contentFit="contain"
                       />
                       {section.image.caption && (
                         <Text style={[styles.caption, { color: textColor }]}>
@@ -92,7 +95,6 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
-    resizeMode: "contain",
   },
   caption: {
     fontSize: 12,
