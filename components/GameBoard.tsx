@@ -1,6 +1,6 @@
 import Tile from "@/components/ui/Tile";
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { getBoardSize } from "@/utils/gridUtils";
 import { StyleSheet, View } from "react-native";
 
@@ -17,7 +17,8 @@ interface GameBoardProps {
  * @returns The game board
  */
 export default function GameBoard({ maxHeight, maxWidth }: GameBoardProps) {
-  const borderColor = useThemeColor("border");
+  const { getThemeColor } = useThemeContext();
+  const borderColor = getThemeColor("border");
 
   const { gameState, gameConfig, selectTile } = useGameplay();
 

@@ -26,7 +26,9 @@ const growingColors = [
 
 export const tileColors = {
   light: {
-    hidden: "#ffffff",
+    tileBorder: "#ffffff",
+    hidden: "#757575",
+    hiddenBorder: "#bbbbbb",
     uncaptured: "#ffEEff",
     enemy: "#ff0000",
     fortified: "#00aadd",
@@ -39,7 +41,9 @@ export const tileColors = {
     growing6: growingColors[6],
   },
   dark: {
-    hidden: "#000000",
+    tileBorder: "#ffffff",
+    hidden: "#757575",
+    hiddenBorder: "#bbbbbb",
     uncaptured: "#ffEEff",
     enemy: "#ff0000",
     fortified: "#00aadd",
