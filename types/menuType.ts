@@ -1,1 +1,1 @@
-export type MenuType = "main" |"rules" | "settings" | "gameOver" | "customGame";
+export type MenuType = "welcome" | "main" |"rules" | "settings" | "gameOver" | "customGame";

@@ -1,9 +1,9 @@
+import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { MenuType } from "@/types/menuType";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
   onClose: () => void;
@@ -90,17 +90,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     left: 10,
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   closeIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
+    marginLeft: 20,
   },
   message: {
     fontSize: 16,

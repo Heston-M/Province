@@ -76,14 +76,14 @@ const styles = StyleSheet.create({
   },
   closeIconContainer: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    width: 20,
-    height: 20,
+    top: -5,
+    left: -5,
+    width: 30,
+    height: 30,
   },
   closeIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     zIndex: 1001,
   },
   title: {

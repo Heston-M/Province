@@ -1,8 +1,8 @@
+import RulesPageRenderer from "@/components/RulesPageRenderer";
 import { getRulesPage, getTotalPages } from "@/constants/rules";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import RulesPageRenderer from "./RulesPageRenderer";
 
 interface RulesMenuProps {
   onClose: () => void;
@@ -28,19 +28,18 @@ export default function RulesMenu({ onClose }: RulesMenuProps) {
       <View style={styles.pageContainer}>
         <RulesPageRenderer page={currentPage} />
       </View>
-      <Pressable 
+      {page < totalPages && <Pressable 
         onPress={() => setPage(page + 1)} 
-        style={[styles.nextIconContainer, { opacity: page >= totalPages ? 0.5 : 1 }]}
-        disabled={page >= totalPages}
+        style={styles.nextIconContainer}
       >
         <Image source={nextIcon} style={styles.pageIcon} />
-      </Pressable>
-      <Pressable 
+      </Pressable>}
+      {page > 1 && <Pressable 
         onPress={() => setPage(page - 1)} 
-        style={[styles.previousIconContainer, { opacity: page <= 1 ? 0.5 : 1 }]} 
-        disabled={page <= 1}>
+        style={styles.previousIconContainer} 
+      >
         <Image source={previousIcon} style={styles.pageIcon} />
-      </Pressable>
+      </Pressable>}
     </View>
   );
 }
@@ -71,8 +70,8 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   backIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   pageIcon: {
     width: 30,

@@ -1,9 +1,9 @@
+import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
-import MenuButton from "./ui/MenuButton";
 
 interface CustomGameMenuProps {
   onBack: () => void;
@@ -198,16 +198,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
+    width: 30,
+    height: 30,
   },
   backIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    marginLeft: 20,
+    marginLeft: 35,
   },
   errorContainer: {
     alignItems: "center",
