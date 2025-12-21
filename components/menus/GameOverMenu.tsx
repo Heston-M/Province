@@ -90,17 +90,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     left: 10,
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   closeIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
+    marginLeft: 20,
   },
   message: {
     fontSize: 16,

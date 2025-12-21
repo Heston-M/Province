@@ -198,16 +198,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
+    width: 30,
+    height: 30,
   },
   backIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    marginLeft: 20,
+    marginLeft: 35,
   },
   errorContainer: {
     alignItems: "center",

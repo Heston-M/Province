@@ -35,12 +35,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   backIcon: {
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
