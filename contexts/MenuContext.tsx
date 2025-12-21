@@ -3,8 +3,10 @@ import GameOverModal from "@/components/menus/GameOverMenu";
 import MainMenu from "@/components/menus/MainMenu";
 import RulesMenu from "@/components/menus/RulesMenu";
 import SettingsMenu from "@/components/menus/SettingsMenu";
+import WelcomeScreen from "@/components/menus/WelcomeScreen";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { MenuType } from "@/types/menuType";
+import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ContextShape = {
@@ -18,9 +20,16 @@ type ContextShape = {
 const MenuContext = createContext<ContextShape | undefined>(undefined);
 
 export default function MenuContextProvider({ children }: { children: React.ReactNode }) {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuContent, setMenuContent] = useState<React.ReactNode>(null);
-  const [menuType, setMenuType] = useState<MenuType | undefined>("main");
+
+  const welcomeScreen = () => { return ( <WelcomeScreen 
+    onStartGame={() => {
+      hardCloseMenu();
+      storeSeenWelcomeScreen();
+    }} 
+    onTutorial={() => {
+      openMenu("rules");
+      storeSeenWelcomeScreen();
+    }} /> ) }
 
   const mainMenu = () => { return ( <MainMenu 
     onClose={() => {hardCloseMenu()}} 
@@ -42,11 +51,23 @@ export default function MenuContextProvider({ children }: { children: React.Reac
 
   const { gameState, pauseGame, resumeGame } = useGameplay();
 
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuContent, setMenuContent] = useState<React.ReactNode>(welcomeScreen());
+  const [menuType, setMenuType] = useState<MenuType | undefined>(undefined);
+
   useEffect(() => {
     if (gameState.status !== "ongoing" && gameState.status !== "animating") {
       openMenu("gameOver");
     }
   }, [gameState.status]);
+
+  useEffect(() => {
+    storage.get<boolean>("seenWelcomeScreen").then((seen) => {
+      if (!seen) {
+        openMenu("welcome");
+      }
+    });
+  }, []);
 
   /**
    * @description
@@ -59,6 +80,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     setMenuVisible(true);
     setMenuType(type);
     switch (type) {
+      case "welcome":
+        setMenuContent(welcomeScreen());
+        break;
       case "main":
         setMenuContent(mainMenu());
         break;
@@ -87,6 +111,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
    */
   const goBackMenu = () => {
     switch (menuType) {
+      case "welcome":
+        openMenu("main");
+        break;
       case "main":
         hardCloseMenu();
         break;
@@ -117,6 +144,14 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     setMenuContent(null);
     setMenuVisible(false);
     setMenuType(undefined);
+  }
+
+  const storeSeenWelcomeScreen = () => {
+    try {
+      storage.set<boolean>("seenWelcomeScreen", true);
+    } catch (error) {
+      console.error("Error storing seen welcome screen:", error);
+    }
   }
 
   return (
