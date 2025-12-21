@@ -88,11 +88,13 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       fogOfWar: useFogOfWar,
       enemyAggression: newEnemyAggression,
       initialTileStates: [],
-      randRemainingTiles: true,
-      randProbabilities: {
-        territory: 0.9,
-        fortified: 0.05,
-        enemy: 0.05,
+      fillConfig: {
+        type: "probabilities",
+        probabilities: {
+          territory: 0.9,
+          fortified: 0.05,
+          enemy: 0.05,
+        },
       },
     }
     if (newGame(config)) {

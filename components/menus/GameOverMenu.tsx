@@ -1,4 +1,5 @@
 import MenuButton from "@/components/ui/MenuButton";
+import { randomGame1 } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
@@ -42,22 +43,7 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
         text={gameState.status === "playerWon" ? "New Game" : "Try Again"} 
         onPress={() => {
         if (gameState.status === "playerWon") {
-          newGame({
-            name: "Random Game",
-            description: "",
-            boardSize: [8, 8],
-            resourceLimit: 10,
-            timeLimit: -1,
-            fogOfWar: false,
-            enemyAggression: 0.8,
-            initialTileStates: [],
-            randRemainingTiles: true,
-            randProbabilities: {
-              territory: 0.9,
-              fortified: 0.05,
-              enemy: 0.05,
-            },
-          });
+          newGame(randomGame1);
         } else {
           restartGame();
         }

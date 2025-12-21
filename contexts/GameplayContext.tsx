@@ -4,7 +4,8 @@ import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { isValidConfig } from "@/utils/configUtils";
-import { advanceEnemyTiles, generateBoard, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
+import { generateBoard } from "@/utils/gameGenerator";
+import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { isStorageQuotaError, storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -28,11 +29,13 @@ const defaultGameConfig: GameConfig = {
   fogOfWar: false,
   enemyAggression: 0.8,
   initialTileStates: [],
-  randRemainingTiles: true,
-  randProbabilities: {
-    territory: 0.9,
-    fortified: 0.05,
-    enemy: 0.05,
+  fillConfig: {
+    type: "probabilities",
+    probabilities: {
+      territory: 0.9,
+      fortified: 0.05,
+      enemy: 0.05,
+    },
   },
 }
 
