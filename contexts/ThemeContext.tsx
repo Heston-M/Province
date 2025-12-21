@@ -64,7 +64,7 @@ export default function ThemeContextProvider({ children }: { children: React.Rea
    * @param icon - The icon to get the source for
    * @returns The source of the icon as an ImageSourcePropType
    */
-  const getIconSource = (icon: "menuBar" | "closeIcon" | "backIcon") => {
+  const getIconSource = (icon: "menuBar" | "closeIcon" | "backIcon" | "nextIcon" | "previousIcon") => {
     switch (icon) {
       case "menuBar":
         if (theme === "light") {
@@ -84,6 +84,20 @@ export default function ThemeContextProvider({ children }: { children: React.Rea
         } else {
           return require("@/assets/icons/backArrowWhite.jpg");
         }
+      case "nextIcon":
+        if (theme === "light") {
+          return require("@/assets/icons/rightArrowBlack.jpg");
+        } else {
+          return require("@/assets/icons/rightArrowWhite.jpg");
+        }
+      case "previousIcon":
+        if (theme === "light") {
+          return require("@/assets/icons/leftArrowBlack.jpg");
+        } else {
+          return require("@/assets/icons/leftArrowWhite.jpg");
+        }
+      default:
+        throw new Error(`Invalid icon: ${icon}`);
     }
   }
 
