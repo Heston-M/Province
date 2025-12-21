@@ -39,6 +39,12 @@ export default function ThemeContextProvider({ children }: { children: React.Rea
     });
   }, []);
 
+  /**
+   * @description
+   * Gets the color for a given field within the theme
+   * @param color - The field to get the color for
+   * @returns The color string
+   */
   const getThemeColor = (color: ThemeColor["field"]) => {
     let colorValue = "";
     
@@ -52,6 +58,12 @@ export default function ThemeContextProvider({ children }: { children: React.Rea
     return colorValue;
   }
 
+  /**
+   * @description
+   * Gets the source for a given icon within the theme
+   * @param icon - The icon to get the source for
+   * @returns The source of the icon as an ImageSourcePropType
+   */
   const getIconSource = (icon: "menuBar" | "closeIcon" | "backIcon") => {
     switch (icon) {
       case "menuBar":

@@ -13,10 +13,10 @@ export const winMessages = [
   "Hard to believe you managed that.",
   "You're a lucky son of a bitch.",
   "Wow.",
-  "ehh, could have been worse.",
+  "Ehh, could have been worse.",
   "Not bad for a human.",
   "Smart move.",
-  "Struggled a little, huh?"
+  "Struggled a little, huh?",
 ]
 
 export const loseMessages = [
@@ -35,5 +35,5 @@ export const loseMessages = [
   "Do better.",
   "I do not like you right now.",
   "Yup.",
-  "That just wasn't very good."
+  "That just wasn't very good.",
 ]

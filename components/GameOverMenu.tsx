@@ -32,7 +32,7 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
         <Image source={closeIcon} style={styles.closeIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>
-        {gameState.status === "playerWon" ? "You Won!" : "You lost..."}
+        {gameState.status === "playerWon" ? "You Won" : "You lost..."}
       </Text>
       <Text style={[styles.message, { color: textColor }]}>
         {gameState.status === "playerWon" ? winMessage : loseMessage}
