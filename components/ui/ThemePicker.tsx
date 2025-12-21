@@ -1,14 +1,19 @@
 import { colors } from "@/constants/colors";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 
 export default function ThemePicker() {
-  const { setPreference, getThemeColor } = useThemeContext();
+  const { preference, setPreference, getThemeColor } = useThemeContext();
   const backgroundColor = getThemeColor("background");
-  const secondaryColor = getThemeColor("secondary");
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
+  const selectedColor = getThemeColor("fortified")
+
+  const systemBackgroundColor = colors[useColorScheme() || "light"].background;
+  const systemSecondaryColor = colors[useColorScheme() || "light"].secondary;
+  const systemTextColor = colors[useColorScheme() || "light"].text;
+  const systemBorderColor = colors[useColorScheme() || "light"].border;
 
   const [hoveredItem, setHoveredItem] = useState<"light" | "dark" | "system" | null>(null);
 
@@ -18,7 +23,7 @@ export default function ThemePicker() {
       <View style={styles.themeContainer}>
         <Pressable 
           style={[styles.themeItem, { 
-            borderColor: colors["light"].border, 
+            borderColor: preference === "light" ? selectedColor : colors["light"].border, 
             backgroundColor: hoveredItem === "light" ? colors["light"].background : colors["light"].secondary }]} 
           onPress={() => setPreference("light")}
           onHoverIn={() => setHoveredItem("light")}
@@ -30,7 +35,7 @@ export default function ThemePicker() {
         </Pressable>
         <Pressable 
           style={[styles.themeItem, { 
-            borderColor: colors["dark"].border, 
+            borderColor: preference === "dark" ? selectedColor : colors["dark"].border, 
             backgroundColor: hoveredItem === "dark" ? colors["dark"].background : colors["dark"].secondary }]} 
           onPress={() => setPreference("dark")}
           onHoverIn={() => setHoveredItem("dark")}
@@ -42,15 +47,15 @@ export default function ThemePicker() {
         </Pressable>
         <Pressable 
           style={[styles.themeItem, { 
-            borderColor: borderColor, 
-            backgroundColor: hoveredItem === "system" ? backgroundColor : secondaryColor }]} 
+            borderColor: preference === "system" ? selectedColor : systemBorderColor, 
+            backgroundColor: hoveredItem === "system" ? systemBackgroundColor : systemSecondaryColor }]} 
           onPress={() => setPreference("system")}
           onHoverIn={() => setHoveredItem("system")}
           onHoverOut={() => setHoveredItem(null)}
           onPressIn={() => setHoveredItem("system")}
           onPressOut={() => setHoveredItem(null)}>
-          <Text style={[styles.themeTitle, { color: textColor }]}>System</Text>
-          <View style={[styles.themeWindow, { backgroundColor: textColor }]}></View>
+          <Text style={[styles.themeTitle, { color: systemTextColor }]}>System</Text>
+          <View style={[styles.themeWindow, { backgroundColor: systemTextColor }]}></View>
           </Pressable>
       </View>
     </View>
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "column",
     alignItems: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 10,
     gap: 5,
   },

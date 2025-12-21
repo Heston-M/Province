@@ -47,6 +47,8 @@ const styles = StyleSheet.create({
   },
   container: {
     position: "relative",
+    maxHeight: "95%",
+    maxWidth: "95%",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
