@@ -1,0 +1,1 @@
+export type MenuType = "main" |"rules" | "settings" | "gameOver" | "customGame";

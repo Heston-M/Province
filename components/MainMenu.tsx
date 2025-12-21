@@ -1,11 +1,12 @@
 import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { MenuType } from "@/types/menuType";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface MainMenuProps {
   onClose: () => void;
-  onOpenMenu: (type: string) => void;
+  onOpenMenu: (type: MenuType) => void;
 }
 
 /**
@@ -56,7 +57,9 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
           onOpenMenu("customGame");
         }} />
         <View style={styles.row}>
-          <MenuButton text="Rules" onPress={() => {}} />
+          <MenuButton text="Rules" onPress={() => {
+            onOpenMenu("rules");
+          }} />
           <MenuButton text="Settings" onPress={() => {
             onOpenMenu("settings");
           }} />

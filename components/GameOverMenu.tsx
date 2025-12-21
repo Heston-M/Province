@@ -1,12 +1,13 @@
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
+import { MenuType } from "@/types/menuType";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
   onClose: () => void;
-  onOpenMenu: (type: "main") => void;
+  onOpenMenu: (type: MenuType) => void;
 }
 
 /**
