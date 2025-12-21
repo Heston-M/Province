@@ -57,7 +57,9 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
         }} />
         <View style={styles.row}>
           <MenuButton text="Rules" onPress={() => {}} />
-          <MenuButton text="Settings" onPress={() => {}} />
+          <MenuButton text="Settings" onPress={() => {
+            onOpenMenu("settings");
+          }} />
         </View>
       </View>
     </View>

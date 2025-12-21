@@ -1,6 +1,7 @@
 import CustomGameMenu from "@/components/CustomGameMenu";
 import GameOverModal from "@/components/GameOverMenu";
 import MainMenu from "@/components/MainMenu";
+import SettingsMenu from "@/components/SettingsMenu";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -31,6 +32,8 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     onBack={() => {goBackMenu()}}
     onGameStarted={() => {hardCloseMenu()}} /> ) }
 
+  const settingsMenu = () => { return ( <SettingsMenu onBack={() => {goBackMenu()}} /> ) }
+
   const { gameState, pauseGame, resumeGame } = useGameplay();
 
   useEffect(() => {
@@ -56,6 +59,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
       case "customGame":
         setMenuContent(customGameMenu());
         break;
+      case "settings":
+        setMenuContent(settingsMenu());
+        break;
       case "gameOver":
         setMenuContent(gameOverMenu());
         break;
@@ -76,6 +82,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         hardCloseMenu();
         break;
       case "customGame":
+        openMenu("main");
+        break;
+      case "settings":
         openMenu("main");
         break;
       case "gameOver":
