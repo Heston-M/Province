@@ -9,7 +9,7 @@ type ContextShape = {
   preference: "light" | "dark" | "system" | null;
   setPreference: (theme: "light" | "dark" | "system") => void;
   getThemeColor: (color: ThemeColor["field"]) => string;
-  getIconSource: (icon: "menuBar" | "closeIcon" | "backIcon") => ImageSourcePropType;
+  getIconSource: (icon: "menuBar" | "closeIcon" | "backIcon" | "nextIcon" | "previousIcon") => ImageSourcePropType;
 }
 
 const ThemeContext = createContext<ContextShape | undefined>(undefined);
