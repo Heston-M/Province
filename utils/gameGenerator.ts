@@ -13,14 +13,15 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
   const initialTileStates = gameConfig.initialTileStates ?? [];
   const fillConfig = gameConfig.fillConfig;
 
-  // if using fixed fill config, store the coordinates of the fortified and enemy tiles
+  let numTerritory = 0;
+  let numFortified = 0;
+  let numEnemy = 0;
+
+  // if using fixed fill config, generate the coordinates of the fortified and enemy tiles
   let fortifiedCoords: Set<[number, number]> = new Set();
   let enemyCoords: Set<[number, number]> = new Set();
 
   if (fillConfig && fillConfig.type === "fixed" && "numbers" in fillConfig) {
-    if (fillConfig.numbers.fortified + fillConfig.numbers.enemy > gameConfig.boardSize[0] * gameConfig.boardSize[1]) {
-      throw new Error("Invalid fill config: Too many tiles specified for board size");
-    }
     for (let i = 0; i < fillConfig.numbers.fortified;) {
       const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
       const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
@@ -71,6 +72,15 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
             type = "territory";
           }
         }
+        if (type === "territory") {
+          numTerritory++;
+        }
+        else if (type === "fortified") {
+          numFortified++;
+        }
+        else if (type === "enemy") {
+          numEnemy++;
+        }
         tiles.push({ 
           x, y, 
           type: type as "territory" | "fortified" | "enemy", 
@@ -81,6 +91,9 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
       }
     }
   }
+  // if using probabilities fill, update to be within the max and min values
+  pinchToMaxMin();
+
   // reveal fortified tiles and adjacent tiles if fog of war is enabled
   if (gameConfig.fogOfWar) {
     const fortifiedTiles = tiles.filter((tile) => tile.type === "fortified");
@@ -93,4 +106,50 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
     }
   }
   return tiles;
+
+  function pinchToMaxMin(): void {
+    if (fillConfig.type === "probabilities") {
+      while (numFortified < (fillConfig.probabilities?.minFortified ?? 0) && numTerritory > 0) {
+        updateRandomTileType("territory", "fortified");
+        numFortified++;
+        numTerritory--;
+      }
+      while (numFortified > (fillConfig.probabilities?.maxFortified ?? gameConfig.boardSize[0] * gameConfig.boardSize[1]) && numFortified > 0) {
+        updateRandomTileType("fortified", "territory");
+        numFortified--;
+        numTerritory++;
+      }
+      while (numEnemy < (fillConfig.probabilities?.minEnemy ?? 0) && numTerritory > 0) {
+        updateRandomTileType("territory", "enemy");
+        numEnemy++;
+        numTerritory--;
+      }
+      while (numEnemy > (fillConfig.probabilities?.maxEnemy ?? gameConfig.boardSize[0] * gameConfig.boardSize[1]) && numEnemy > 0) {
+        updateRandomTileType("enemy", "territory");
+        numEnemy--;
+        numTerritory++;
+      }
+    }
+  }
+
+  function updateRandomTileType(fromType: "territory" | "fortified" | "enemy", toType: "territory" | "fortified" | "enemy"): boolean {
+    if (tiles.every((t) => t.type !== fromType)) {
+      return false;
+    }
+    while (true) {
+      const randX = Math.random() * gameConfig.boardSize[0] + 1;
+      const randY = Math.random() * gameConfig.boardSize[1] + 1;
+      const randTile = tiles.find((t) => t.x === randX && t.y === randY);
+      if (randTile && randTile.type === fromType) {
+        randTile.type = toType;
+        if (toType === "fortified") {
+          randTile.isCaptured = true;
+        }
+        else {
+          randTile.isCaptured = false;
+        }
+        return true;
+      }
+    }
+  }
 }

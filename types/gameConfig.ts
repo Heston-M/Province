@@ -6,6 +6,10 @@ export type FillConfig = {
     territory: number;
     fortified: number;
     enemy: number;
+    maxFortified?: number;
+    maxEnemy?: number;
+    minFortified?: number;
+    minEnemy?: number;
   };
 } | {
   type: "fixed";
