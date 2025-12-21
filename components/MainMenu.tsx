@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   closeIconContainer: {
     position: "absolute",
     top: 0,
-    right: 0,
+    left: 0,
     width: 20,
     height: 20,
   },
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    marginRight: 20,
+    marginLeft: 20,
   },
   gridContainer: {
     flexDirection: "column",
