@@ -49,11 +49,11 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                     <View style={styles.imageContainer}>
                       <Image 
                         source={section.image.source} 
-                        style={styles.image} 
+                        style={styles.textImage} 
                         contentFit="contain"
                       />
                       {section.image.caption && (
-                        <Text style={[styles.caption, { color: textColor }]}>
+                        <Text style={[styles.caption, { width: 100, color: textColor }]}>
                           {section.image.caption}
                         </Text>
                       )}
@@ -100,8 +100,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: "italic",
     marginTop: 5,
+    textAlign: "center",
   },
   textImageContainer: {
+    flexDirection: "row",
     gap: 10,
+  },
+  textImage: {
+    width: 100,
+    height: 100,
   },
 });

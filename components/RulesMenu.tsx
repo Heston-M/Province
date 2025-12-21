@@ -23,16 +23,16 @@ export default function RulesMenu({ onClose }: RulesMenuProps) {
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable onPress={onClose} style={styles.backIconContainer}>
-        <Image source={backIcon} style={styles.icon} />
+        <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
       <View style={styles.pageContainer}>
         <RulesPageRenderer page={currentPage} />
       </View>
       <Pressable onPress={() => setPage(page + 1)} style={styles.nextIconContainer}>
-        <Image source={nextIcon} style={styles.icon} />
+        <Image source={nextIcon} style={styles.pageIcon} />
       </Pressable>
       <Pressable onPress={() => setPage(page - 1)} style={styles.previousIconContainer}>
-        <Image source={previousIcon} style={styles.icon} />
+        <Image source={previousIcon} style={styles.pageIcon} />
       </Pressable>
     </View>
   );
@@ -62,9 +62,13 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 1000,
   },
-  icon: {
+  backIcon: {
     width: 20,
     height: 20,
+  },
+  pageIcon: {
+    width: 30,
+    height: 30,
   },
   title: {
     fontSize: 24,
