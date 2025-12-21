@@ -1,47 +1,71 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useMenuContext } from "@/contexts/MenuContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
+
+interface GameOverModalProps {
+  onClose: () => void;
+  onOpenMenu: (type: "main") => void;
+}
 
 /**
  * @description
  * Renders the game over menu
  * @returns The game over menu
  */
-export default function GameOverModal() {
+export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
+  const isDark = useColorScheme() === "dark";
 
   const { gameState, newGame, restartGame } = useGameplay();
-  const { hardCloseMenu } = useMenuContext();
 
   const winMessage = useRandomQuote("win");
   const loseMessage = useRandomQuote("lose");
 
-  const buttonText = gameState.status === "playerWon" ? "New Game" : "Try Again";
-
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+      <Pressable style={styles.closeIconContainer} onPress={onClose}>
+        <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
+      </Pressable>
       <Text style={[styles.title, { color: textColor }]}>
         {gameState.status === "playerWon" ? "You Won!" : "You lost..."}
       </Text>
       <Text style={[styles.message, { color: textColor }]}>
         {gameState.status === "playerWon" ? winMessage : loseMessage}
       </Text>
-      <MenuButton text={buttonText} onPress={() => {
+      <MenuButton 
+        text={gameState.status === "playerWon" ? "New Game" : "Try Again"} 
+        onPress={() => {
         if (gameState.status === "playerWon") {
           newGame({
-            boardSize: [10, 8],
+            name: "Random Game",
+            description: "",
+            boardSize: [8, 8],
             moveLimit: 10,
+            timeLimit: -1,
+            fogOfWar: false,
+            enemyAggression: 0.8,
+            initialTileStates: [],
+            randRemainingTiles: true,
+            randProbabilities: {
+              territory: 0.9,
+              fortified: 0.05,
+              enemy: 0.05,
+            },
           });
         } else {
           restartGame();
         }
-        hardCloseMenu();
+        onClose();
       }} />
+      <MenuButton 
+        text="Main Menu" 
+        onPress={() => {
+          onOpenMenu("main");
+        }} />
     </View>
   );
 }
@@ -58,16 +82,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     zIndex: 1001,
+    gap: 10,
+  },
+  closeIconContainer: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    width: 20,
+    height: 20,
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
     textAlign: "center",
   },
   message: {
     fontSize: 16,
-    marginBottom: 10,
     textAlign: "center",
   },
 });

@@ -1,40 +1,58 @@
 import { useGameplay } from "@/contexts/GameplayContext";
-import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
+
+interface MainMenuProps {
+  onClose: () => void;
+  onOpenMenu: (type: string) => void;
+}
 
 /**
  * @description
  * Renders the main menu
  * @returns The main menu
  */
-export default function MainMenu() {
+export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
   const isDark = useColorScheme() === "dark";
 
-  const { hardCloseMenu } = useMenuContext();
   const { restartGame, newGame } = useGameplay();
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
-      <Pressable onPress={hardCloseMenu} style={styles.closeIconContainer}>
+      <Pressable onPress={onClose} style={styles.closeIconContainer}>
         <Image source={isDark ? require("@/assets/icons/closeIconWhite.jpg") : require("@/assets/icons/closeIconBlack.jpg")} style={styles.closeIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Province</Text>
       <View style={styles.gridContainer}>
         <MenuButton text="Restart Game" onPress={() => {
           restartGame();
-          hardCloseMenu();
+          onClose();
         }} />
         <MenuButton text="New Game" onPress={() => {
           newGame({
-            boardSize: [8, 10],
+            name: "Random Game",
+            description: "",
+            boardSize: [8, 8],
             moveLimit: 10,
+            timeLimit: -1,
+            fogOfWar: false,
+            enemyAggression: 0.8,
+            initialTileStates: [],
+            randRemainingTiles: true,
+            randProbabilities: {
+              territory: 0.9,
+              fortified: 0.05,
+              enemy: 0.05,
+            },
           });
-          hardCloseMenu();
+          onClose();
+        }} />
+        <MenuButton text="Custom Game" onPress={() => {
+          onOpenMenu("customGame");
         }} />
         <View style={styles.row}>
           <MenuButton text="Rules" onPress={() => {}} />
@@ -53,7 +71,7 @@ const styles = StyleSheet.create({
   closeIconContainer: {
     position: "absolute",
     top: 0,
-    right: 0,
+    left: 0,
     width: 20,
     height: 20,
   },
@@ -66,7 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    marginRight: 20,
+    marginLeft: 20,
   },
   gridContainer: {
     flexDirection: "column",
