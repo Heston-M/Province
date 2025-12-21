@@ -1,8 +1,9 @@
 import { useGameplay } from "@/contexts/GameplayContext";
+import { useUserContext } from "@/contexts/UserContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, useColorScheme, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface CustomGameMenuProps {
@@ -28,7 +29,8 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const secondaryColor = useThemeColor("secondary");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { theme } = useUserContext();
+  const isDark = theme === "dark";
 
   const { newGame } = useGameplay();
 

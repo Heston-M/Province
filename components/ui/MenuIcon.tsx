@@ -1,5 +1,6 @@
+import { useUserContext } from "@/contexts/UserContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Image, Pressable, useColorScheme } from "react-native";
+import { Image, Pressable } from "react-native";
 
 interface MenuIconProps {
   onPress: () => void;
@@ -13,8 +14,9 @@ interface MenuIconProps {
  */
 export default function MenuIcon({ onPress }: MenuIconProps) {
   const backgroundColor = useThemeColor("background");
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+
+  const { theme } = useUserContext();
+  const isDark = theme === "dark";
 
   return (
     <Pressable onPress={onPress} style={{ backgroundColor: backgroundColor }}>

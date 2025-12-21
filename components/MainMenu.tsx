@@ -1,7 +1,8 @@
+import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
+import { useUserContext } from "@/contexts/UserContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
-import MenuButton from "./ui/MenuButton";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface MainMenuProps {
   onClose: () => void;
@@ -17,7 +18,8 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { theme } = useUserContext();
+  const isDark = theme === "dark";
 
   const { restartGame, newGame } = useGameplay();
 

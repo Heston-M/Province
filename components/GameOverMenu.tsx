@@ -1,7 +1,8 @@
 import { useGameplay } from "@/contexts/GameplayContext";
+import { useUserContext } from "@/contexts/UserContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Image, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import MenuButton from "./ui/MenuButton";
 
 interface GameOverModalProps {
@@ -18,7 +19,8 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
   const backgroundColor = useThemeColor("background");
   const textColor = useThemeColor("text");
   const borderColor = useThemeColor("border");
-  const isDark = useColorScheme() === "dark";
+  const { theme } = useUserContext();
+  const isDark = theme === "dark";
 
   const { gameState, newGame, restartGame } = useGameplay();
 
