@@ -51,11 +51,12 @@ export function getAdjacentTiles(x: number, y: number, boardSize: [number, numbe
  * Advances the enemy tiles
  * @param tileStates - The tile states
  * @param boardSize - The board size
+ * @param chance - The chance of the enemy advancing
  * @param disallowedStates - The disallowed states
  * @returns The tile states with the advanced enemy tiles
  */
-export function advanceEnemyTiles(tileStates: TileState[], boardSize: [number, number], disallowedStates: TileState[] = []): TileState[] {
-  if (Math.random() < 0.9) {
+export function advanceEnemyTiles(tileStates: TileState[], boardSize: [number, number], chance: number, disallowedStates: TileState[] = []): TileState[] {
+  if (Math.random() < chance) {
     const capturableTiles: TileState[] = [];
     for (const tile of tileStates) {
       if (tile.type === "enemy") {

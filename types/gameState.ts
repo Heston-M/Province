@@ -3,7 +3,7 @@ import { TileState } from "./tileState";
 export type GameState = {
   status: "ongoing" | "animating" | "playerWon" | "enemyWon";
   tileStates: TileState[];
-  previousTileStates: TileState[][]; // history of tile states
+  initialTileStates: TileState[];
   resourcesLeft: number;
   elapsedTime: number;
   firstMove: boolean;

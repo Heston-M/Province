@@ -27,7 +27,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [gameState, setGameState] = useState<GameState>({
     status: "ongoing",
     tileStates: [],
-    previousTileStates: [],
+    initialTileStates: [],
     resourcesLeft: 10,
     elapsedTime: 0,
     firstMove: true,
@@ -91,11 +91,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * @returns void
    */
   const restartGame = () => {
-    const newConfig = {
-      ...gameConfig, 
-      initialTileStates: gameState.previousTileStates[0] ?? [],
-      randRemainingTiles: false,
-    };
+    const newConfig = gameConfig; 
+    newConfig.initialTileStates = gameState.initialTileStates;
     newGame(newConfig);
   }
 
@@ -125,7 +122,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameState({
       status: "ongoing",
       tileStates: tiles,
-      previousTileStates: [tiles],
+      initialTileStates: tiles.map((tile) => ({...tile})),
       resourcesLeft: config.resourceLimit,
       elapsedTime: 0,
       firstMove: true,
@@ -151,10 +148,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch (error) {
       if (isStorageQuotaError(error)) {
         console.error("Storage quota exceeded while storing game state.");
-        // keep the first move, and the last 10 moves
-        if (gameState.previousTileStates.length > 10) {
-          gameState.previousTileStates = [...gameState.previousTileStates.slice(0,1), ...gameState.previousTileStates.slice(-10)];
-        }
       } else {
         console.error("Error storing game state:", error);
       }
@@ -189,9 +182,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (newState.firstMove) {
       state.type = "territory";
       newState.firstMove = false;
-    }
-    else {
-      newState.previousTileStates.push([...gameState.tileStates]);  // don't save the initial tiles states, already saved
     }
 
     let moveCost = 1;
@@ -239,7 +229,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // grow territory
     if (growTerritory) {
       let nextStates = progressTerritoryGrowth(newState.tileStates);
-      nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, [state]);
+      nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, gameConfig.enemyAggression, [state]);
 
       newState.tileStates = [...nextStates];
     }

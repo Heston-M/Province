@@ -1,4 +1,5 @@
 import MenuButton from "@/components/ui/MenuButton";
+import { getRandomGame } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useEffect, useRef } from "react";
@@ -64,22 +65,7 @@ export default function WelcomeScreen({ onStartGame, onTutorial }: WelcomeScreen
   }, [fadeAnim, text1FadeAnim, text2FadeAnim, text3FadeAnim, text4FadeAnim, buttonFadeAnim]);
 
   const startGame = () => {
-    newGame({
-      name: "Random Game",
-      description: "",
-      boardSize: [8, 8],
-      resourceLimit: 10,
-      timeLimit: -1,
-      fogOfWar: false,
-      enemyAggression: 0.8,
-      initialTileStates: [],
-      randRemainingTiles: true,
-      randProbabilities: {
-        territory: 0.9,
-        fortified: 0.05,
-        enemy: 0.05,
-      },
-    });
+    newGame(getRandomGame());
     onStartGame();
   }
 
