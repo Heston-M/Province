@@ -5,7 +5,9 @@
  * @returns The formatted time
  */
 export function formatTime(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  const sign = seconds < 0 ? "-" : "";
+  const absSeconds = Math.abs(seconds);
+  const minutes = Math.floor(absSeconds / 60);
+  const remainingSeconds = absSeconds % 60;
+  return `${sign}${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }

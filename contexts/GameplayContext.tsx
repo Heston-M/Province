@@ -1,10 +1,12 @@
+import { getRandomGame } from "@/constants/levels/randomGames";
 import { endGame } from "@/scripts/endGame";
 import { GameConfig } from "@/types/gameConfig";
 import { GameState } from "@/types/gameState";
 import { TileState } from "@/types/tileState";
 import { isGameOver, isValidTileSet } from "@/utils/boardChecker";
 import { isValidConfig } from "@/utils/configUtils";
-import { advanceEnemyTiles, generateBoard, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
+import { generateBoard } from "@/utils/gameGenerator";
+import { advanceEnemyTiles, getAdjacentTiles, progressTerritoryGrowth } from "@/utils/gridUtils";
 import { isStorageQuotaError, storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -19,37 +21,20 @@ type ContextShape = {
   resumeGame: () => void;
 }
 
-const defaultGameConfig: GameConfig = {
-  name: "Default",
-  description: "A default game config",
-  boardSize: [8, 8],
-  resourceLimit: 10,
-  timeLimit: -1,
-  fogOfWar: false,
-  enemyAggression: 0.8,
-  initialTileStates: [],
-  randRemainingTiles: true,
-  randProbabilities: {
-    territory: 0.9,
-    fortified: 0.05,
-    enemy: 0.05,
-  },
-}
-
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
 
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState>({
     status: "ongoing",
     tileStates: [],
-    previousTileStates: [],
+    initialTileStates: [],
     resourcesLeft: 10,
     elapsedTime: 0,
     firstMove: true,
     movesEnabled: true,
     isPaused: false,
   });
-  const [gameConfig, setGameConfig] = useState<GameConfig>(defaultGameConfig);
+  const [gameConfig, setGameConfig] = useState<GameConfig>(getRandomGame());
 
   /**
    * @description
@@ -91,7 +76,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
-        newGame(defaultGameConfig);
+        newGame(getRandomGame());
       }
     });
   }
@@ -105,15 +90,8 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * Restarts the current game with the same config.
    * @returns void
    */
-  // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
-  //   Cannot restart exact same game until initial tiles are being saved.
   const restartGame = () => {
-    const newConfig = {
-      ...gameConfig, 
-      initialTileStates: gameState.previousTileStates[0] ?? [],
-      randRemainingTiles: false,
-    };
-    newGame(newConfig);
+    newGame({...gameConfig, initialTileStates: gameState.initialTileStates});
   }
 
   /**
@@ -142,9 +120,9 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setGameState({
       status: "ongoing",
       tileStates: tiles,
-      previousTileStates: [tiles],
+      initialTileStates: tiles.map((tile) => ({...tile})),
       resourcesLeft: config.resourceLimit,
-      elapsedTime: 0,
+      elapsedTime: config.timeLimit !== -1 ? config.timeLimit : 0,
       firstMove: true,
       movesEnabled: true,
       isPaused: false,
@@ -152,26 +130,34 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return true;
   }
 
+  // timer effect
   useEffect(() => {
     if (gameState.status !== "ongoing" || gameState.isPaused) {
       return;
     }
     const interval = setInterval(() => {
-      setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
+      if (gameConfig.timeLimit === -1) {
+        setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
+      } else {
+        setGameState(prev => {
+          const newTime = prev.elapsedTime - 1;
+          if (newTime <= 0 && gameState.status === "ongoing") {
+            setTimeout(() => runEndGame("enemyWon", {...prev, elapsedTime: newTime}), 0);
+          }
+          return {...prev, elapsedTime: newTime};
+        });
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, [gameState.status, gameState.isPaused]);
 
+  // save game state to storage on change
   useEffect(() => {
     try {
       storage.set<GameState>("gameState", gameState);
     } catch (error) {
       if (isStorageQuotaError(error)) {
         console.error("Storage quota exceeded while storing game state.");
-        // keep the first move, and the last 10 moves
-        if (gameState.previousTileStates.length > 10) {
-          gameState.previousTileStates = [...gameState.previousTileStates.slice(0,1), ...gameState.previousTileStates.slice(-10)];
-        }
       } else {
         console.error("Error storing game state:", error);
       }
@@ -186,7 +172,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * @returns void
    */
   const runEndGame = async (targetStatus: GameState["status"], currentState: GameState) => {
-    setGameState({...currentState, movesEnabled: false, status: "animating"});
+    setGameState({...currentState, movesEnabled: false, isPaused: true, status: "animating"});
     await endGame(currentState.tileStates, gameConfig.boardSize, targetStatus, (updatedStates) => {
       setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
     }).then((finalStates) => {
@@ -206,9 +192,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (newState.firstMove) {
       state.type = "territory";
       newState.firstMove = false;
-    }
-    else {
-      newState.previousTileStates.push([...newState.tileStates]);  // don't save the initial tiles states, already saved
     }
 
     let moveCost = 1;
@@ -256,7 +239,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // grow territory
     if (growTerritory) {
       let nextStates = progressTerritoryGrowth(newState.tileStates);
-      nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, [state]);
+      nextStates = advanceEnemyTiles(nextStates, gameConfig.boardSize, gameConfig.enemyAggression, [state]);
 
       newState.tileStates = [...nextStates];
     }

@@ -25,11 +25,11 @@ export async function endGame(
      || (winner === "enemyWon" && !enemyCannotMove(currentStates, boardSize))) {
 
     let nextStates = progressTerritoryGrowth(currentStates);
-    if (winner === "enemyWon") nextStates = advanceEnemyTiles(nextStates, boardSize);
+    if (winner === "enemyWon") nextStates = advanceEnemyTiles(nextStates, boardSize, 1);
 
     onStepUpdate(nextStates);
 
-    timeout = Math.max(100, timeout - 10);
+    timeout = Math.max(50, timeout - 10);
     await new Promise(resolve => {
       requestAnimationFrame(() => {
         setTimeout(resolve, timeout);

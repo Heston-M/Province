@@ -1,5 +1,30 @@
 import { TileState } from "./tileState";
 
+export type FillConfig = {
+  type: "probabilities" | "fixed";
+}
+
+export type ProbabilitiesFillConfig = FillConfig & {
+  type: "probabilities";
+  probabilities: {
+    territory: number;
+    fortified: number;
+    enemy: number;
+    maxFortified: number;
+    maxEnemy: number;
+    minFortified: number;
+    minEnemy: number;
+  };
+}
+
+export type FixedFillConfig = FillConfig & {
+  type: "fixed";
+  numbers: {
+    fortified: number;
+    enemy: number;
+  }
+}
+
 export type GameConfig = {
   name: string;
   description: string;
@@ -9,10 +34,5 @@ export type GameConfig = {
   fogOfWar: boolean;
   enemyAggression: number;
   initialTileStates: TileState[];
-  randRemainingTiles: boolean;
-  randProbabilities: {
-    territory: number;
-    fortified: number;
-    enemy: number;
-  };
+  fillConfig: FillConfig;
 }
