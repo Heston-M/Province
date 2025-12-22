@@ -1,7 +1,7 @@
 import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { FillConfig, GameConfig } from "@/types/gameConfig";
+import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
@@ -22,7 +22,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const [enemyAggression, setEnemyAggression] = useState("");
 
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [useProbabilities, setUseProbabilities] = useState(true);
+  const [useFixedFill, setUseFixedFill] = useState(false);
   const [fortifiedChance, setFortifiedChance] = useState("");
   const [enemyChance, setEnemyChance] = useState("");
   const [maxFortified, setMaxFortified] = useState("");
@@ -92,7 +92,21 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
     const newMinEnemy =               minEnemy.trim() === "" ? 0 : parseInt(minEnemy.trim());
     const newFortifiedNumber = fortifiedNumber.trim() === "" ? Math.ceil(newBoardX * newBoardY / 20) : parseInt(fortifiedNumber.trim());
     const newEnemyNumber =         enemyNumber.trim() === "" ? Math.ceil(newBoardX * newBoardY / 20) : parseInt(enemyNumber.trim());
-    if (useProbabilities) {
+    if (useFixedFill) {
+      if (isNaN(newFortifiedNumber) || newFortifiedNumber < 0 || newFortifiedNumber > newBoardX * newBoardY) {
+        errors.push("Fortified number must be between 0 and the board size.");
+        invalidFields.push("fortifiedNumber");
+      }
+      if (isNaN(newEnemyNumber) || newEnemyNumber < 0 || newEnemyNumber > newBoardX * newBoardY) {
+        errors.push("Enemy number must be between 0 and the board size.");
+        invalidFields.push("enemyNumber");
+      }
+      if (isNaN(newFortifiedNumber) || isNaN(newEnemyNumber) || newFortifiedNumber + newEnemyNumber > newBoardX * newBoardY) {
+        errors.push("Fortified and enemy numbers must be less than the board size.");
+        invalidFields.push("fortifiedNumber");
+        invalidFields.push("enemyNumber");
+      }
+    } else {
       if (isNaN(newFortifiedChance) || newFortifiedChance < 0 || newFortifiedChance > 100) {
         errors.push("Fortified chance must be between 0 and 100.");
         invalidFields.push("fortifiedChance");
@@ -123,21 +137,6 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
         invalidFields.push("minEnemy");
       }
     }
-    else {
-      if (isNaN(newFortifiedNumber) || newFortifiedNumber < 0 || newFortifiedNumber > newBoardX * newBoardY) {
-        errors.push("Fortified number must be between 0 and the board size.");
-        invalidFields.push("fortifiedNumber");
-      }
-      if (isNaN(newEnemyNumber) || newEnemyNumber < 0 || newEnemyNumber > newBoardX * newBoardY) {
-        errors.push("Enemy number must be between 0 and the board size.");
-        invalidFields.push("enemyNumber");
-      }
-      if (isNaN(newFortifiedNumber) || isNaN(newEnemyNumber) || newFortifiedNumber + newEnemyNumber > newBoardX * newBoardY) {
-        errors.push("Fortified and enemy numbers must be less than the board size.");
-        invalidFields.push("fortifiedNumber");
-        invalidFields.push("enemyNumber");
-      }
-    }
 
     setError(errors.join("\n"));
     setInvalidFields(invalidFields);
@@ -146,8 +145,16 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       return;
     }
 
-    let newFillConfig: FillConfig;
-    if (useProbabilities) {
+    let newFillConfig: ProbabilitiesFillConfig | FixedFillConfig;
+    if (useFixedFill) {
+      newFillConfig = {
+        type: "fixed",
+        numbers: {
+          fortified: newFortifiedNumber,
+          enemy: newEnemyNumber,
+        },
+      }
+    } else {
       newFillConfig = {
         type: "probabilities",
         probabilities: {
@@ -158,15 +165,6 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
           maxEnemy: newMaxEnemy,
           minFortified: newMinFortified,
           minEnemy: newMinEnemy,
-        },
-      }
-    }
-    else {
-      newFillConfig = {
-        type: "fixed",
-        numbers: {
-          fortified: newFortifiedNumber,
-          enemy: newEnemyNumber,
         },
       }
     }
@@ -323,17 +321,17 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
           <View style={[styles.advancedOptionsContainer, { backgroundColor: secondaryColor, borderColor: accentColor }]}>
             <Text style={[styles.subHeader, { color: textColor }]}>Advanced Options</Text>
             <View style={styles.switchContainer}>
-              <Text style={[styles.switchLabel, { color: textColor }]}>Fill using: {useProbabilities ? "Probabilities" : "Numbers of tiles"}</Text>
+              <Text style={[styles.switchLabel, { color: textColor }]}>Fill using: {useFixedFill ? "Numbers of tiles" : "Probabilities"}</Text>
               <Switch
-                value={useProbabilities}
-                onValueChange={setUseProbabilities}
+                value={useFixedFill}
+                onValueChange={setUseFixedFill}
                 trackColor={{ false: accentColor, true: accentColor }}
                 thumbColor={textColor}
                 ios_backgroundColor={accentColor}
                 {...(Platform.OS === 'web' ? { activeThumbColor: textColor } : {})}
               />
             </View>
-            {useProbabilities && (
+            {!useFixedFill && (
               <View style={{ gap: 5 }}>
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
@@ -409,7 +407,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
                 </View>
               </View>
             )}
-            {!useProbabilities && (
+            {useFixedFill && (
               <View style={styles.row}>
                 <View style={styles.inputContainer}>
                   <Text style={[styles.label, { color: textColor }]}>Fortified Tiles</Text>

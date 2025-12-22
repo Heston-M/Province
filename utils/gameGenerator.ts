@@ -1,4 +1,4 @@
-import { GameConfig } from "@/types/gameConfig";
+import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 import { TileState } from "@/types/tileState";
 import { getAdjacentTiles } from "./gridUtils";
 
@@ -11,30 +11,40 @@ import { getAdjacentTiles } from "./gridUtils";
 export function generateBoard(gameConfig: GameConfig): TileState[] {
   const tiles: TileState[] = [];
   const initialTileStates = gameConfig.initialTileStates ?? [];
-  const fillConfig = gameConfig.fillConfig;
+  const fillConfigType = gameConfig.fillConfig.type;
+  let fillConfig: ProbabilitiesFillConfig | FixedFillConfig;
+  if (fillConfigType === "probabilities") {
+    fillConfig = gameConfig.fillConfig as ProbabilitiesFillConfig;
+  }
+  else if (fillConfigType === "fixed") {
+    fillConfig = gameConfig.fillConfig as FixedFillConfig;
+  }
+  else {
+    throw new Error("Invalid fill config type");
+  }
 
   let numTerritory = 0;
   let numFortified = 0;
   let numEnemy = 0;
 
   // if using fixed fill config, generate the coordinates of the fortified and enemy tiles
-  let fortifiedCoords: Set<[number, number]> = new Set();
-  let enemyCoords: Set<[number, number]> = new Set();
+  let fortifiedCoords: Map<string, boolean> = new Map();
+  let enemyCoords: Map<string, boolean> = new Map();
 
-  if (fillConfig && fillConfig.type === "fixed" && "numbers" in fillConfig) {
+  if (fillConfig && fillConfig.type === "fixed") {
     for (let i = 0; i < fillConfig.numbers.fortified;) {
       const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
       const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
-      if (!fortifiedCoords.has([x, y])) {
-        fortifiedCoords.add([x, y]);
+      if (!fortifiedCoords.has(`${x},${y}`) && !initialTileStates.some((t) => t.x === x && t.y === y)) {
+        fortifiedCoords.set(`${x},${y}`, true);
         i++;
       }
     }
     for (let i = 0; i < fillConfig.numbers.enemy;) {
       const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
       const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
-      if (!enemyCoords.has([x, y])) {
-        enemyCoords.add([x, y]);
+      if (!enemyCoords.has(`${x},${y}`) && !initialTileStates.some((t) => t.x === x && t.y === y)) {
+        enemyCoords.set(`${x},${y}`, true);
         i++;
       }
     }
@@ -44,12 +54,13 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
   for (let y = 1; y <= gameConfig.boardSize[1]; y++) {
     for (let x = 1; x <= gameConfig.boardSize[0]; x++) {
       const tileState = initialTileStates.find((t) => t.x === x && t.y === y);
+      let type: "territory" | "fortified" | "enemy" = "territory";
       if (tileState) {
         tiles.push(tileState);  // tile given by game config
+        type = tileState.type;
       }
       else {
         const randNum = Math.random();
-        let type = "territory";
         if (fillConfig.type === "probabilities") {  // randomly generate tile
           if (randNum < fillConfig.probabilities.territory) {
             type = "territory";
@@ -61,33 +72,33 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
             type = "enemy";
           }
         }
-        else if (fillConfig.type === "fixed" && "numbers" in fillConfig) {  // fill tile with uncaptured territory
-          if (fortifiedCoords.has([x, y])) {
+        else if (fillConfig.type === "fixed") {  // fill tile with uncaptured territory
+          if (fortifiedCoords.get(`${x},${y}`)) {
             type = "fortified";
           }
-          else if (enemyCoords.has([x, y])) {
+          else if (enemyCoords.get(`${x},${y}`)) {
             type = "enemy";
           }
           else {
             type = "territory";
           }
         }
-        if (type === "territory") {
-          numTerritory++;
-        }
-        else if (type === "fortified") {
-          numFortified++;
-        }
-        else if (type === "enemy") {
-          numEnemy++;
-        }
         tiles.push({ 
           x, y, 
-          type: type as "territory" | "fortified" | "enemy", 
+          type, 
           growingLevel: 0, 
           isHidden: gameConfig.fogOfWar, 
           isCaptured: type === "fortified" ? true : false 
         });
+      }
+      if (type === "territory") {
+        numTerritory++;
+      }
+      else if (type === "fortified") {
+        numFortified++;
+      }
+      else if (type === "enemy") {
+        numEnemy++;
       }
     }
   }
@@ -109,22 +120,22 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
 
   function pinchToMaxMin(): void {
     if (fillConfig.type === "probabilities") {
-      while (numFortified < (fillConfig.probabilities?.minFortified ?? 0) && numTerritory > 0) {
+      while (numFortified < fillConfig.probabilities.minFortified && numTerritory > 0) {
         updateRandomTileType("territory", "fortified");
         numFortified++;
         numTerritory--;
       }
-      while (numFortified > (fillConfig.probabilities?.maxFortified ?? gameConfig.boardSize[0] * gameConfig.boardSize[1]) && numFortified > 0) {
+      while (numFortified > fillConfig.probabilities.maxFortified && numFortified > 0) {
         updateRandomTileType("fortified", "territory");
         numFortified--;
         numTerritory++;
       }
-      while (numEnemy < (fillConfig.probabilities?.minEnemy ?? 0) && numTerritory > 0) {
+      while (numEnemy < fillConfig.probabilities.minEnemy && numTerritory > 0) {
         updateRandomTileType("territory", "enemy");
         numEnemy++;
         numTerritory--;
       }
-      while (numEnemy > (fillConfig.probabilities?.maxEnemy ?? gameConfig.boardSize[0] * gameConfig.boardSize[1]) && numEnemy > 0) {
+      while (numEnemy > fillConfig.probabilities.maxEnemy && numEnemy > 0) {
         updateRandomTileType("enemy", "territory");
         numEnemy--;
         numTerritory++;
@@ -137,8 +148,8 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
       return false;
     }
     while (true) {
-      const randX = Math.random() * gameConfig.boardSize[0] + 1;
-      const randY = Math.random() * gameConfig.boardSize[1] + 1;
+      const randX = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
+      const randY = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
       const randTile = tiles.find((t) => t.x === randX && t.y === randY);
       if (randTile && randTile.type === fromType) {
         randTile.type = toType;

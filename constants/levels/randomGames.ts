@@ -1,4 +1,4 @@
-import { GameConfig } from "@/types/gameConfig";
+import { GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 
 export const randomGames: GameConfig[] = [
   {
@@ -17,7 +17,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.05,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -35,7 +35,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.05,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -53,7 +53,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.05,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -71,7 +71,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.15,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -89,7 +89,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.05,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -107,7 +107,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.05,
         enemy: 0.05,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
   {
     name: "Random Game",
@@ -125,7 +125,7 @@ export const randomGames: GameConfig[] = [
         fortified: 0.04,
         enemy: 0.04,
       },
-    },
+    } as ProbabilitiesFillConfig,
   },
 ]
 
