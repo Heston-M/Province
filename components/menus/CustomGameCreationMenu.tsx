@@ -1,6 +1,7 @@
 import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { useUser } from "@/contexts/UserContext";
 import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
@@ -45,6 +46,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const backIcon = getIconSource("backIcon");
 
   const { newGame } = useGameplay();
+  const { addCustomGame } = useUser();
 
   function submitGame() {
     setError(null);
@@ -170,6 +172,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
     }
 
     const config: GameConfig = {
+      id: -1,
       name: newName,
       description: newDescription,
       boardSize: [newBoardX, newBoardY],
@@ -181,6 +184,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       fillConfig: newFillConfig,
     }
     if (newGame(config)) {
+      addCustomGame(config);
       onGameStarted();
     }
     else {

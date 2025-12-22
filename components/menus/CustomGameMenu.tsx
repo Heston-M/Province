@@ -1,8 +1,8 @@
 import GameSelector from "@/components/GameSelector";
 import MenuButton from "@/components/ui/MenuButton";
-import { getRandomGame } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { useUser } from "@/contexts/UserContext";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -20,10 +20,10 @@ export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStart
   const borderColor = getThemeColor("border");
   const backIcon = getIconSource("backIcon");
 
-  const randomGames = Array.from({ length: 10 }, () => getRandomGame());
   const [selectedGame, setSelectedGame] = useState<GameConfig | undefined>(undefined);
 
   const { newGame } = useGameplay();
+  const { customGames } = useUser();
 
   const startGame = () => {
     newGame(selectedGame!);
@@ -35,7 +35,7 @@ export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStart
       <Pressable onPress={onBack} style={styles.backIconContainer}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
-      <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
+      <Text style={[styles.title, { color: textColor }]}>Custom Games</Text>
       <View style={styles.row}>
         <MenuButton text="New Custom Game" onPress={onCreateCustomGame} />
         <MenuButton 
@@ -47,7 +47,7 @@ export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStart
       </View>
       <View style={[styles.gameSelectorContainer, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
         <GameSelector 
-          games={randomGames} 
+          games={customGames} 
           selectedGame={selectedGame} 
           onGameSelected={(game) => selectedGame === game ? setSelectedGame(undefined) : setSelectedGame(game)} 
         />
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gameSelectorContainer: {
-    height: "50%",
+    maxHeight: "70%",
     width: "100%",
     padding: 10,
     justifyContent: "center",
