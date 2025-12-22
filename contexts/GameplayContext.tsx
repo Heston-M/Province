@@ -124,7 +124,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tileStates: tiles,
       initialTileStates: tiles.map((tile) => ({...tile})),
       resourcesLeft: config.resourceLimit,
-      elapsedTime: 0,
+      elapsedTime: config.timeLimit !== -1 ? config.timeLimit : 0,
       firstMove: true,
       movesEnabled: true,
       isPaused: false,
@@ -132,16 +132,28 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return true;
   }
 
+  // timer effect
   useEffect(() => {
     if (gameState.status !== "ongoing" || gameState.isPaused) {
       return;
     }
     const interval = setInterval(() => {
-      setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
+      if (gameConfig.timeLimit === -1) {
+        setGameState(prev => ({...prev, elapsedTime: prev.elapsedTime + 1}));
+      } else {
+        setGameState(prev => {
+          const newTime = prev.elapsedTime - 1;
+          if (newTime <= 0 && gameState.status === "ongoing") {
+            setTimeout(() => runEndGame("enemyWon", {...prev, elapsedTime: newTime}), 0);
+          }
+          return {...prev, elapsedTime: newTime};
+        });
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, [gameState.status, gameState.isPaused]);
 
+  // save game state to storage on change
   useEffect(() => {
     try {
       storage.set<GameState>("gameState", gameState);
@@ -162,7 +174,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * @returns void
    */
   const runEndGame = async (targetStatus: GameState["status"], currentState: GameState) => {
-    setGameState({...currentState, movesEnabled: false, status: "animating"});
+    setGameState({...currentState, movesEnabled: false, isPaused: true, status: "animating"});
     await endGame(currentState.tileStates, gameConfig.boardSize, targetStatus, (updatedStates) => {
       setGameState((prevState) => ({...prevState, tileStates: updatedStates}));
     }).then((finalStates) => {
