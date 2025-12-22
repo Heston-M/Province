@@ -3,12 +3,16 @@ export const colors = {
   light: {
     background: "#e5e5e5",
     secondary: "#ffffff",
+    tertiary: "#5e5e5e",
+    accent: "#00aadd",
     text: "#000000",
     border: "#000000",
   },
   dark: {
     background: "#1a1a1a",
     secondary: "#000000",
+    tertiary: "#5e5e5e",
+    accent: "#00aadd",
     text: "#ffffff",
     border: "#ffffff",
   },
