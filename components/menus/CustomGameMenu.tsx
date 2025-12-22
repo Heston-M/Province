@@ -4,15 +4,17 @@ import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useUser } from "@/contexts/UserContext";
 import { GameConfig } from "@/types/gameConfig";
+import { MenuType } from "@/types/menuType";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CustomGameMenuProps {
   onBack: () => void;
-  onCreateCustomGame: () => void;
+  onOpenMenu: (type: MenuType) => void;
   onGameStarted: () => void;
 }
-export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStarted }: CustomGameMenuProps) {
+
+export default function CustomGameMenu({ onBack, onOpenMenu, onGameStarted }: CustomGameMenuProps) {
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const secondaryColor = getThemeColor("secondary");
@@ -37,21 +39,21 @@ export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStart
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Custom Games</Text>
       <View style={styles.row}>
-        <MenuButton text="New Custom Game" onPress={onCreateCustomGame} />
-        <MenuButton 
+        <MenuButton text="New Custom Game" onPress={() => onOpenMenu("customGameCreation")} />
+        {customGames.length > 0 && <MenuButton 
           text="Start Game" 
           highlight={selectedGame !== undefined} 
           disabled={selectedGame === undefined} 
           onPress={startGame} 
-        />
+        />}
       </View>
-      <View style={[styles.gameSelectorContainer, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
+      {customGames.length > 0 && <View style={[styles.gameSelectorContainer, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
         <GameSelector 
           games={customGames} 
           selectedGame={selectedGame} 
           onGameSelected={(game) => selectedGame === game ? setSelectedGame(undefined) : setSelectedGame(game)} 
         />
-      </View>
+      </View>}
     </View>
   );
 }
@@ -59,6 +61,7 @@ export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStart
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minWidth: 220,
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
@@ -75,6 +78,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    marginLeft: 20,
   },
   row: {
     flexDirection: "row",

@@ -25,7 +25,7 @@ export default function GameSelector({ games, selectedGame, onGameSelected }: Ga
         fadeSize={30}
       >
         <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
-          <Text style={[styles.title, { color: textColor }]}>Saved Custom Games</Text>
+          <Text style={[styles.title, { color: textColor }]}>Previous Custom Games</Text>
           {games.map((game, index) => (
             <View key={index} style={styles.gameCardContainer}>
               <GameCard 
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
   },
   gameCardContainer: {

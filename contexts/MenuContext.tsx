@@ -43,7 +43,7 @@ export default function MenuContextProvider({ children }: { children: React.Reac
 
   const customGameMenu = () => { return ( <CustomGameMenu 
     onBack={() => {goBackMenu()}}
-    onCreateCustomGame={() => {openMenu("customGameCreation")}}
+    onOpenMenu={(type) => {openMenu(type as MenuType)}}
     onGameStarted={() => {hardCloseMenu()}} /> ) }
 
   const customGameCreationMenu = () => { return ( <CustomGameCreationMenu 
