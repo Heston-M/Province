@@ -16,7 +16,7 @@ export default function GameCard({ game, isSelected, onGamePressed }: GameCardPr
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
 
-  const timeLimit = game.timeLimit === -1 ? "None" : formatTime(game.timeLimit);
+  const timeLimit = formatTime(game.timeLimit);
 
   return (
     <Pressable 
@@ -26,8 +26,8 @@ export default function GameCard({ game, isSelected, onGamePressed }: GameCardPr
       <Text style={[styles.title, { color: textColor }]}>{game.name}</Text>
       {game.description ? <Text style={[styles.description, { color: textColor }]}>{game.description}</Text> : null}
       <Text style={[styles.description, { color: textColor }]}>Board Size: {game.boardSize[0]}x{game.boardSize[1]}</Text>
-      <Text style={[styles.description, { color: textColor }]}>{game.fogOfWar ? "Fog of War" : "No Fog of War"}</Text>
-      <Text style={[styles.description, { color: textColor }]}>{game.timeLimit === -1 ? "No Time Limit" : `Time Limit: ${timeLimit}`}</Text>
+      <Text style={[styles.description, { color: textColor }]}>{game.fogOfWar ? "Fog of War" : "No Fog of War"} | {game.timeLimit === -1 ? "No Time Limit" : `Time Limit: ${timeLimit}`}</Text>
+      <Text style={[styles.description, { color: textColor }]}>Enemy Aggression: {game.enemyAggression * 10}</Text>
     </Pressable>
   );
 }
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     borderWidth: 2,
-    gap: 5,
+    gap: 2,
   },
   title: {
     fontSize: 16,
