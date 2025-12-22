@@ -91,9 +91,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * @returns void
    */
   const restartGame = () => {
-    const newConfig = gameConfig; 
-    newConfig.initialTileStates = gameState.initialTileStates;
-    newGame(newConfig);
+    newGame({...gameConfig, initialTileStates: gameState.initialTileStates});
   }
 
   /**
