@@ -1,3 +1,4 @@
+import { getRandomGame } from "@/constants/levels/randomGames";
 import { endGame } from "@/scripts/endGame";
 import { GameConfig } from "@/types/gameConfig";
 import { GameState } from "@/types/gameState";
@@ -20,25 +21,6 @@ type ContextShape = {
   resumeGame: () => void;
 }
 
-const defaultGameConfig: GameConfig = {
-  name: "Default",
-  description: "A default game config",
-  boardSize: [8, 8],
-  resourceLimit: 10,
-  timeLimit: -1,
-  fogOfWar: false,
-  enemyAggression: 0.8,
-  initialTileStates: [],
-  fillConfig: {
-    type: "probabilities",
-    probabilities: {
-      territory: 0.9,
-      fortified: 0.05,
-      enemy: 0.05,
-    },
-  },
-}
-
 const GameplayContext = createContext<ContextShape | undefined>(undefined);
 
 export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -52,7 +34,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     movesEnabled: true,
     isPaused: false,
   });
-  const [gameConfig, setGameConfig] = useState<GameConfig>(defaultGameConfig);
+  const [gameConfig, setGameConfig] = useState<GameConfig>(getRandomGame());
 
   /**
    * @description
@@ -94,7 +76,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const loadGame = async () => {
     await fetchGame().then((valid) => {
       if (!valid) {
-        newGame(defaultGameConfig);
+        newGame(getRandomGame());
       }
     });
   }
@@ -108,8 +90,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
    * Restarts the current game with the same config.
    * @returns void
    */
-  // NOT COMPLETE: the new game will not be the same because the tiles are generated randomly.
-  //   Cannot restart exact same game until initial tiles are being saved.
   const restartGame = () => {
     const newConfig = {
       ...gameConfig, 
@@ -211,7 +191,7 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       newState.firstMove = false;
     }
     else {
-      newState.previousTileStates.push([...newState.tileStates]);  // don't save the initial tiles states, already saved
+      newState.previousTileStates.push([...gameState.tileStates]);  // don't save the initial tiles states, already saved
     }
 
     let moveCost = 1;
