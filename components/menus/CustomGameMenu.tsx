@@ -37,7 +37,6 @@ export default function CustomGameMenu({ onBack, onGotoCustomGameCreation, onGam
           games={randomGames} 
           selectedGame={selectedGame} 
           onGameSelected={(game) => selectedGame === game ? setSelectedGame(undefined) : setSelectedGame(game)} 
-          onGameStarted={onGameStarted} 
         />
       </View>
     </View>

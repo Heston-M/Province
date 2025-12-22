@@ -1,16 +1,16 @@
+import FadingScrollView from "@/components/ui/FadingScrollView";
 import GameCard from "@/components/ui/GameCard";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface GameSelectorProps {
   games: GameConfig[];
   selectedGame: GameConfig | undefined;
   onGameSelected: (game: GameConfig) => void;
-  onGameStarted: (game: GameConfig) => void;
 }
 
-export default function GameSelector({ games, selectedGame, onGameSelected, onGameStarted }: GameSelectorProps) {
+export default function GameSelector({ games, selectedGame, onGameSelected }: GameSelectorProps) {
   const { getThemeColor } = useThemeContext();
   const secondaryColor = getThemeColor("secondary");
   const textColor = getThemeColor("text");
@@ -18,9 +18,11 @@ export default function GameSelector({ games, selectedGame, onGameSelected, onGa
 
   return (
     <View style={styles.gameSelectorContainer}>
-      <ScrollView
+      <FadingScrollView
         contentContainerStyle={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        fadeColor={secondaryColor}
+        fadeSize={30}
       >
         <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
           <Text style={[styles.title, { color: textColor }]}>Saved Custom Games</Text>
@@ -33,7 +35,7 @@ export default function GameSelector({ games, selectedGame, onGameSelected, onGa
             </View>
           ))}
         </View>
-      </ScrollView>
+      </FadingScrollView>
     </View>
   );
 }
