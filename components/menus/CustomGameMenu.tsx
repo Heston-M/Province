@@ -1,6 +1,7 @@
 import GameSelector from "@/components/GameSelector";
 import MenuButton from "@/components/ui/MenuButton";
 import { getRandomGame } from "@/constants/levels/randomGames";
+import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
 import { useState } from "react";
@@ -8,10 +9,10 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CustomGameMenuProps {
   onBack: () => void;
-  onGotoCustomGameCreation: () => void;
-  onGameStarted: (game: GameConfig) => void;
+  onCreateCustomGame: () => void;
+  onGameStarted: () => void;
 }
-export default function CustomGameMenu({ onBack, onGotoCustomGameCreation, onGameStarted }: CustomGameMenuProps) {
+export default function CustomGameMenu({ onBack, onCreateCustomGame, onGameStarted }: CustomGameMenuProps) {
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const secondaryColor = getThemeColor("secondary");
@@ -22,6 +23,13 @@ export default function CustomGameMenu({ onBack, onGotoCustomGameCreation, onGam
   const randomGames = Array.from({ length: 10 }, () => getRandomGame());
   const [selectedGame, setSelectedGame] = useState<GameConfig | undefined>(undefined);
 
+  const { newGame } = useGameplay();
+
+  const startGame = () => {
+    newGame(selectedGame!);
+    onGameStarted();
+  }
+  
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable onPress={onBack} style={styles.backIconContainer}>
@@ -29,8 +37,13 @@ export default function CustomGameMenu({ onBack, onGotoCustomGameCreation, onGam
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
       <View style={styles.row}>
-        <MenuButton text="New Custom Game" onPress={onGotoCustomGameCreation} />
-        <MenuButton text="Start Game" highlight={selectedGame !== undefined} disabled={selectedGame === undefined} onPress={() => onGameStarted(selectedGame!)} />
+        <MenuButton text="New Custom Game" onPress={onCreateCustomGame} />
+        <MenuButton 
+          text="Start Game" 
+          highlight={selectedGame !== undefined} 
+          disabled={selectedGame === undefined} 
+          onPress={startGame} 
+        />
       </View>
       <View style={[styles.gameSelectorContainer, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
         <GameSelector 
