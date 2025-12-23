@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 
 interface MenuButtonProps {
   text: string;
+  fillColor?: string;
   highlight?: boolean;
   highlightColor?: string;
   disabled?: boolean;
@@ -17,9 +18,9 @@ interface MenuButtonProps {
  * @param onPress - Callback function to be called when the button is pressed
  * @returns The menu button component
  */
-export default function MenuButton({ text, highlight, highlightColor, disabled, onPress }: MenuButtonProps) {
+export default function MenuButton({ text, fillColor, highlight, highlightColor, disabled, onPress }: MenuButtonProps) {
   const { getThemeColor } = useThemeContext();
-  const backgroundColor = getThemeColor("secondary");
+  const backgroundColor = fillColor || getThemeColor("secondary");
   const accentColor = getThemeColor("accent");
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");

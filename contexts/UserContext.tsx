@@ -6,6 +6,7 @@ type ContextShape = {
   customGames: GameConfig[];
   addCustomGame: (game: GameConfig) => void;
   removeCustomGame: (game: GameConfig) => void;
+  clearCustomGames: () => void;
 }
 
 const UserContext = createContext<ContextShape | undefined>(undefined);
@@ -62,8 +63,14 @@ export default function UserContextProvider({ children }: { children: React.Reac
     });
   }
 
+  const clearCustomGames = () => {
+    storage.remove("customGames");
+    setCustomGames([]);
+    setVacantIds([startId]);
+  }
+
   return (
-    <UserContext.Provider value={{ customGames, addCustomGame, removeCustomGame }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ customGames, addCustomGame, removeCustomGame, clearCustomGames }}>{children}</UserContext.Provider>
   );
 }
 
