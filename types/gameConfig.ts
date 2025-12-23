@@ -10,10 +10,13 @@ export type ProbabilitiesFillConfig = FillConfig & {
     territory: number;
     fortified: number;
     enemy: number;
+    obstacle: number;
     maxFortified: number;
     maxEnemy: number;
+    maxObstacle: number;
     minFortified: number;
     minEnemy: number;
+    minObstacle: number;
   };
 }
 
@@ -22,6 +25,7 @@ export type FixedFillConfig = FillConfig & {
   numbers: {
     fortified: number;
     enemy: number;
+    obstacle: number;
   }
 }
 
