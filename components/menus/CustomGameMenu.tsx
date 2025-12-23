@@ -6,7 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { GameConfig } from "@/types/gameConfig";
 import { MenuType } from "@/types/menuType";
 import { useState } from "react";
-import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CustomGameMenuProps {
   onBack: () => void;
@@ -23,22 +23,6 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
   const backIcon = getIconSource("backIcon");
-
-  const height = () => {
-    if (Platform.OS === "web") {
-      return undefined;
-    }
-    switch (customGames.length) {
-      case 0:
-        return 86;
-      case 1:
-        return 340;
-      case 2:
-        return 455;
-      default:
-        return 543;
-      }
-    }
 
   const [selectedGame, setSelectedGame] = useState<GameConfig | undefined>(undefined);
   const [deleteModalTarget, setDeleteModalTarget] = useState<"game" | "all" | null>(null);

@@ -1,27 +1,62 @@
+import MenuButton from "@/components/ui/MenuButton";
 import ThemePicker from "@/components/ui/ThemePicker";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface SettingsMenuProps {
   onBack: () => void;
+  onClearGameStorage: () => void;
 }
 
-export default function SettingsMenu({ onBack }: SettingsMenuProps) {
+export default function SettingsMenu({ onBack, onClearGameStorage }: SettingsMenuProps) {
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
+  const secondaryColor = getThemeColor("secondary");
+  const destructiveColor = getThemeColor("destructive");
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
   const backIcon = getIconSource("backIcon");
 
-  const height = Platform.OS === "web" ? undefined : 164;
+  const [confirmClearGameStorageModalVisible, setConfirmClearGameStorageModalVisible] = useState(false);
+
+  const confirmClearGameStorageModal = () => {
+    return (
+      <View style={[styles.modalContainer, { backgroundColor: secondaryColor, borderColor: destructiveColor }]}>
+        <Text style={[styles.modalTitle, { color: textColor }]}>Clear Game Storage?</Text>
+        <Text style={[styles.modalMessage, { color: textColor }]}>
+          This will reset everything in the game, including level progress, custom games, settings, and more. Everything.</Text>
+        <Text style={[styles.modalMessage, { color: textColor }]}>
+          This action cannot be undone.</Text>
+        <View style={styles.row}>
+          <MenuButton text="Cancel" onPress={() => {setConfirmClearGameStorageModalVisible(false)}} />
+          <MenuButton 
+            text="Clear" 
+            fillColor={destructiveColor} 
+            highlight={true} 
+            highlightColor={destructiveColor} 
+            onPress={() => {
+              onClearGameStorage();
+              setConfirmClearGameStorageModalVisible(false);
+            }} />
+        </View>
+      </View>
+    )
+  }
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor, height: height }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable style={styles.backIconContainer} onPress={() => {onBack()}}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
       <Text style={[styles.title, { color: textColor }]}>Settings</Text>
       <ThemePicker />
+      <MenuButton 
+        text="Clear Game Storage" 
+        highlight={true} 
+        highlightColor={destructiveColor} 
+        onPress={() => {setConfirmClearGameStorageModalVisible(true)}} />
+      {confirmClearGameStorageModalVisible && confirmClearGameStorageModal()}
     </View>
   );
 } 
@@ -31,6 +66,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
+    gap: 10,
   },
   backIconContainer: {
     position: "absolute",
@@ -47,5 +83,31 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  modalContainer: {
+    position: "absolute",
+    top: -5,
+    left: -5,
+    right: -5,
+    bottom: -5,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 10,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    gap: 10,
   },
 });
