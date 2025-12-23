@@ -17,6 +17,7 @@ export default function Index() {
   const { top, left, right, bottom } = useSafeAreaInsets();
 
   const { gameState } = useGameplay();
+  const hasGame = gameState && gameState.tileStates.length > 0;
   const formattedTime = formatTime(gameState.elapsedTime);
 
   const { menuVisible, menuContent, menuEscapeAllowed, openMenu } = useMenuContext();
@@ -42,8 +43,8 @@ export default function Index() {
       <BasicModal visible={menuVisible} escapeAllowed={menuEscapeAllowed}>
         {menuContent}
       </BasicModal>
-      <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>
-      <Text style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</Text>
+      {hasGame && <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>}
+      {hasGame && <Text style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</Text>}
       <GameBoard maxHeight={height * 0.8} maxWidth={width * 0.8} />
     </View>
   );
