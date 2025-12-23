@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 type ContextShape = {
   customGames: GameConfig[];
   addCustomGame: (game: GameConfig) => void;
+  updateCustomGame: (id: number, game: GameConfig) => void;
   removeCustomGame: (game: GameConfig) => void;
   clearCustomGames: () => void;
 }
@@ -55,6 +56,11 @@ export default function UserContextProvider({ children }: { children: React.Reac
       return newGames;
     });
   }
+
+  const updateCustomGame = (id: number, game: GameConfig) => {
+    setCustomGames(prev => prev.map((g) => g.id === id ? game : g));
+  }
+
   const removeCustomGame = (game: GameConfig) => {
     setCustomGames(prev => {
       const newGames = prev.filter((g) => g.id !== game.id);
@@ -70,7 +76,7 @@ export default function UserContextProvider({ children }: { children: React.Reac
   }
 
   return (
-    <UserContext.Provider value={{ customGames, addCustomGame, removeCustomGame, clearCustomGames }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ customGames, addCustomGame, updateCustomGame, removeCustomGame, clearCustomGames }}>{children}</UserContext.Provider>
   );
 }
 

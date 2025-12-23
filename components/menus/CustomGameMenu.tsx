@@ -11,10 +11,11 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 interface CustomGameMenuProps {
   onBack: () => void;
   onOpenMenu: (type: MenuType) => void;
+  onEditGame: (game: GameConfig | undefined) => void;
   onGameStarted: () => void;
 }
 
-export default function CustomGameMenu({ onBack, onOpenMenu, onGameStarted }: CustomGameMenuProps) {
+export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameStarted }: CustomGameMenuProps) {
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const secondaryColor = getThemeColor("secondary");
@@ -112,7 +113,7 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onGameStarted }: Cu
           text="Edit"
           highlight={selectedGame !== undefined}
           disabled={selectedGame === undefined}
-          onPress={() => {}}
+          onPress={() => onEditGame(selectedGame)}
         />
       </View>}
     </View>

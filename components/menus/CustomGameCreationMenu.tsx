@@ -3,15 +3,16 @@ import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useUser } from "@/contexts/UserContext";
 import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 interface CustomGameMenuProps {
+  game: GameConfig | undefined;
   onBack: () => void;
   onGameStarted: () => void;
 }
 
-export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenuProps) {
+export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGameMenuProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [boardX, setBoardX] = useState("");
@@ -33,6 +34,60 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const [fortifiedNumber, setFortifiedNumber] = useState("");
   const [enemyNumber, setEnemyNumber] = useState("");
 
+  useEffect(() => {
+    const loadGame = () => {
+      if (game) {
+        setName(game.name ?? "");
+        setDescription(game.description ?? "");
+        setBoardX(game.boardSize[0].toString() ?? "");
+        setBoardY(game.boardSize[1].toString() ?? "");
+        setResourceLimit(game.resourceLimit.toString() ?? "");
+        setUseTimeLimit(game.timeLimit !== -1 ? true : false);
+        setTimeLimit(game.timeLimit.toString() ?? "");
+        setUseFogOfWar(game.fogOfWar ?? false);
+        setEnemyAggression(prev => {
+          const newEnemyAggression = game.enemyAggression ? game.enemyAggression * 10 : prev;
+          return newEnemyAggression.toString();
+        });
+        setShowAdvancedOptions(false);
+        setUseFixedFill(game.fillConfig.type === "fixed" ? true : false);
+        setFortifiedChance(prev => {
+          const newFortifiedChance = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.fortified * 100 : prev;
+          return newFortifiedChance.toString();
+        });
+        setEnemyChance(prev => {
+          const newEnemyChance = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.enemy * 100 : prev;
+          return newEnemyChance.toString();
+        });
+        setMaxFortified(prev => {
+          const newMaxFortified = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.fortified : prev;
+          return newMaxFortified.toString();
+        });
+        setMaxEnemy(prev => {
+          const newMaxEnemy = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.enemy : prev;
+          return newMaxEnemy.toString();
+        });
+        setMinFortified(prev => {
+          const newMinFortified = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.minFortified : prev;
+          return newMinFortified.toString();
+        });
+        setMinEnemy(prev => {
+          const newMinEnemy = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.minEnemy : prev;
+          return newMinEnemy.toString();
+        });
+        setFortifiedNumber(prev => {
+          const newFortifiedNumber = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.fortified : prev;
+          return newFortifiedNumber.toString();
+        });
+        setEnemyNumber(prev => {
+          const newEnemyNumber = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.enemy : prev;
+          return newEnemyNumber.toString();
+        });
+      }
+    }
+    loadGame();
+  }, [game]);
+
   const [error, setError] = useState<string | null>(null);
   const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "resourceLimit" | "timeLimit" | "enemyAggression" | "fortifiedChance" | "enemyChance" | "maxFortified" | "maxEnemy" | "minFortified" | "minEnemy" | "fortifiedNumber" | "enemyNumber")[]>([]);
 
@@ -46,7 +101,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
   const backIcon = getIconSource("backIcon");
 
   const { newGame } = useGameplay();
-  const { addCustomGame } = useUser();
+  const { addCustomGame, updateCustomGame } = useUser();
 
   function submitGame() {
     setError(null);
@@ -184,8 +239,13 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
       fillConfig: newFillConfig,
     }
     if (newGame(config)) {
-      addCustomGame(config);
-      onGameStarted();
+      if (game) {
+        updateCustomGame(game.id, config);
+        onBack();
+      } else {
+        addCustomGame(config);
+        onGameStarted();
+      }
     }
     else {
       setError("Invalid game config");
@@ -445,7 +505,7 @@ export default function CustomGameMenu({ onBack, onGameStarted }: CustomGameMenu
         {/* Create Game Button */}
         <View style={styles.row}>
           <MenuButton
-            text="Create Game"
+            text={game ? "Update Game" : "Create Game"}
             onPress={submitGame}
           />
         </View>
