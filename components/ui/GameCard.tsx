@@ -25,9 +25,9 @@ export default function GameCard({ game, isSelected, onGamePressed }: GameCardPr
     >
       <Text style={[styles.title, { color: textColor }]}>{game.name}</Text>
       {game.description ? <Text style={[styles.description, { color: textColor }]}>{game.description}</Text> : null}
-      <Text style={[styles.description, { color: textColor }]}>Board Size: {game.boardSize[0]}x{game.boardSize[1]}</Text>
-      <Text style={[styles.description, { color: textColor }]}>{game.fogOfWar ? "Fog of War" : "No Fog of War"} | {game.timeLimit === -1 ? "No Time Limit" : `Time Limit: ${timeLimit}`}</Text>
-      <Text style={[styles.description, { color: textColor }]}>Enemy Aggression: {game.enemyAggression * 10}</Text>
+      <Text style={[styles.gameStat, { color: textColor }]}>Board Size: {game.boardSize[0]}x{game.boardSize[1]}</Text>
+      <Text style={[styles.gameStat, { color: textColor }]}>{game.fogOfWar ? "Fog of War" : "No Fog of War"} | {game.timeLimit === -1 ? "No Time Limit" : `Time Limit: ${timeLimit}`}</Text>
+      <Text style={[styles.gameStat, { color: textColor }]}>Enemy Aggression: {game.enemyAggression * 10}</Text>
     </Pressable>
   );
 }
@@ -45,8 +45,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 2,
   },
   description: {
+    fontSize: 11,
+    fontStyle: "italic",
+    textAlign: "center",
+    marginBottom: 2,
+  },
+  gameStat: {
     fontSize: 12,
+    textAlign: "center",
   },
 });

@@ -6,6 +6,7 @@ import RulesMenu from "@/components/menus/RulesMenu";
 import SettingsMenu from "@/components/menus/SettingsMenu";
 import WelcomeScreen from "@/components/menus/WelcomeScreen";
 import { useGameplay } from "@/contexts/GameplayContext";
+import { GameConfig } from "@/types/gameConfig";
 import { MenuType } from "@/types/menuType";
 import { storage } from "@/utils/storage";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -22,6 +23,7 @@ type ContextShape = {
 const MenuContext = createContext<ContextShape | undefined>(undefined);
 
 export default function MenuContextProvider({ children }: { children: React.ReactNode }) {
+  const [editGame, setEditGame] = useState<GameConfig | undefined>(undefined);
 
   const welcomeScreen = () => { return ( <WelcomeScreen 
     onStartGame={() => {
@@ -44,11 +46,13 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const customGameMenu = () => { return ( <CustomGameMenu 
     onBack={() => {goBackMenu()}}
     onOpenMenu={(type) => {openMenu(type as MenuType)}}
+    onEditGame={(game) => {setEditGame(game)}}
     onGameStarted={() => {hardCloseMenu()}} /> ) }
 
   const customGameCreationMenu = () => { return ( <CustomGameCreationMenu 
-    onBack={() => {goBackMenu()}}
-    onGameStarted={() => {hardCloseMenu()}} /> ) }
+    game={editGame}
+    onBack={() => {setEditGame(undefined); openMenu("customGame")}}
+    onGameStarted={() => {setEditGame(undefined); hardCloseMenu()}} /> ) }
 
   const settingsMenu = () => { return ( <SettingsMenu 
     onBack={() => {goBackMenu()}} /> ) }
@@ -62,6 +66,13 @@ export default function MenuContextProvider({ children }: { children: React.Reac
   const [menuContent, setMenuContent] = useState<React.ReactNode>(welcomeScreen());
   const [menuType, setMenuType] = useState<MenuType | undefined>(undefined);
   const [menuEscapeAllowed, setMenuEscapeAllowed] = useState(true);
+
+  useEffect(() => {
+    if (editGame) {
+      openMenu("customGameCreation");
+      setEditGame(undefined);
+    }
+  }, [editGame]);
 
   useEffect(() => {
     if (gameState.status !== "ongoing" && gameState.status !== "animating") {
