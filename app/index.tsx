@@ -24,16 +24,13 @@ export default function Index() {
 
   return (
     <View
-      style={{
-        flex: 1,
+      style={[styles.container, {
         paddingTop: top,
         paddingLeft: left,
         paddingRight: right,
         paddingBottom: bottom,
-        justifyContent: "center",
-        alignItems: "center",
         backgroundColor: backgroundColor,
-      }}
+      }]}
     >
       <Pressable 
         onPress={() => openMenu("main")} 
@@ -51,6 +48,15 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   menuIconContainer: {
     position: "absolute",
     width: 40,

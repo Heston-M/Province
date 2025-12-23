@@ -6,7 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { GameConfig } from "@/types/gameConfig";
 import { MenuType } from "@/types/menuType";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CustomGameMenuProps {
   onBack: () => void;
@@ -23,6 +23,22 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
   const backIcon = getIconSource("backIcon");
+
+  const height = () => {
+    if (Platform.OS === "web") {
+      return undefined;
+    }
+    switch (customGames.length) {
+      case 0:
+        return 86;
+      case 1:
+        return 340;
+      case 2:
+        return 455;
+      default:
+        return 543;
+      }
+    }
 
   const [selectedGame, setSelectedGame] = useState<GameConfig | undefined>(undefined);
   const [deleteModalTarget, setDeleteModalTarget] = useState<"game" | "all" | null>(null);
@@ -73,7 +89,7 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
   }
   
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor, height: height() }]}>
       <Pressable onPress={onBack} style={styles.backIconContainer}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
@@ -122,7 +138,7 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    maxHeight: 543,
     minWidth: 220,
     justifyContent: "center",
     alignItems: "center",
@@ -171,11 +187,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gameSelectorContainer: {
+    flex: 1,
+    flexShrink: 1,
     maxHeight: "70%",
+    minHeight: 150,
     width: "100%",
     padding: 10,
-    justifyContent: "center",
-    alignItems: "center",
     borderWidth: 1,
     borderRadius: 10,
   },

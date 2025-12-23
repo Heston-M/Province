@@ -53,17 +53,14 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     maxHeight: "95%",
+    minHeight: 100,
     maxWidth: "95%",
+    minWidth: 100,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
     borderWidth: 1,
     borderRadius: 10,
     zIndex: 1001,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
 });
