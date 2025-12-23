@@ -89,7 +89,7 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
   }
   
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor, height: height() }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable onPress={onBack} style={styles.backIconContainer}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
@@ -187,8 +187,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gameSelectorContainer: {
-    flex: 1,
-    flexShrink: 1,
     maxHeight: "70%",
     minHeight: 150,
     width: "100%",

@@ -42,13 +42,12 @@ export default function GameSelector({ games, selectedGame, onGameSelected }: Ga
 
 const styles = StyleSheet.create({
   gameSelectorContainer: {
-    flex: 1,
     padding: 10,
     borderWidth: 1,
     borderRadius: 10,
   },
   scrollView: {
-    flexGrow: 1,
+    
   },
   container: {
     width: "100%",
