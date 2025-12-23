@@ -61,7 +61,6 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    flex: 1,
     minHeight: 200,
     minWidth: 200,
     justifyContent: "center",

@@ -26,8 +26,8 @@ export default function GameSelector({ games, selectedGame, onGameSelected }: Ga
       >
         <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
           <Text style={[styles.title, { color: textColor }]}>Previous Custom Games</Text>
-          {games.map((game, index) => (
-            <View key={index} style={styles.gameCardContainer}>
+          {games.map((game) => (
+            <View key={game.id} style={styles.gameCardContainer}>
               <GameCard 
                 game={game} 
                 isSelected={selectedGame === game} 
@@ -42,19 +42,15 @@ export default function GameSelector({ games, selectedGame, onGameSelected }: Ga
 
 const styles = StyleSheet.create({
   gameSelectorContainer: {
-    flex: 1,
     padding: 10,
-    justifyContent: "center",
-    alignItems: "center",
     borderWidth: 1,
     borderRadius: 10,
   },
   scrollView: {
-    flexGrow: 1,
+    
   },
   container: {
-    flex: 1,
-    justifyContent: "center",
+    width: "100%",
     alignItems: "center",
     gap: 5,
   },

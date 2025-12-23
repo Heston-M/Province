@@ -82,7 +82,6 @@ export default function FadingScrollView({
     <View style={[styles.container, style]}>
       <ScrollView
         {...scrollViewProps}
-        style={styles.scrollView}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         onContentSizeChange={handleContentSizeChange}
@@ -115,10 +114,6 @@ export default function FadingScrollView({
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
   },
   fadeTop: {
     position: "absolute",
