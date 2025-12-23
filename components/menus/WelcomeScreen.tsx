@@ -6,11 +6,12 @@ import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 
 interface WelcomeScreenProps {
+  delay: number;
   onStartGame: () => void;
   onTutorial: () => void;
 }
 
-export default function WelcomeScreen({ onStartGame, onTutorial }: WelcomeScreenProps) {
+export default function WelcomeScreen({ delay, onStartGame, onTutorial }: WelcomeScreenProps) {
   const { getThemeColor } = useThemeContext();
   const backgroundColor = getThemeColor("background");
   const textColor = getThemeColor("text");
@@ -28,37 +29,37 @@ export default function WelcomeScreen({ onStartGame, onTutorial }: WelcomeScreen
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      delay: 500,
+      delay: 500 + delay,
       duration: 5000,
       useNativeDriver: true,
     }).start();
     Animated.timing(text1FadeAnim, {
       toValue: 1,
-      delay: 3000,
+      delay: 3000 + delay,
       duration: 4000,
       useNativeDriver: true,
     }).start();
     Animated.timing(text2FadeAnim, {
       toValue: 1,
-      delay: 6000,
+      delay: 6000 + delay,
       duration: 4000,
       useNativeDriver: true,
     }).start();
     Animated.timing(text3FadeAnim, {
       toValue: 1,
-      delay: 9000,
+      delay: 9000 + delay,
       duration: 4000,
       useNativeDriver: true,
     }).start();
     Animated.timing(text4FadeAnim, {
       toValue: 1,
-      delay: 12000,
+      delay: 12000 + delay,
       duration: 4000,
       useNativeDriver: true,
     }).start();
     Animated.timing(buttonFadeAnim, {
       toValue: 1,
-      delay: 15000,
+      delay: 15000 + delay,
       duration: 4000,
       useNativeDriver: true,
     }).start();
@@ -97,8 +98,6 @@ export default function WelcomeScreen({ onStartGame, onTutorial }: WelcomeScreen
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-
     justifyContent: "center",
     alignItems: "center",
     gap: 10,

@@ -25,7 +25,8 @@ const MenuContext = createContext<ContextShape | undefined>(undefined);
 export default function MenuContextProvider({ children }: { children: React.ReactNode }) {
   const [editGame, setEditGame] = useState<GameConfig | undefined>(undefined);
 
-  const welcomeScreen = () => { return ( <WelcomeScreen 
+  const welcomeScreen = (delay: number = 0) => { return ( <WelcomeScreen 
+    delay={delay}
     onStartGame={() => {
       hardCloseMenu();
       storeSeenWelcomeScreen();
@@ -55,7 +56,8 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     onGameStarted={() => {setEditGame(undefined); hardCloseMenu()}} /> ) }
 
   const settingsMenu = () => { return ( <SettingsMenu 
-    onBack={() => {goBackMenu()}} /> ) }
+    onBack={() => {goBackMenu()}}
+    onClearGameStorage={() => {clearGameStorage()}} /> ) }
 
   const rulesMenu = () => { return ( <RulesMenu 
     onClose={() => {goBackMenu()}} /> ) }
@@ -182,6 +184,23 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     } catch (error) {
       console.error("Error storing seen welcome screen:", error);
     }
+  }
+
+  /**
+   * @description
+   * Clears the game storage and shows the welcome screen after a delay.
+   * Note: This is a complete reset of the game, including everything in local storage.
+   *       Only use this to reset the game to a fresh state.
+   * @returns void
+   */
+  const clearGameStorage = () => {
+    storage.clear().then(() => {
+      console.log("Game storage cleared");
+      setMenuType("welcome");
+      setMenuContent(welcomeScreen(3000));
+    }).catch((error) => {
+      console.error("Error clearing game storage:", error);
+    });
   }
 
   return (
