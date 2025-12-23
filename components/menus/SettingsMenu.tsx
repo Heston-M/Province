@@ -1,6 +1,6 @@
 import ThemePicker from "@/components/ui/ThemePicker";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface SettingsMenuProps {
   onBack: () => void;
@@ -13,10 +13,8 @@ export default function SettingsMenu({ onBack }: SettingsMenuProps) {
   const borderColor = getThemeColor("border");
   const backIcon = getIconSource("backIcon");
 
-  const height = Platform.OS === "web" ? undefined : 164;
-
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor, height: height }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
       <Pressable style={styles.backIconContainer} onPress={() => {onBack()}}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>

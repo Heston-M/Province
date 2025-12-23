@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, useColorScheme, View } from "react-native"
 
 export default function ThemePicker() {
   const { preference, setPreference, getThemeColor } = useThemeContext();
-  const backgroundColor = getThemeColor("background");
+  const secondaryColor = getThemeColor("secondary");
   const textColor = getThemeColor("text");
   const borderColor = getThemeColor("border");
   const selectedColor = getThemeColor("fortified")
@@ -18,7 +18,7 @@ export default function ThemePicker() {
   const [hoveredItem, setHoveredItem] = useState<"light" | "dark" | "system" | null>(null);
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+    <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
       <Text style={[styles.title, { color: textColor }]}>Color Scheme</Text>
       <View style={styles.themeContainer}>
         <Pressable 
@@ -36,7 +36,7 @@ export default function ThemePicker() {
         <Pressable 
           style={[styles.themeItem, { 
             borderColor: preference === "dark" ? selectedColor : colors["dark"].border, 
-            backgroundColor: hoveredItem === "dark" ? colors["dark"].background : colors["dark"].secondary }]} 
+            backgroundColor: hoveredItem === "dark" ? colors["dark"].secondary : colors["dark"].background }]} 
           onPress={() => setPreference("dark")}
           onHoverIn={() => setHoveredItem("dark")}
           onHoverOut={() => setHoveredItem(null)}
@@ -48,7 +48,7 @@ export default function ThemePicker() {
         <Pressable 
           style={[styles.themeItem, { 
             borderColor: preference === "system" ? selectedColor : systemBorderColor, 
-            backgroundColor: hoveredItem === "system" ? systemBackgroundColor : systemSecondaryColor }]} 
+            backgroundColor: hoveredItem === "system" ? systemSecondaryColor : systemBackgroundColor }]} 
           onPress={() => setPreference("system")}
           onHoverIn={() => setHoveredItem("system")}
           onHoverOut={() => setHoveredItem(null)}
@@ -64,14 +64,16 @@ export default function ThemePicker() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    gap: 10,
   },
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   themeContainer: {
     flexDirection: "row",
