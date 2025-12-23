@@ -10,11 +10,14 @@ import { getAdjacentTiles } from "./gridUtils";
  * @returns true if the tile set is valid, false otherwise
  */
 export function isValidTileSet(tileStates: TileState[], boardSize: [number, number]) {
+  if (tileStates.length !== boardSize[0] * boardSize[1]) {
+    return false;
+  }
   for (const tile of tileStates) {
     if (tile.x < 1 || tile.x > boardSize[0] || tile.y < 1 || tile.y > boardSize[1]) {
       return false;
     }
-    if (tile.type !== "territory" && tile.type !== "fortified" && tile.type !== "enemy") {
+    if (tile.type !== "territory" && tile.type !== "fortified" && tile.type !== "enemy" && tile.type !== "obstacle") {
       return false;
     }
     if (tile.growingLevel < 0 || tile.growingLevel > 6) {
@@ -38,7 +41,7 @@ export function isValidTileSet(tileStates: TileState[], boardSize: [number, numb
  * @returns "ongoing" if the game is not over, "playerWon" if the player won, "enemyWon" if the enemy won
  */
 export function isGameOver(resourcesLeft: number, tileStates: TileState[]): GameState["status"] {
-  if (tileStates.every((tile) => tile.isCaptured)) {
+  if (tileStates.every((tile) => tile.isCaptured || tile.type === "obstacle")) {
     return "playerWon";
   }
   if (resourcesLeft <= 0) {
@@ -54,7 +57,7 @@ export function isGameOver(resourcesLeft: number, tileStates: TileState[]): Game
  * @returns true if all tiles are fortified, false otherwise
  */
 export function areAllTilesFortified(tileStates: TileState[]) {
-  return tileStates.every((tile) => tile.type === "fortified");
+  return tileStates.every((tile) => tile.type === "fortified" || tile.type === "obstacle");
 }
 
 /**

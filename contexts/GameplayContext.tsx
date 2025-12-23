@@ -226,10 +226,6 @@ export const GameplayProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         moveCost = 2;
       }
     }
-    if (state.type === "fortified") {
-      state.isCaptured = true;
-      moveCost = 0;
-    }
 
     // reveal adjacent tiles
     for (const tile of adjacentTiles) {

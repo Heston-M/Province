@@ -54,7 +54,7 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
   for (let y = 1; y <= gameConfig.boardSize[1]; y++) {
     for (let x = 1; x <= gameConfig.boardSize[0]; x++) {
       const tileState = initialTileStates.find((t) => t.x === x && t.y === y);
-      let type: "territory" | "fortified" | "enemy" = "territory";
+      let type: "territory" | "fortified" | "enemy" | "obstacle" = "territory";
       if (tileState) {
         tiles.push(tileState);  // tile given by game config
         type = tileState.type;
