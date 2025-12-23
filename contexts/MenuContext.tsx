@@ -1,3 +1,4 @@
+import CustomGameCreationMenu from "@/components/menus/CustomGameCreationMenu";
 import CustomGameMenu from "@/components/menus/CustomGameMenu";
 import GameOverModal from "@/components/menus/GameOverMenu";
 import MainMenu from "@/components/menus/MainMenu";
@@ -41,6 +42,11 @@ export default function MenuContextProvider({ children }: { children: React.Reac
     onOpenMenu={(type) => {openMenu(type as MenuType)}} /> ) }
 
   const customGameMenu = () => { return ( <CustomGameMenu 
+    onBack={() => {goBackMenu()}}
+    onOpenMenu={(type) => {openMenu(type as MenuType)}}
+    onGameStarted={() => {hardCloseMenu()}} /> ) }
+
+  const customGameCreationMenu = () => { return ( <CustomGameCreationMenu 
     onBack={() => {goBackMenu()}}
     onGameStarted={() => {hardCloseMenu()}} /> ) }
 
@@ -96,6 +102,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
       case "customGame":
         setMenuContent(customGameMenu());
         break;
+      case "customGameCreation":
+        setMenuContent(customGameCreationMenu());
+        break;
       case "rules":
         setMenuContent(rulesMenu());
         break;
@@ -126,6 +135,9 @@ export default function MenuContextProvider({ children }: { children: React.Reac
         break;
       case "customGame":
         openMenu("main");
+        break;
+      case "customGameCreation":
+        openMenu("customGame");
         break;
       case "rules":
         openMenu("main");

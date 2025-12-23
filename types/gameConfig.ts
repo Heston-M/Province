@@ -26,6 +26,7 @@ export type FixedFillConfig = FillConfig & {
 }
 
 export type GameConfig = {
+  id: number;
   name: string;
   description: string;
   boardSize: [number, number]; // [width, height]

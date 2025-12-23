@@ -2,6 +2,7 @@ import { GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 
 export const randomGames: GameConfig[] = [
   {
+    id: 800,
     name: "Random Game",
     description: "",
     boardSize: [8, 8],
@@ -20,6 +21,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 801,
     name: "Random Game",
     description: "",
     boardSize: [12, 8],
@@ -38,6 +40,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 802,
     name: "Random Game",
     description: "",
     boardSize: [6, 6],
@@ -56,6 +59,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 803,
     name: "Random Game",
     description: "",
     boardSize: [8, 8],
@@ -74,6 +78,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 804,
     name: "Random Game",
     description: "",
     boardSize: [6, 6],
@@ -92,6 +97,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 805,
     name: "Random Game",
     description: "",
     boardSize: [12, 12],
@@ -110,6 +116,7 @@ export const randomGames: GameConfig[] = [
     } as ProbabilitiesFillConfig,
   },
   {
+    id: 806,
     name: "Random Game",
     description: "",
     boardSize: [12, 12],
