@@ -1,9 +1,10 @@
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import { getRandomGame } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { MenuType } from "@/types/menuType";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 interface MainMenuProps {
   onClose: () => void;
@@ -29,7 +30,7 @@ export default function MainMenu({ onClose, onOpenMenu }: MainMenuProps) {
       <Pressable onPress={onClose} style={styles.closeIconContainer}>
         <Image source={closeIcon} style={styles.closeIcon} />
       </Pressable>
-      <Text style={[styles.title, { color: textColor }]}>Province</Text>
+      <CustomText style={[styles.title, { color: textColor }]}>Province</CustomText>
       <View style={styles.gridContainer}>
         <MenuButton text="Restart Game" onPress={() => {
           restartGame();

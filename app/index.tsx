@@ -1,10 +1,11 @@
 import GameBoard from "@/components/GameBoard";
 import BasicModal from "@/components/ui/BasicModal";
+import CustomText from "@/components/ui/CustomText";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useMenuContext } from "@/contexts/MenuContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { formatTime } from "@/utils/timeUtils";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -40,8 +41,8 @@ export default function Index() {
       <BasicModal visible={menuVisible} escapeAllowed={menuEscapeAllowed}>
         {menuContent}
       </BasicModal>
-      {hasGame && <Text style={[styles.stat, { color: textColor }]}>{formattedTime}</Text>}
-      {hasGame && <Text style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</Text>}
+      {hasGame && <CustomText style={[styles.stat, { color: textColor }]}>{formattedTime}</CustomText>}
+      {hasGame && <CustomText style={[styles.stat, { color: textColor }]}>Resources left: {gameState.resourcesLeft}</CustomText>}
       <GameBoard maxHeight={height * 0.8} maxWidth={width * 0.8} />
     </View>
   );

@@ -1,10 +1,11 @@
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useUser } from "@/contexts/UserContext";
 import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/gameConfig";
 import { useEffect, useState } from "react";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from "react-native";
 
 interface CustomGameMenuProps {
   game: GameConfig | undefined;
@@ -261,10 +262,10 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         <Pressable style={styles.backIconContainer} onPress={() => {onBack()}}>
           <Image source={backIcon} style={styles.backIcon} />
         </Pressable>
-        <Text style={[styles.title, { color: textColor }]}>Custom Game</Text>
+        <CustomText style={[styles.title, { color: textColor }]}>Custom Game</CustomText>
         {/* Name */}
         <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: textColor }]}>Name (required)</Text>
+          <CustomText style={[styles.label, { color: textColor }]}>Name (required)</CustomText>
           <TextInput 
             style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
               invalidFields.includes("name") && { borderColor: "red" }]} 
@@ -276,7 +277,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         </View>
         {/* Description */}
         <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: textColor }]}>Description</Text>
+          <CustomText style={[styles.label, { color: textColor }]}>Description</CustomText>
           <TextInput 
             style={[ styles.input, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }]} 
             value={description} 
@@ -287,7 +288,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         </View>
         {/* Board Size */}
         <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: textColor }]}>Board Size</Text>
+          <CustomText style={[styles.label, { color: textColor }]}>Board Size</CustomText>
           <View style={styles.row}>
             <TextInput 
               style={[ styles.thinInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor }, 
@@ -310,7 +311,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         <View style={styles.row}>
           {/* Resource Limit */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: textColor }]}>Resource Limit</Text>
+            <CustomText style={[styles.label, { color: textColor }]}>Resource Limit</CustomText>
             <TextInput 
               style={[ styles.thinInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                 invalidFields.includes("resourceLimit") && { borderColor: "red" }]} 
@@ -322,7 +323,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           </View>
           {/* Enemy Aggression */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: textColor }]}>Enemy Aggression</Text>
+            <CustomText style={[styles.label, { color: textColor }]}>Enemy Aggression</CustomText>
             <TextInput 
               style={[ styles.thinInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                 invalidFields.includes("enemyAggression") && { borderColor: "red" }]} 
@@ -336,7 +337,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         <View style={styles.row}>
           {/* Fog of War Switch */}
           <View style={styles.switchContainer}>
-            <Text style={[styles.switchLabel, { color: textColor }]}>Fog of War</Text>
+            <CustomText style={[styles.switchLabel, { color: textColor }]}>Fog of War</CustomText>
             <Switch
               value={useFogOfWar}
               onValueChange={setUseFogOfWar}
@@ -348,7 +349,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           </View>
           {/* Time Limit Switch */}
           <View style={styles.switchContainer}>
-            <Text style={[styles.switchLabel, { color: textColor }]}>Time Limit</Text>
+            <CustomText style={[styles.switchLabel, { color: textColor }]}>Time Limit</CustomText>
             <Switch
               value={useTimeLimit}
               onValueChange={setUseTimeLimit}
@@ -360,7 +361,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           </View>
           {/* Advanced Options Switch */}
           <View style={styles.switchContainer}>
-            <Text style={[styles.switchLabel, { color: textColor }]}>Advanced</Text>
+            <CustomText style={[styles.switchLabel, { color: textColor }]}>Advanced</CustomText>
             <Switch
               value={showAdvancedOptions}
               onValueChange={setShowAdvancedOptions}
@@ -383,9 +384,9 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         {/* Advanced Options */}
         {showAdvancedOptions && (
           <View style={[styles.advancedOptionsContainer, { backgroundColor: secondaryColor, borderColor: accentColor }]}>
-            <Text style={[styles.subHeader, { color: textColor }]}>Advanced Options</Text>
+            <CustomText style={[styles.subHeader, { color: textColor }]}>Advanced Options</CustomText>
             <View style={styles.switchContainer}>
-              <Text style={[styles.switchLabel, { color: textColor }]}>Fill using: {useFixedFill ? "Numbers of tiles" : "Probabilities"}</Text>
+              <CustomText style={[styles.switchLabel, { color: textColor }]}>Fill using: {useFixedFill ? "Numbers of tiles" : "Probabilities"}</CustomText>
               <Switch
                 value={useFixedFill}
                 onValueChange={setUseFixedFill}
@@ -399,7 +400,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
               <View style={{ gap: 5 }}>
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Fortified Chance</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Fortified Chance</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("fortifiedChance") && { borderColor: "red" }]}
@@ -410,7 +411,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Enemy Chance</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Enemy Chance</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("enemyChance") && { borderColor: "red" }]}
@@ -423,7 +424,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                 </View>
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Max Fortified</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Max Fortified</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("maxFortified") && { borderColor: "red" }]}
@@ -434,7 +435,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Max Enemy</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Max Enemy</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("maxEnemy") && { borderColor: "red" }]}
@@ -447,7 +448,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                 </View>
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Min Fortified</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Min Fortified</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("minFortified") && { borderColor: "red" }]}
@@ -458,7 +459,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <Text style={[styles.label, { color: textColor }]}>Min Enemy</Text>
+                    <CustomText style={[styles.label, { color: textColor }]}>Min Enemy</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                         invalidFields.includes("minEnemy") && { borderColor: "red" }]}
@@ -474,7 +475,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
             {useFixedFill && (
               <View style={styles.row}>
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.label, { color: textColor }]}>Fortified Tiles</Text>
+                  <CustomText style={[styles.label, { color: textColor }]}>Fortified Tiles</CustomText>
                   <TextInput
                     style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                       invalidFields.includes("fortifiedNumber") && { borderColor: "red" }]}
@@ -485,7 +486,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                   />
                 </View>
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.label, { color: textColor }]}>Enemy Tiles</Text>
+                  <CustomText style={[styles.label, { color: textColor }]}>Enemy Tiles</CustomText>
                   <TextInput
                     style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
                       invalidFields.includes("enemyNumber") && { borderColor: "red" }]}
@@ -500,7 +501,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           </View>
         )}
         {error && <View style={styles.errorContainer}>
-           <Text style={[styles.error, { color: textColor }]}>{error}</Text>
+           <CustomText style={[styles.error, { color: textColor }]}>{error}</CustomText>
         </View>}
         {/* Create Game Button */}
         <View style={styles.row}>

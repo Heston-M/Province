@@ -1,7 +1,8 @@
+import CustomText from "@/components/ui/CustomText";
 import { colors } from "@/constants/colors";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 
 export default function ThemePicker() {
   const { preference, setPreference, getThemeColor } = useThemeContext();
@@ -19,7 +20,7 @@ export default function ThemePicker() {
 
   return (
     <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>Color Scheme</Text>
+      <CustomText style={[styles.title, { color: textColor }]}>Color Scheme</CustomText>
       <View style={styles.themeContainer}>
         <Pressable 
           style={[styles.themeItem, { 
@@ -30,7 +31,7 @@ export default function ThemePicker() {
           onHoverOut={() => setHoveredItem(null)}
           onPressIn={() => setHoveredItem("light")}
           onPressOut={() => setHoveredItem(null)}>
-          <Text style={[styles.themeTitle, { color: colors["light"].text }]}>Light</Text>
+          <CustomText style={[styles.themeTitle, { color: colors["light"].text }]}>Light</CustomText>
           <View style={[styles.themeWindow, { backgroundColor: colors["light"].text }]}></View>
         </Pressable>
         <Pressable 
@@ -42,7 +43,7 @@ export default function ThemePicker() {
           onHoverOut={() => setHoveredItem(null)}
           onPressIn={() => setHoveredItem("dark")}
           onPressOut={() => setHoveredItem(null)}>
-          <Text style={[styles.themeTitle, { color: colors["dark"].text }]}>Dark</Text>
+          <CustomText style={[styles.themeTitle, { color: colors["dark"].text }]}>Dark</CustomText>
           <View style={[styles.themeWindow, { backgroundColor: colors["dark"].text }]}></View>
         </Pressable>
         <Pressable 
@@ -54,7 +55,7 @@ export default function ThemePicker() {
           onHoverOut={() => setHoveredItem(null)}
           onPressIn={() => setHoveredItem("system")}
           onPressOut={() => setHoveredItem(null)}>
-          <Text style={[styles.themeTitle, { color: systemTextColor }]}>System</Text>
+          <CustomText style={[styles.themeTitle, { color: systemTextColor }]}>System</CustomText>
           <View style={[styles.themeWindow, { backgroundColor: systemTextColor }]}></View>
           </Pressable>
       </View>

@@ -1,7 +1,8 @@
+import CustomText from "@/components/ui/CustomText";
 import { RulesPage } from "@/constants/rules";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { Image } from "expo-image";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface RulesPageRendererProps {
   page: RulesPage;
@@ -14,15 +15,15 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>{page.title}</Text>
+      <CustomText style={[styles.title, { color: textColor }]}>{page.title}</CustomText>
       <View style={styles.content}>
         {page.sections.map((section, index) => {
           switch (section.type) {
             case "text":
               return (
-                <Text key={index} style={[styles.text, { color: textColor }]}>
+                <CustomText key={index} style={[styles.text, { color: textColor }]}>
                   {section.content}
-                </Text>
+                </CustomText>
               );
             case "image":
               return (
@@ -33,18 +34,18 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                     contentFit="contain"
                   />
                   {section.image?.caption && (
-                    <Text style={[styles.caption, { width: section.image?.width ?? 200, color: textColor }]}>
+                    <CustomText style={[styles.caption, { width: section.image?.width ?? 200, color: textColor }]}>
                       {section.image?.caption}
-                    </Text>
+                    </CustomText>
                   )}
                 </View>
               );
             case "text-image":
               return (
                 <View key={index} style={styles.textImageContainer}>
-                  <Text style={[styles.text, { height: section.image?.height ?? 200, color: textColor }]}>
+                  <CustomText style={[styles.text, { height: section.image?.height ?? 200, color: textColor }]}>
                     {section.content}
-                  </Text>
+                  </CustomText>
                   {section.image && (
                     <View style={styles.imageContainer}>
                       <Image 
@@ -53,9 +54,9 @@ export default function RulesPageRenderer({ page }: RulesPageRendererProps) {
                         contentFit="contain"
                       />
                       {section.image.caption && (
-                        <Text style={[styles.caption, { width: section.image?.width ?? 200, color: textColor, textAlign: "center" }]}>
+                        <CustomText style={[styles.caption, { width: section.image?.width ?? 200, color: textColor, textAlign: "center" }]}>
                           {section.image.caption}
-                        </Text>
+                        </CustomText>
                       )}
                     </View>
                   )}

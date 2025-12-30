@@ -1,10 +1,11 @@
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import { getRandomGame } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useRandomQuote } from "@/hooks/useRandomQuote";
 import { MenuType } from "@/types/menuType";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 interface GameOverModalProps {
   onClose: () => void;
@@ -33,12 +34,12 @@ export default function GameOverModal({ onClose, onOpenMenu }: GameOverModalProp
       <Pressable style={styles.closeIconContainer} onPress={onClose}>
         <Image source={closeIcon} style={styles.closeIcon} />
       </Pressable>
-      <Text style={[styles.title, { color: textColor }]}>
+      <CustomText style={[styles.title, { color: textColor }]}>
         {gameState.status === "playerWon" ? "You Won" : "You lost..."}
-      </Text>
-      <Text style={[styles.message, { color: textColor }]}>
+      </CustomText>
+      <CustomText style={[styles.message, { color: textColor }]}>
         {gameState.status === "playerWon" ? winMessage : loseMessage}
-      </Text>
+      </CustomText>
       <MenuButton 
         text={gameState.status === "playerWon" ? "New Game" : "Try Again"} 
         onPress={() => {

@@ -1,8 +1,9 @@
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import ThemePicker from "@/components/ui/ThemePicker";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 interface SettingsMenuProps {
   onBack: () => void;
@@ -23,11 +24,11 @@ export default function SettingsMenu({ onBack, onClearGameStorage }: SettingsMen
   const confirmClearGameStorageModal = () => {
     return (
       <View style={[styles.modalContainer, { backgroundColor: secondaryColor, borderColor: destructiveColor }]}>
-        <Text style={[styles.modalTitle, { color: textColor }]}>Clear Game Storage?</Text>
-        <Text style={[styles.modalMessage, { color: textColor }]}>
-          This will reset everything in the game, including level progress, custom games, settings, and more. Everything.</Text>
-        <Text style={[styles.modalMessage, { color: textColor }]}>
-          This action cannot be undone.</Text>
+        <CustomText style={[styles.modalTitle, { color: textColor }]}>Clear Game Storage?</CustomText>
+        <CustomText style={[styles.modalMessage, { color: textColor }]}>
+          This will reset everything in the game, including level progress, custom games, settings, and more. Everything.</CustomText>
+        <CustomText style={[styles.modalMessage, { color: textColor }]}>
+          This action cannot be undone.</CustomText>
         <View style={styles.row}>
           <MenuButton text="Cancel" onPress={() => {setConfirmClearGameStorageModalVisible(false)}} />
           <MenuButton 
@@ -49,7 +50,7 @@ export default function SettingsMenu({ onBack, onClearGameStorage }: SettingsMen
       <Pressable style={styles.backIconContainer} onPress={() => {onBack()}}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
-      <Text style={[styles.title, { color: textColor }]}>Settings</Text>
+      <CustomText style={[styles.title, { color: textColor }]}>Settings</CustomText>
       <ThemePicker />
       <MenuButton 
         text="Clear Game Storage" 
