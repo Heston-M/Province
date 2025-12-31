@@ -7,6 +7,15 @@ import { FixedFillConfig, GameConfig, ProbabilitiesFillConfig } from "@/types/ga
 import { useEffect, useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from "react-native";
 
+type InvalidField = 
+  "name" 
+  | "boardX" | "boardY" 
+  | "resourceLimit" | "timeLimit" | "enemyAggression" 
+  | "fortifiedChance" | "enemyChance" | "obstacleChance"
+  | "maxFortified" | "maxEnemy" | "maxObstacle"
+  | "minFortified" | "minEnemy" | "minObstacle"
+  | "fortifiedNumber" | "enemyNumber" | "obstacleNumber";
+
 interface CustomGameMenuProps {
   game: GameConfig | undefined;
   onBack: () => void;
@@ -28,12 +37,16 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
   const [useFixedFill, setUseFixedFill] = useState(false);
   const [fortifiedChance, setFortifiedChance] = useState("");
   const [enemyChance, setEnemyChance] = useState("");
+  const [obstacleChance, setObstacleChance] = useState("");
   const [maxFortified, setMaxFortified] = useState("");
   const [maxEnemy, setMaxEnemy] = useState("");
+  const [maxObstacle, setMaxObstacle] = useState("");
   const [minFortified, setMinFortified] = useState("");
   const [minEnemy, setMinEnemy] = useState("");
+  const [minObstacle, setMinObstacle] = useState("");
   const [fortifiedNumber, setFortifiedNumber] = useState("");
   const [enemyNumber, setEnemyNumber] = useState("");
+  const [obstacleNumber, setObstacleNumber] = useState("");
 
   useEffect(() => {
     const loadGame = () => {
@@ -60,6 +73,10 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           const newEnemyChance = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.enemy * 100 : prev;
           return newEnemyChance.toString();
         });
+        setObstacleChance(prev => {
+          const newObstacleChance = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.obstacle * 100 : prev;
+          return newObstacleChance.toString();
+        });
         setMaxFortified(prev => {
           const newMaxFortified = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.fortified : prev;
           return newMaxFortified.toString();
@@ -67,6 +84,10 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         setMaxEnemy(prev => {
           const newMaxEnemy = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.enemy : prev;
           return newMaxEnemy.toString();
+        });
+        setMaxObstacle(prev => {
+          const newMaxObstacle = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.obstacle : prev;
+          return newMaxObstacle.toString();
         });
         setMinFortified(prev => {
           const newMinFortified = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.minFortified : prev;
@@ -76,6 +97,10 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           const newMinEnemy = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.minEnemy : prev;
           return newMinEnemy.toString();
         });
+        setMinObstacle(prev => {
+          const newMinObstacle = game.fillConfig.type === "probabilities" ? (game.fillConfig as ProbabilitiesFillConfig).probabilities?.minObstacle : prev;
+          return newMinObstacle.toString();
+        });
         setFortifiedNumber(prev => {
           const newFortifiedNumber = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.fortified : prev;
           return newFortifiedNumber.toString();
@@ -84,13 +109,17 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
           const newEnemyNumber = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.enemy : prev;
           return newEnemyNumber.toString();
         });
+        setObstacleNumber(prev => {
+          const newObstacleNumber = game.fillConfig.type === "fixed" ? (game.fillConfig as FixedFillConfig).numbers?.obstacle : prev;
+          return newObstacleNumber.toString();
+        });
       }
     }
     loadGame();
   }, [game]);
 
   const [error, setError] = useState<string | null>(null);
-  const [invalidFields, setInvalidFields] = useState<("name" |"boardX" | "boardY" | "resourceLimit" | "timeLimit" | "enemyAggression" | "fortifiedChance" | "enemyChance" | "maxFortified" | "maxEnemy" | "minFortified" | "minEnemy" | "fortifiedNumber" | "enemyNumber")[]>([]);
+  const [invalidFields, setInvalidFields] = useState<InvalidField[]>([]);
 
   const { getThemeColor, getIconSource } = useThemeContext();
   const backgroundColor = getThemeColor("background");
@@ -109,7 +138,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
     setInvalidFields([]);
 
     const errors = [];
-    const invalidFields: ("name" |"boardX" | "boardY" | "resourceLimit" | "timeLimit" | "enemyAggression" | "fortifiedChance" | "enemyChance" | "maxFortified" | "maxEnemy" | "minFortified" | "minEnemy" | "fortifiedNumber" | "enemyNumber")[] = [];
+    const invalidFields: InvalidField[] = [];
 
     const newName = name.trim();
     if (newName.length === 0) {
@@ -127,6 +156,7 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
       errors.push("Columns must be between 3 and 20.");
       invalidFields.push("boardX");
     }
+    const boardSize = newBoardX * newBoardY;
     const newResourceLimit = resourceLimit.trim() === "" ? 10 : parseInt(resourceLimit.trim());
     if (isNaN(newResourceLimit) || newResourceLimit < 7) {
       errors.push("Resource limit must be at least 7.");
@@ -144,25 +174,34 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
     }
     const newFortifiedChance = fortifiedChance.trim() === "" ? 5 : parseFloat(fortifiedChance.trim());
     const newEnemyChance =         enemyChance.trim() === "" ? 5 : parseFloat(enemyChance.trim());
-    const newMaxFortified =       maxFortified.trim() === "" ? newBoardX * newBoardY : parseInt(maxFortified.trim());
-    const newMaxEnemy =               maxEnemy.trim() === "" ? newBoardX * newBoardY : parseInt(maxEnemy.trim());
+    const newObstacleChance =   obstacleChance.trim() === "" ? 0 : parseFloat(obstacleChance.trim());
+    const newMaxFortified =       maxFortified.trim() === "" ? boardSize : parseInt(maxFortified.trim());
+    const newMaxEnemy =               maxEnemy.trim() === "" ? boardSize : parseInt(maxEnemy.trim());
+    const newMaxObstacle =         maxObstacle.trim() === "" ? boardSize : parseInt(maxObstacle.trim());
     const newMinFortified =       minFortified.trim() === "" ? 0 : parseInt(minFortified.trim());
     const newMinEnemy =               minEnemy.trim() === "" ? 0 : parseInt(minEnemy.trim());
-    const newFortifiedNumber = fortifiedNumber.trim() === "" ? Math.ceil(newBoardX * newBoardY / 20) : parseInt(fortifiedNumber.trim());
-    const newEnemyNumber =         enemyNumber.trim() === "" ? Math.ceil(newBoardX * newBoardY / 20) : parseInt(enemyNumber.trim());
+    const newMinObstacle =         minObstacle.trim() === "" ? 0 : parseInt(minObstacle.trim());
+    const newFortifiedNumber = fortifiedNumber.trim() === "" ? Math.ceil(boardSize / 20) : parseInt(fortifiedNumber.trim());
+    const newEnemyNumber =         enemyNumber.trim() === "" ? Math.ceil(boardSize / 20) : parseInt(enemyNumber.trim());
+    const newObstacleNumber =   obstacleNumber.trim() === "" ? Math.ceil(boardSize / 20) : parseInt(obstacleNumber.trim());
     if (useFixedFill) {
-      if (isNaN(newFortifiedNumber) || newFortifiedNumber < 0 || newFortifiedNumber > newBoardX * newBoardY) {
+      if (isNaN(newFortifiedNumber) || newFortifiedNumber < 0 || newFortifiedNumber > boardSize) {
         errors.push("Fortified number must be between 0 and the board size.");
         invalidFields.push("fortifiedNumber");
       }
-      if (isNaN(newEnemyNumber) || newEnemyNumber < 0 || newEnemyNumber > newBoardX * newBoardY) {
+      if (isNaN(newEnemyNumber) || newEnemyNumber < 0 || newEnemyNumber > boardSize) {
         errors.push("Enemy number must be between 0 and the board size.");
         invalidFields.push("enemyNumber");
       }
-      if (isNaN(newFortifiedNumber) || isNaN(newEnemyNumber) || newFortifiedNumber + newEnemyNumber > newBoardX * newBoardY) {
-        errors.push("Fortified and enemy numbers must be less than the board size.");
+      if (isNaN(newObstacleNumber) || newObstacleNumber < 0 || newObstacleNumber > boardSize) {
+        errors.push("Obstacle number must be between 0 and the board size.");
+        invalidFields.push("obstacleNumber");
+      }
+      if (isNaN(newFortifiedNumber) || isNaN(newEnemyNumber) || newFortifiedNumber + newEnemyNumber + newObstacleNumber > boardSize) {
+        errors.push("Fortified, enemy, and obstacle numbers must be less than the board size.");
         invalidFields.push("fortifiedNumber");
         invalidFields.push("enemyNumber");
+        invalidFields.push("obstacleNumber");
       }
     } else {
       if (isNaN(newFortifiedChance) || newFortifiedChance < 0 || newFortifiedChance > 100) {
@@ -173,10 +212,15 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         errors.push("Enemy chance must be between 0 and 100.");
         invalidFields.push("enemyChance");
       }
-      if (newFortifiedChance + newEnemyChance > 100) {
-        errors.push("Fortified and enemy chances must be less than 100.");
+      if (isNaN(newObstacleChance) || newObstacleChance < 0 || newObstacleChance > 100) {
+        errors.push("Obstacle chance must be between 0 and 100.");
+        invalidFields.push("obstacleChance");
+      }
+      if (newFortifiedChance + newEnemyChance + newObstacleChance > 100) {
+        errors.push("Fortified, enemy, and obstacle chances must be less than 100.");
         invalidFields.push("fortifiedChance");
         invalidFields.push("enemyChance");
+        invalidFields.push("obstacleChance");
       }
       if (isNaN(newMaxFortified) || newMaxFortified < 0) {
         errors.push("Max fortified must be at least 0.");
@@ -186,13 +230,21 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         errors.push("Max enemy must be at least 0.");
         invalidFields.push("maxEnemy");
       }
-      if (isNaN(newMinFortified) || newMinFortified > newBoardX * newBoardY) {
+      if (isNaN(newMaxObstacle) || newMaxObstacle < 0) {
+        errors.push("Max obstacle must be at least 0.");
+        invalidFields.push("maxObstacle");
+      }
+      if (isNaN(newMinFortified) || newMinFortified > boardSize) {
         errors.push("Min fortified must be less than the board size.");
         invalidFields.push("minFortified");
       }
-      if (isNaN(newMinEnemy) || newMinEnemy > newBoardX * newBoardY) {
+      if (isNaN(newMinEnemy) || newMinEnemy > boardSize) {
         errors.push("Min enemy must be less than the board size.");
         invalidFields.push("minEnemy");
+      }
+      if (isNaN(newMinObstacle) || newMinObstacle > boardSize) {
+        errors.push("Min obstacle must be less than the board size.");
+        invalidFields.push("minObstacle");
       }
     }
 
@@ -210,19 +262,23 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
         numbers: {
           fortified: newFortifiedNumber,
           enemy: newEnemyNumber,
+          obstacle: newObstacleNumber,
         },
       }
     } else {
       newFillConfig = {
         type: "probabilities",
         probabilities: {
-          territory: (1 - newFortifiedChance / 100 - newEnemyChance / 100),
+          territory: (1 - newFortifiedChance / 100 - newEnemyChance / 100 - newObstacleChance / 100),
           fortified: newFortifiedChance / 100,
           enemy: newEnemyChance / 100,
+          obstacle: newObstacleChance / 100,
           maxFortified: newMaxFortified,
           maxEnemy: newMaxEnemy,
+          maxObstacle: newMaxObstacle,
           minFortified: newMinFortified,
           minEnemy: newMinEnemy,
+          minObstacle: newMinObstacle,
         },
       }
     }
@@ -424,6 +480,19 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                 </View>
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Obstacle Chance</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("obstacleChance") && { borderColor: "red" }]}
+                      value={obstacleChance}
+                      placeholder="0 - 100"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setObstacleChance(text)}
+                    />
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.inputContainer}>
                     <CustomText style={[styles.label, { color: textColor }]}>Max Fortified</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
@@ -435,19 +504,6 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                     />
                   </View>
                   <View style={styles.inputContainer}>
-                    <CustomText style={[styles.label, { color: textColor }]}>Max Enemy</CustomText>
-                    <TextInput
-                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
-                        invalidFields.includes("maxEnemy") && { borderColor: "red" }]}
-                      value={maxEnemy}
-                      placeholder="> 0"
-                      placeholderTextColor={textColor + "80"}
-                      onChangeText={(text) => setMaxEnemy(text)}
-                    />
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.inputContainer}>
                     <CustomText style={[styles.label, { color: textColor }]}>Min Fortified</CustomText>
                     <TextInput
                       style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
@@ -456,6 +512,19 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                       placeholder="< board size"
                       placeholderTextColor={textColor + "80"}
                       onChangeText={(text) => setMinFortified(text)}
+                    />
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Max Enemy</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("maxEnemy") && { borderColor: "red" }]}
+                      value={maxEnemy}
+                      placeholder="> 0"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setMaxEnemy(text)}
                     />
                   </View>
                   <View style={styles.inputContainer}>
@@ -470,31 +539,70 @@ export default function CustomGameMenu({ game, onBack, onGameStarted }: CustomGa
                     />
                   </View>
                 </View>
+                <View style={styles.row}>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Max Obstacle</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("maxObstacle") && { borderColor: "red" }]}
+                      value={maxObstacle}
+                      placeholder="> 0"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setMaxObstacle(text)}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Min Obstacle</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("minObstacle") && { borderColor: "red" }]}
+                      value={minObstacle}
+                      placeholder="< board size"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setMinObstacle(text)}
+                    />
+                  </View>
+                </View>
               </View>
             )}
             {useFixedFill && (
-              <View style={styles.row}>
-                <View style={styles.inputContainer}>
-                  <CustomText style={[styles.label, { color: textColor }]}>Fortified Tiles</CustomText>
-                  <TextInput
-                    style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
-                      invalidFields.includes("fortifiedNumber") && { borderColor: "red" }]}
-                    value={fortifiedNumber}
-                    placeholder="0 - board size"
-                    placeholderTextColor={textColor + "80"}
-                    onChangeText={(text) => setFortifiedNumber(text)}
-                  />
+              <View style={{ gap: 5 }}>
+                <View style={styles.row}>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Fortified Tiles</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("fortifiedNumber") && { borderColor: "red" }]}
+                      value={fortifiedNumber}
+                      placeholder="0 - board size"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setFortifiedNumber(text)}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Enemy Tiles</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("enemyNumber") && { borderColor: "red" }]}
+                      value={enemyNumber}
+                      placeholder="0 - board size"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setEnemyNumber(text)}
+                    />
+                  </View>
                 </View>
-                <View style={styles.inputContainer}>
-                  <CustomText style={[styles.label, { color: textColor }]}>Enemy Tiles</CustomText>
-                  <TextInput
-                    style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
-                      invalidFields.includes("enemyNumber") && { borderColor: "red" }]}
-                    value={enemyNumber}
-                    placeholder="0 - board size"
-                    placeholderTextColor={textColor + "80"}
-                    onChangeText={(text) => setEnemyNumber(text)}
-                  />
+                <View style={styles.row}>
+                  <View style={styles.inputContainer}>
+                    <CustomText style={[styles.label, { color: textColor }]}>Obstacle Tiles</CustomText>
+                    <TextInput
+                      style={[styles.advancedInput, { color: textColor, backgroundColor: secondaryColor, borderColor: borderColor },
+                        invalidFields.includes("obstacleNumber") && { borderColor: "red" }]}
+                      value={obstacleNumber}
+                      placeholder="0 - board size"
+                      placeholderTextColor={textColor + "80"}
+                      onChangeText={(text) => setObstacleNumber(text)}
+                    />
+                  </View>
                 </View>
               </View>
             )}
