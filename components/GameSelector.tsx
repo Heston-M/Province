@@ -1,8 +1,9 @@
+import CustomText from "@/components/ui/CustomText";
 import FadingScrollView from "@/components/ui/FadingScrollView";
 import GameCard from "@/components/ui/GameCard";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { GameConfig } from "@/types/gameConfig";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface GameSelectorProps {
   games: GameConfig[];
@@ -25,7 +26,7 @@ export default function GameSelector({ games, selectedGame, onGameSelected }: Ga
         fadeSize={30}
       >
         <View style={[styles.container, { backgroundColor: secondaryColor, borderColor: borderColor }]}>
-          <Text style={[styles.title, { color: textColor }]}>Previous Custom Games</Text>
+          <CustomText style={[styles.title, { color: textColor }]}>Previous Custom Games</CustomText>
           {games.map((game) => (
             <View key={game.id} style={styles.gameCardContainer}>
               <GameCard 

@@ -1,9 +1,10 @@
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import { getRandomGame } from "@/constants/levels/randomGames";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text } from "react-native";
+import { Animated, StyleSheet } from "react-native";
 
 interface WelcomeScreenProps {
   delay: number;
@@ -79,14 +80,14 @@ export default function WelcomeScreen({ delay, onStartGame, onTutorial }: Welcom
         opacity: fadeAnim,
       }
     ]}>
-      <Text style={[styles.title, { color: textColor }]}>Province</Text>
-      <Animated.Text style={[styles.text, { color: textColor, opacity: text1FadeAnim }]}>
+      <CustomText style={[styles.title, { color: textColor }]}>Province</CustomText>
+      <Animated.Text style={[styles.text, { color: textColor, opacity: text1FadeAnim, fontFamily: "Comfortaa" }]}>
         Welcome ambitious conqueror...</Animated.Text>
-      <Animated.Text style={[styles.text, { color: textColor, opacity: text2FadeAnim }]}>
+      <Animated.Text style={[styles.text, { color: textColor, opacity: text2FadeAnim, fontFamily: "Comfortaa" }]}>
         You don't seem like you're ready to rule the world yet.</Animated.Text>
-      <Animated.Text style={[styles.text, { color: textColor, opacity: text3FadeAnim }]}>
+      <Animated.Text style={[styles.text, { color: textColor, opacity: text3FadeAnim, fontFamily: "Comfortaa" }]}>
         Unfortunately, all competent options are... indisposed. So you'll have to do.</Animated.Text>
-      <Animated.Text style={[styles.text, { color: textColor, opacity: text4FadeAnim }]}>
+      <Animated.Text style={[styles.text, { color: textColor, opacity: text4FadeAnim, fontFamily: "Comfortaa" }]}>
         Now, do you know what to do? Or do I need to spell it out for you?</Animated.Text>
       <Animated.View style={[styles.row, { opacity: buttonFadeAnim }]}>
         <MenuButton text="Get to Work" onPress={startGame} />

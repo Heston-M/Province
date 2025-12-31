@@ -1,6 +1,7 @@
+import CustomText from "@/components/ui/CustomText";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 
 interface MenuButtonProps {
   text: string;
@@ -40,7 +41,7 @@ export default function MenuButton({ text, fillColor, highlight, highlightColor,
       onHoverOut={() => setIsHover(false)}
       onPressIn={() => setIsHover(true)}
       onPressOut={() => setIsHover(false)}>
-      <Text style={[styles.text, { color: textColor }]}>{text}</Text>
+      <CustomText style={[styles.text, { color: textColor }]}>{text}</CustomText>
     </Pressable>
   );
 }

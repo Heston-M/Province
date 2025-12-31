@@ -1,4 +1,5 @@
 import GameSelector from "@/components/GameSelector";
+import CustomText from "@/components/ui/CustomText";
 import MenuButton from "@/components/ui/MenuButton";
 import { useGameplay } from "@/contexts/GameplayContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -6,7 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import { GameConfig } from "@/types/gameConfig";
 import { MenuType } from "@/types/menuType";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 interface CustomGameMenuProps {
   onBack: () => void;
@@ -38,14 +39,14 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
   const confirmDeleteModal = () => {
     return (
       <View style={[styles.modalContainer, { backgroundColor: secondaryColor, borderColor: deleteColor }]}>
-        <Text style={[styles.modalTitle, { color: textColor }]}>
+        <CustomText style={[styles.modalTitle, { color: textColor }]}>
           Delete {deleteModalTarget === "game" ? `"${selectedGame?.name}"` : "all games"}?
-        </Text>
-        <Text style={[styles.modalMessage, { color: textColor }]}>
+        </CustomText>
+        <CustomText style={[styles.modalMessage, { color: textColor }]}>
           {deleteModalTarget === "game" ? "Are you sure you want to permanently delete this game?" : "Are you sure you want to permanently delete all games?"}
-        </Text>
+        </CustomText>
         {deleteModalTarget === "all" && 
-          <Text style={[styles.modalMessage, { color: textColor }]}>This action cannot be undone.</Text>
+          <CustomText style={[styles.modalMessage, { color: textColor }]}>This action cannot be undone.</CustomText>
         }
         <View style={styles.row}>
           <MenuButton 
@@ -77,7 +78,7 @@ export default function CustomGameMenu({ onBack, onOpenMenu, onEditGame, onGameS
       <Pressable onPress={onBack} style={styles.backIconContainer}>
         <Image source={backIcon} style={styles.backIcon} />
       </Pressable>
-      <Text style={[styles.title, { color: textColor }]}>Custom Games</Text>
+      <CustomText style={[styles.title, { color: textColor }]}>Custom Games</CustomText>
       <View style={styles.row}>
         <MenuButton text="New Custom Game" onPress={() => onOpenMenu("customGameCreation")} />
         {customGames.length > 0 && <MenuButton 
