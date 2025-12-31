@@ -26,35 +26,31 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
   let numTerritory = 0;
   let numFortified = 0;
   let numEnemy = 0;
+  let numObstacle = 0;
 
-  // if using fixed fill config, generate the coordinates of the fortified and enemy tiles
-  let fortifiedCoords: Map<string, boolean> = new Map();
-  let enemyCoords: Map<string, boolean> = new Map();
+  // if using fixed fill config, generate the coordinates of the fortified, enemy, and obstacle tiles
+  let determinedTileTypes: Map<string, "territory" | "fortified" | "enemy" | "obstacle"> = new Map();
 
-  if (fillConfig && fillConfig.type === "fixed") {
-    for (let i = 0; i < fillConfig.numbers.fortified;) {
-      const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
-      const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
-      if (!fortifiedCoords.has(`${x},${y}`) && !initialTileStates.some((t) => t.x === x && t.y === y)) {
-        fortifiedCoords.set(`${x},${y}`, true);
-        i++;
-      }
-    }
-    for (let i = 0; i < fillConfig.numbers.enemy;) {
-      const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
-      const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
-      if (!enemyCoords.has(`${x},${y}`) && !initialTileStates.some((t) => t.x === x && t.y === y)) {
-        enemyCoords.set(`${x},${y}`, true);
-        i++;
+  function determineTiles(num: number, type: "territory" | "fortified" | "enemy" | "obstacle"): void {
+    if (fillConfig.type === "fixed") {
+      while (num < fillConfig.numbers.fortified) {
+        const x = Math.floor(Math.random() * gameConfig.boardSize[0]) + 1;
+        const y = Math.floor(Math.random() * gameConfig.boardSize[1]) + 1;
+        if (!determinedTileTypes.has(`${x},${y}`) && !initialTileStates.some((t) => t.x === x && t.y === y)) {
+          determinedTileTypes.set(`${x},${y}`, type);
+        }
       }
     }
   }
+  determineTiles(numFortified, "fortified");
+  determineTiles(numEnemy, "enemy");
+  determineTiles(numObstacle, "obstacle");
   
   // generate the board tiles
   for (let y = 1; y <= gameConfig.boardSize[1]; y++) {
     for (let x = 1; x <= gameConfig.boardSize[0]; x++) {
       const tileState = initialTileStates.find((t) => t.x === x && t.y === y);
-      let type: "territory" | "fortified" | "enemy" = "territory";
+      let type: "territory" | "fortified" | "enemy" | "obstacle" = "territory";
       if (tileState) {
         tiles.push(tileState);  // tile given by game config
         type = tileState.type;
@@ -64,23 +60,28 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
         if (fillConfig.type === "probabilities") {  // randomly generate tile
           if (randNum < fillConfig.probabilities.territory) {
             type = "territory";
+            numTerritory++;
           }
           else if (randNum < fillConfig.probabilities.territory + fillConfig.probabilities.fortified) {
             type = "fortified";
+            numFortified++;
+          }
+          else if (randNum < fillConfig.probabilities.territory + fillConfig.probabilities.fortified + fillConfig.probabilities.enemy) {
+            type = "enemy";
+            numEnemy++;
           }
           else {
-            type = "enemy";
+            type = "obstacle";
+            numObstacle++;
           }
         }
         else if (fillConfig.type === "fixed") {  // fill tile with uncaptured territory
-          if (fortifiedCoords.get(`${x},${y}`)) {
-            type = "fortified";
-          }
-          else if (enemyCoords.get(`${x},${y}`)) {
-            type = "enemy";
+          if (determinedTileTypes.has(`${x},${y}`)) {
+            type = determinedTileTypes.get(`${x},${y}`) as "territory" | "fortified" | "enemy" | "obstacle";
           }
           else {
             type = "territory";
+            numTerritory++;
           }
         }
         tiles.push({ 
@@ -91,19 +92,15 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
           isCaptured: type === "fortified" ? true : false 
         });
       }
-      if (type === "territory") {
-        numTerritory++;
-      }
-      else if (type === "fortified") {
-        numFortified++;
-      }
-      else if (type === "enemy") {
-        numEnemy++;
-      }
     }
   }
   // if using probabilities fill, update to be within the max and min values
-  pinchToMaxMin();
+  if (fillConfig.type === "probabilities") {
+    const probabilities = (fillConfig as ProbabilitiesFillConfig).probabilities;
+    numFortified = pinchToMaxMin(probabilities.maxFortified, probabilities.minFortified, "fortified");
+    numEnemy = pinchToMaxMin(probabilities.maxEnemy, probabilities.minEnemy, "enemy");
+    numObstacle = pinchToMaxMin(probabilities.maxObstacle, probabilities.minObstacle, "obstacle");
+  }
 
   // reveal fortified tiles and adjacent tiles if fog of war is enabled
   if (gameConfig.fogOfWar) {
@@ -118,32 +115,35 @@ export function generateBoard(gameConfig: GameConfig): TileState[] {
   }
   return tiles;
 
-  function pinchToMaxMin(): void {
+  function pinchToMaxMin(max: number, min: number, type: "fortified" | "enemy" | "obstacle"): number {
+    let num = -1;
     if (fillConfig.type === "probabilities") {
-      while (numFortified < fillConfig.probabilities.minFortified && numTerritory > 0) {
-        updateRandomTileType("territory", "fortified");
-        numFortified++;
+      switch (type) {
+        case "fortified":
+          num = numFortified;
+          break;
+        case "enemy":
+          num = numEnemy;
+          break;
+        case "obstacle":
+          num = numObstacle;
+          break;
+      }
+      while (num < min && numTerritory > 0) {
+        updateRandomTileType("territory", type);
+        num++;
         numTerritory--;
       }
-      while (numFortified > fillConfig.probabilities.maxFortified && numFortified > 0) {
-        updateRandomTileType("fortified", "territory");
-        numFortified--;
-        numTerritory++;
-      }
-      while (numEnemy < fillConfig.probabilities.minEnemy && numTerritory > 0) {
-        updateRandomTileType("territory", "enemy");
-        numEnemy++;
-        numTerritory--;
-      }
-      while (numEnemy > fillConfig.probabilities.maxEnemy && numEnemy > 0) {
-        updateRandomTileType("enemy", "territory");
-        numEnemy--;
+      while (num > max && numTerritory < gameConfig.boardSize[0] * gameConfig.boardSize[1]) {
+        updateRandomTileType(type, "territory");
+        num--;
         numTerritory++;
       }
     }
+    return num;
   }
 
-  function updateRandomTileType(fromType: "territory" | "fortified" | "enemy", toType: "territory" | "fortified" | "enemy"): boolean {
+  function updateRandomTileType(fromType: "territory" | "fortified" | "enemy" | "obstacle", toType: "territory" | "fortified" | "enemy" | "obstacle"): boolean {
     if (tiles.every((t) => t.type !== fromType)) {
       return false;
     }
