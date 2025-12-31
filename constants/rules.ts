@@ -37,7 +37,7 @@ export const rulesPages: RulesPage[] = [
     sections: [
       {
         type: "text",
-        content: "The goal is to capture territory tiles..."
+        content: "The goal is to capture territory tiles. Select tiles on the board to capture them."
       },
       {
         type: "image",
@@ -46,16 +46,6 @@ export const rulesPages: RulesPage[] = [
           caption: "A blank board of territory tiles",
         }
       },
-      {
-        type: "text",
-        content: "Select tiles on the board to capture them."
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: "Move Cost",
-    sections: [
       {
         type: "text",
         content: "Each time you capture a territory tile, it costs you 1 resource."
@@ -73,14 +63,10 @@ export const rulesPages: RulesPage[] = [
         type: "text",
         content: "Your resources are limited. If you run out of moves before you can capture the whole board, you lose."
       },
-      {
-        type: "text",
-        content: "You can can get back resources by harvesting territory tiles. Though, you can only hold so many resources at a time."
-      }
     ]
   },
   {
-    id: 3,
+    id: 2,
     title: "Territory Growth",
     sections: [
       {
@@ -97,7 +83,7 @@ export const rulesPages: RulesPage[] = [
     ]
   },
   {
-    id: 4,
+    id: 3,
     title: "Harvesting Territory",
     sections: [
       {
@@ -111,15 +97,9 @@ export const rulesPages: RulesPage[] = [
           caption: "Territory tiles being harvested"
         }
       },
-    ]
-  },
-  {
-    id: 5,
-    title: "Harvesting Territory",
-    sections: [
       {
         type: "text",
-        content: "You get 1 resource back for each territory tile you harvest, including those adjacent ones."
+        content: "You get 1 resource back for each territory tile you harvest, including those adjacent ones. Though, you can only hold so many resources at a time."
       },
       {
         type: "text",
@@ -128,7 +108,7 @@ export const rulesPages: RulesPage[] = [
     ]
   },
   {
-    id: 6,
+    id: 4,
     title: "Fortified Territory",
     sections: [
       {
@@ -142,12 +122,6 @@ export const rulesPages: RulesPage[] = [
           caption: "Fortified territory tile"
         }
       },
-    ]
-  },
-  {
-    id: 7,
-    title: "Fortified Territory",
-    sections: [
       {
         type: "text",
         content: "To fortify a territory tile, simply leave it alone. A green territory tile will automatically become fortified."
@@ -162,7 +136,7 @@ export const rulesPages: RulesPage[] = [
     ]
   },
   {
-    id: 8,
+    id: 5,
     title: "The Enemy",
     sections: [
       {
@@ -170,23 +144,24 @@ export const rulesPages: RulesPage[] = [
         content: "The enemy are here to do the same as you, conquer. They will capture nearby territory tiles as well as your own tiles if they get the chance."
       },
       {
-        type: "text-image",
-        content: "Capturing an enemy tile costs 1 extra resource, unless a fortified tile of yours is adjacent to it.",
+        type: "image",
         image: {
           source: require("@/assets/gameImages/tiles/enemy.png"),
           caption: "Enemy territory tile",
-          width: 120,
-          height: 120,
         }
       },
       {
         type: "text",
         content: "You must defeat all enemies.",
+      },
+      {
+        type: "text",
+        content: "Capturing an enemy tile costs 1 extra resource, unless a fortified tile of yours is adjacent to it.",
       }
     ]
   },
   {
-    id: 9,
+    id: 6,
     title: "Fog of War",
     sections: [
       {
@@ -203,7 +178,7 @@ export const rulesPages: RulesPage[] = [
     ]
   },
   {
-    id: 10,
+    id: 7,
     title: "Time Limit",
     sections: [
       {
@@ -218,6 +193,20 @@ export const rulesPages: RulesPage[] = [
         type: "text",
         content: "I just care that you win. So win."
       }
+    ]
+  },
+  {
+    id: 8,
+    title: "Now go.",
+    sections: [
+      {
+        type: "text",
+        content: "While I don't have much faith in you, maybe you'll surprise me."
+      },
+      {
+        type: "text",
+        content: "But I'm not holding my breath."
+      },
     ]
   }
 ];

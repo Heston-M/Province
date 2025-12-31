@@ -21,6 +21,8 @@ export default function FadingScrollView({
   const [contentHeight, setContentHeight] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
   // Helper function to convert hex to rgba
   const hexToRgba = (hex: string, alpha: number): string => {
     // Handle rgba strings
@@ -61,6 +63,11 @@ export default function FadingScrollView({
     }).start();
   }, [showTopFade, showBottomFade]);
 
+  useEffect(() => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+    setScrollY(0);
+  }, [children]);
+
   const handleScroll = (event: any) => {
     const { contentOffset } = event.nativeEvent;
     setScrollY(contentOffset.y);
@@ -86,6 +93,7 @@ export default function FadingScrollView({
         scrollEventThrottle={16}
         onContentSizeChange={handleContentSizeChange}
         onLayout={handleLayout}
+        ref={scrollViewRef}
       >
         {children}
       </ScrollView>
@@ -114,6 +122,7 @@ export default function FadingScrollView({
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    flex: 1,
   },
   fadeTop: {
     position: "absolute",
